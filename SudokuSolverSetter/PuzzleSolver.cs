@@ -10,7 +10,7 @@ namespace SudokuSolverSetter
     {
         public Grid Solver(Grid grid)
         {
-            bool changeMade = true;
+            bool changeMade = false;
             do
             {
                 if (FindNakedSingles(grid))
