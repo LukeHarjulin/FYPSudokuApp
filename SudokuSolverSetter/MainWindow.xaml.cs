@@ -23,7 +23,7 @@ namespace SudokuSolverSetter
         public MainWindow()
         {
             InitializeComponent();
-            //Create list of all the cells so that they can be transformed. 
+            //Create list of all the cells so that they can be transformed
             PuzzleGenerator gen = new PuzzleGenerator();
             PuzzleSolver solve = new PuzzleSolver();
 
@@ -38,12 +38,16 @@ namespace SudokuSolverSetter
                 x8y1g7, x8y2g7, x8y3g7, x8y4g8, x8y5g8, x8y6g8, x8y7g9, x8y8g9, x8y9g9,
                 x9y1g7, x9y2g7, x9y3g7, x9y4g8, x9y5g8, x9y6g8, x9y7g9, x9y8g9, x9y9g9
             };
-            // Grid grid = gen.Setter();
+            //Grid grid = gen.Setter();//Calling the puzzle generator method to create a puzzle - incomplete
+            
+            //Currently using pre-made sudoku puzzles found on sudokuwiki.org to develop my puzzle solver
             #region Manual Puzzle Generation
+            
             Cell[][] cells = new Cell[9][];
             for (int t = 0; t < cells.Length; t++)
             { cells[t] = new Cell[9]; }
             List<int> candiFiller = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            
             #region Test Puzzle One
             /*cells[0][0] = new Cell() { Num = 9, Candidates = { }, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
             cells[0][1] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
@@ -128,7 +132,7 @@ namespace SudokuSolverSetter
             cells[8][8] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 9, XLocation = 0, YLocation = 0 };*/
             #endregion Test Puzzle One
             #region Test Puzzle Two
-            cells[0][0] = new Cell() { Num = 5, Candidates = { }, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
+            /*cells[0][0] = new Cell() { Num = 5, Candidates = { }, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
             cells[0][1] = new Cell() { Num = 6, Candidates = { }, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
             cells[0][2] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
             cells[0][3] = new Cell() { Num = 7, Candidates = { }, SubGridLoc = 2, XLocation = 0, YLocation = 0 };
@@ -208,7 +212,7 @@ namespace SudokuSolverSetter
             cells[8][5] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 8, XLocation = 0, YLocation = 0 };
             cells[8][6] = new Cell() { Num = 3, Candidates = { }, SubGridLoc = 9, XLocation = 0, YLocation = 0 };
             cells[8][7] = new Cell() { Num = 4, Candidates = { }, SubGridLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[8][8] = new Cell() { Num = 5, Candidates = { }, SubGridLoc = 9, XLocation = 0, YLocation = 0 };
+            cells[8][8] = new Cell() { Num = 5, Candidates = { }, SubGridLoc = 9, XLocation = 0, YLocation = 0 };*/
             #endregion Test Puzzle Two
             #region Test Puzzle Three
             /*cells[0][0] = new Cell() { Num = 3, Candidates = {}, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
@@ -294,7 +298,7 @@ namespace SudokuSolverSetter
             cells[8][8] = new Cell() { Num = 4, Candidates = {}, SubGridLoc = 9, XLocation = 0, YLocation = 0 };*/
             #endregion
             #region Test Puzzle Four
-            /*cells[0][0] = new Cell() { Num = 3, Candidates = { }, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
+            cells[0][0] = new Cell() { Num = 3, Candidates = { }, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
             cells[0][1] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
             cells[0][2] = new Cell() { Num = 9, Candidates = { }, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
             cells[0][3] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 2, XLocation = 0, YLocation = 0 };
@@ -374,7 +378,7 @@ namespace SudokuSolverSetter
             cells[8][5] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 8, XLocation = 0, YLocation = 0 };
             cells[8][6] = new Cell() { Num = 1, Candidates = { }, SubGridLoc = 9, XLocation = 0, YLocation = 0 };
             cells[8][7] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[8][8] = new Cell() { Num = 4, Candidates = { }, SubGridLoc = 9, XLocation = 0, YLocation = 0 };*/
+            cells[8][8] = new Cell() { Num = 4, Candidates = { }, SubGridLoc = 9, XLocation = 0, YLocation = 0 };
             #endregion
             #region Test Puzzle Five
             /*cells[0][0] = new Cell() { Num = 0, Candidates = candiFiller, SubGridLoc = 1, XLocation = 0, YLocation = 0 };
@@ -476,6 +480,7 @@ namespace SudokuSolverSetter
                 PuzzleID = 0,
                 Rows = cells
             };
+            
             #endregion
 
             PopulateGrid(grid, txtBxList);
@@ -488,13 +493,13 @@ namespace SudokuSolverSetter
 
         public void PopulateGrid(Grid grid, List<TextBox> txtBxList)
         {
-            /*This method populates the Uniform grid and it's labels with all the given values from 'grid'.
+            /*This method populates the Uniform grid and its textboxes with all the given values from 'grid'.
             */
-            int x = 0;
-            int y = 0;
+            int x = 0;//row number
+            int y = 0;//column number
             for (int i = 0; i < txtBxList.Count; i++)
             {
-                if (grid.Rows[x][y].Num == 0) //0's are placeholders for when there is no value, so any 0's are turned into labels with empty text.
+                if (grid.Rows[x][y].Num == 0) //0's are placeholders for when there is no value, so any 0's are turned into texetboxes containing the candidate values.
                 {
                     txtBxList[i].FontSize = 12;
                     txtBxList[i].Text = "";
@@ -508,14 +513,14 @@ namespace SudokuSolverSetter
                 {
                     txtBxList[i].FontSize = 36;
                     txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
-                    if (grid.Rows[x][y].ReadOnly == true)
+                    if (grid.Rows[x][y].ReadOnly == true)//The readonly property ensures that the default given values of the sudoku puzzle remain readonly.
                     {
                         txtBxList[i].FontWeight = FontWeights.SemiBold;
                         txtBxList[i].IsReadOnly = true;
                     }
                 }
                 y++;
-                if (y == 9)
+                if (y == 9)//row needs to increment and column needs to reset to 0 once it reaches the end of the row
                 {
                     y = 0;
                     x++;
@@ -523,8 +528,9 @@ namespace SudokuSolverSetter
             }
 
         }
-        private void B_Solve_Click(object sender, RoutedEventArgs e)
+        private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the grid that it is presented
         {
+            //Initialising objects
             PuzzleSolver solve = new PuzzleSolver();
             List<TextBox> txtBxList = new List<TextBox>
             { x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
@@ -540,6 +546,8 @@ namespace SudokuSolverSetter
             Grid gridSolve = new Grid() { PuzzleID = 0 };
             gridSolve.Rows = new Cell[9][];
             int cellNum = 0;
+
+            //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
             for (int r = 0; r < gridSolve.Rows.Length; r++)
             {
                 gridSolve.Rows[r] = new Cell[9];
@@ -578,8 +586,9 @@ namespace SudokuSolverSetter
             PopulateGrid(gridSolve, txtBxList);
         }
 
-        private void B_Solve1by1_Click(object sender, RoutedEventArgs e)
+        private void B_Solve1by1_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve in increments (e.g. once a value is placed into a cell, the solver stops)
         {
+            //Initialising objects
             PuzzleSolver solve = new PuzzleSolver();
             List<TextBox> txtBxList = new List<TextBox>
             { x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
@@ -595,6 +604,8 @@ namespace SudokuSolverSetter
             Grid gridSolve = new Grid() { PuzzleID = 0 };//Passes by reference, changed to deep copy
             gridSolve.Rows = new Cell[9][];
             int cellNum = 0;
+
+            //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
             for (int r = 0; r < gridSolve.Rows.Length; r++)
             {
                 gridSolve.Rows[r] = new Cell[9];
