@@ -8,9 +8,15 @@ namespace SudokuSolverSetter
 {
     public class PuzzleSolver
     {
-        public Grid Solver(Grid grid)
+        #region Full Solver method
+        public Grid Solver(Grid grid)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
         {
             bool changeMade = false;
+            /*
+             *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
+             *  The if and elses are to make the process faster of solving faster, 
+                as it ensures that it tries the easiest less computationally heavy methods first before the more complex methods.
+            */
             do
             {
                 if (FindNakedSingles(grid))
@@ -21,14 +27,13 @@ namespace SudokuSolverSetter
                 {
                     changeMade = true;
                 }
+                //More methods to add
                 else
                 {
                     changeMade = false;
                 }
             } while (changeMade);
-
-
-
+            
             return grid;
         }
 
@@ -62,6 +67,7 @@ namespace SudokuSolverSetter
                             changeMade = true;
                             grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
                         }
+                        //If two candidates remain, then it attempts to find a naked pair (aka a Conjugate Pair) by calling the FindNakedPair() method
                         else if (grid.Rows[i][j].Candidates.Count == 2)
                         {
                             if (FindNakedPair(grid, grid.Rows[i][j]))
@@ -366,8 +372,9 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-
-        public int SolveACell(int[] position, Grid grid)
+        #endregion
+        #region Temporary Solver used in puzzle generator
+        public int SolveACell(int[] position, Grid grid)//Used in the generator - unfinshied!
         {
             int cellNum = 0;
             List<int> numberList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -389,7 +396,8 @@ namespace SudokuSolverSetter
             }
             return cellNum;
         }
-
+        #endregion
+        #region Solver for Solving Cell by Cell button
         public Grid SolveCellByCell(Grid grid)
         {
             bool changeMade = false;
@@ -733,5 +741,6 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+        #endregion
     }
 }
