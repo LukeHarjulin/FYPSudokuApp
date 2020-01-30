@@ -19,11 +19,11 @@ namespace SudokuSolverSetter
             */
             do
             {
-                if (FindNakedSingles(grid))
+                if (FindNakedNumbers(grid))
                 {
                     changeMade = true;
                 }
-                else if (FindHiddenSingles(grid))
+                else if (FindHiddenNumbers(grid))
                 {
                     changeMade = true;
                 }
@@ -38,7 +38,7 @@ namespace SudokuSolverSetter
         }
 
 
-        private bool FindNakedSingles(Grid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
+        private bool FindNakedNumbers(Grid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
         {
             bool changeMade = false;//Used to flag if a number has been discovered, so the grid can be checked again
 
@@ -76,7 +76,8 @@ namespace SudokuSolverSetter
                             }
                         }
                     }
-                }
+
+                                    }
             }
 
             return changeMade;
@@ -175,7 +176,7 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-        private bool FindHiddenSingles(Grid grid)
+        private bool FindHiddenNumbers(Grid grid)
         {
             bool changeMade = false;
 
@@ -203,6 +204,7 @@ namespace SudokuSolverSetter
                             if (grid.Rows[i][h].Candidates.Contains(n + 1))
                             {
                                 grid.Rows[i][h].Num = n + 1;
+                                grid.Rows[i][h].Candidates.Clear();
                                 changeMade = true;
                                 break;
                             }
@@ -234,6 +236,7 @@ namespace SudokuSolverSetter
                             if (grid.Rows[h][colu].Candidates.Contains(n + 1))
                             {
                                 grid.Rows[h][colu].Num = n + 1;
+                                grid.Rows[h][colu].Candidates.Clear();
                                 changeMade = true;
                                 break;
                             }
@@ -247,30 +250,31 @@ namespace SudokuSolverSetter
             for (int sg = 0; sg < 9; sg++)//Finding Hidden Singles in subgrids
             {
                 int[] freqOfEachCandi = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                for (int x = xStart; x < xStart + 3; x++)
+                for (int x = xStart; x < xStart + 3; x++)//Iterates through the subgrids rows
                 {
-                    for (int y = yStart; y < yStart + 3; y++)
+                    for (int y = yStart; y < yStart + 3; y++)//Iterates through the subgrids columns
                     {
                         for (int l = 0; l < grid.Rows[x][y].Candidates.Count; l++)
                         {
                             if (grid.Rows[x][y].Num == 0)
                             {
-                                freqOfEachCandi[grid.Rows[x][y].Candidates[l] - 1]++;
+                                freqOfEachCandi[grid.Rows[x][y].Candidates[l] - 1]++;//Increments the frequency of the value that corresponds with the candidate number - 1 (arrays index at 0)
                             }
                         }
                     }
                 }
                 for (int n = 0; n < 9; n++)
                 {
-                    if (freqOfEachCandi[n] == 1)
+                    if (freqOfEachCandi[n] == 1)//Hidden singles obivously should only frequent once in 
                     {
-                        for (int x = xStart; x < xStart + 3; x++)
+                        for (int x = xStart; x < xStart + 3; x++)//Iterates through the subgrids rows
                         {
-                            for (int y = yStart; y < yStart + 3; y++)
+                            for (int y = yStart; y < yStart + 3; y++)//Iterates through the subgrids columns
                             {
                                 if (grid.Rows[x][y].Candidates.Contains(n + 1))
                                 {
-                                    grid.Rows[x][y].Num = n + 1;
+                                    grid.Rows[x][y].Num = n + 1;//Assigns the number of the cell with the hidden single
+                                    grid.Rows[x][y].Candidates.Clear();
                                     changeMade = true;
                                     break;
                                 }
@@ -278,14 +282,16 @@ namespace SudokuSolverSetter
                         }
                         break;
                     }
-                    if (freqOfEachCandi[n] == 2)
+                    if (freqOfEachCandi[n] == 2)//Hidden Pairs
                     {
+                        //Storage for the pair of cells
                         Cell cell1 = new Cell();
                         Cell cell2 = new Cell();
-                        int counter = 0;
-                        for (int x = xStart; x < xStart + 3; x++)
+                        int counter = 0;//Counter used to assign cell1 with the first cell and cell2 with the second.
+
+                        for (int x = xStart; x < xStart + 3; x++)//Iterates through the subgrids rows
                         {
-                            for (int y = yStart; y < yStart + 3; y++)
+                            for (int y = yStart; y < yStart + 3; y++)//Iterates through the subgrids columns
                             {
                                 if (grid.Rows[x][y].Candidates.Contains(n + 1))
                                 {
@@ -320,7 +326,7 @@ namespace SudokuSolverSetter
                             }
                         }
                     }
-                    if (freqOfEachCandi[n] == 3)
+                    if (freqOfEachCandi[n] == 3)//Hidden Triples
                     {
                         Cell cell1 = new Cell();
                         Cell cell2 = new Cell();
@@ -372,6 +378,28 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+
+        /*Rule for Type1 Unique Rectangle:
+         *There must a four pairs in a rectangle that spans two sub-grids.
+         *All of the pairs must be naked, apart from one.
+         *The cell that contains more than just the pair is able to get rid of the pair from the candidate number list.
+         * Reason: A sudoku puzzle cannot contain four conjugate pairs as there can only be one solution to the puzzle. 
+         * If numbers are interchangeable, that means there is more than one solution
+        */
+        public bool UniqueRectangle(Grid grid)
+        {
+            bool changeMade = false;
+
+
+
+            return changeMade;
+        }
+        /*Chaining:
+         * 
+        */
+        /*X-Wing Strategy:
+         * 
+         */
         #endregion
         #region Temporary Solver used in puzzle generator
         public int SolveACell(int[] position, Grid grid)//Used in the generator - unfinshied!
@@ -402,16 +430,16 @@ namespace SudokuSolverSetter
         {
             bool changeMade = false;
 
-            if (!FindNakedSingles1by1(grid))
+            if (!FindNakedNumbers1by1(grid))
             {
-                FindHiddenSingles1by1(grid);
+                FindHiddenNumbers1by1(grid);
             }
 
 
             return grid;
         }
 
-        private bool FindNakedSingles1by1(Grid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
+        private bool FindNakedNumbers1by1(Grid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
         {
             bool changeMade = false;//Used to flag if a number has been discovered, so the grid can be checked again
 
@@ -547,7 +575,7 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-        private bool FindHiddenSingles1by1(Grid grid)
+        private bool FindHiddenNumbers1by1(Grid grid)
         {
             bool changeMade = false;
 
@@ -561,7 +589,7 @@ namespace SudokuSolverSetter
                     {
                         if (grid.Rows[i][j].Num == 0)
                         {
-                            freqOfEachCandi[grid.Rows[i][j].Candidates[l] - 1]++;
+                            freqOfEachCandi[grid.Rows[i][j].Candidates[l] - 1]++;//Increments the frequency of the value that corresponds with the candidate number - 1 (arrays index at 0)
                         }
                     }
 
@@ -575,6 +603,7 @@ namespace SudokuSolverSetter
                             if (grid.Rows[i][h].Candidates.Contains(n + 1))
                             {
                                 grid.Rows[i][h].Num = n + 1;
+                                grid.Rows[i][h].Candidates.Clear();
                                 return true;
                             }
                         }
@@ -605,6 +634,7 @@ namespace SudokuSolverSetter
                             if (grid.Rows[h][colu].Candidates.Contains(n + 1))
                             {
                                 grid.Rows[h][colu].Num = n + 1;
+                                grid.Rows[h][colu].Candidates.Clear();
                                 return true;
                             }
                         }
@@ -641,6 +671,7 @@ namespace SudokuSolverSetter
                                 if (grid.Rows[x][y].Candidates.Contains(n + 1))
                                 {
                                     grid.Rows[x][y].Num = n + 1;
+                                    grid.Rows[x][y].Candidates.Clear();
                                     return true;
                                 }
                             }
