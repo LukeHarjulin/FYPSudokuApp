@@ -55,7 +55,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Cell.cs" />
-    <Compile Include="Grid.cs" />
+    <Compile Include="SudokuGrid.cs" />
     <Compile Include="PuzzleGenerator.cs" />
     <Compile Include="PuzzleSolver.cs" />
     <Page Include="MainWindow.xaml">

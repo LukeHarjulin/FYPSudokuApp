@@ -9,7 +9,7 @@ namespace SudokuSolverSetter
     public class PuzzleSolver
     {
         #region Full Solver method
-        public Grid Solver(Grid grid)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
+        public SudokuGrid Solver(SudokuGrid grid)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
         {
             bool changeMade = false;
             /*
@@ -38,7 +38,7 @@ namespace SudokuSolverSetter
         }
 
 
-        private bool FindNakedNumbers(Grid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
+        private bool FindNakedNumbers(SudokuGrid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
         {
             bool changeMade = false;//Used to flag if a number has been discovered, so the grid can be checked again
 
@@ -48,14 +48,14 @@ namespace SudokuSolverSetter
                 {
                     if (grid.Rows[i][j].Num == 0)
                     {
-                        //Start checking the rows, columns or subgrid, eliminating numbers from the candidate list
+                        //Start checking the rows, columns or block, eliminating numbers from the candidate list
                         //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
                         foreach (Cell[] item in grid.Rows)
                         {
                             foreach (Cell cell in item)
                             {
                                 if (grid.Rows[i][j].Candidates.Contains(cell.Num) &&
-                                    (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].SubGridLoc == cell.SubGridLoc))
+                                    (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
                                 {
                                     grid.Rows[i][j].Candidates.Remove(cell.Num);
                                     changeMade = true;
@@ -77,15 +77,16 @@ namespace SudokuSolverSetter
                         }
                     }
 
-                                    }
+                }
             }
 
             return changeMade;
         }
 
-        private bool FindNakedPair(Grid grid, Cell cellWithPair)
+        private bool FindNakedPair(SudokuGrid grid, Cell cellWithPair)
         {
             bool changeMade = false;
+            int nakedPairCount = 0;
             for (int i = 0; i < grid.Rows.Length; i++)
             {
                 for (int j = 0; j < grid.Rows[i].Length; j++)
@@ -94,6 +95,7 @@ namespace SudokuSolverSetter
                     {
                         if (cellWithPair.XLocation == grid.Rows[i][j].XLocation && cellWithPair != grid.Rows[i][j])
                         {
+                            nakedPairCount++;
                             foreach (Cell curCell in grid.Rows[i])
                             {
                                 if (!cellWithPair.Equals(curCell) && !curCell.Equals(grid.Rows[i][j]) && curCell.Candidates.Contains(cellWithPair.Candidates[0]))
@@ -101,9 +103,18 @@ namespace SudokuSolverSetter
                                 if (!cellWithPair.Equals(curCell) && !curCell.Equals(grid.Rows[i][j]) && curCell.Candidates.Contains(cellWithPair.Candidates[1]))
                                 { curCell.Candidates.Remove(cellWithPair.Candidates[1]); changeMade = true; }
                             }
+                            //if (!changeMade)
+                            //{
+                            //    FindUniqueRectangle(grid, cellWithPair, grid.Rows[i][j]);
+                            //}
+                            if (nakedPairCount > 1 && changeMade == false)
+                            {
+                                nakedPairCount = nakedPairCount;
+                            }
                         }
                         if (cellWithPair.YLocation == grid.Rows[i][j].YLocation && cellWithPair != grid.Rows[i][j])
                         {
+                            nakedPairCount++;
                             for (int k = 0; k < grid.Rows.Length; k++)
                             {
                                 if (!cellWithPair.Equals(grid.Rows[k][j]) && !grid.Rows[k][j].Equals(grid.Rows[i][j]) && grid.Rows[k][j].Candidates.Contains(cellWithPair.Candidates[0]))
@@ -111,11 +122,20 @@ namespace SudokuSolverSetter
                                 if (!cellWithPair.Equals(grid.Rows[k][j]) && !grid.Rows[k][j].Equals(grid.Rows[i][j]) && grid.Rows[k][j].Candidates.Contains(cellWithPair.Candidates[1]))
                                 { grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[1]); changeMade = true; }
                             }
+                            //if (!changeMade)
+                            //{
+                            //    FindUniqueRectangle(grid, cellWithPair, grid.Rows[i][j]);
+                            //}
+                            if (nakedPairCount > 1 && changeMade == false)
+                            {
+                                nakedPairCount = nakedPairCount;
+                            }
                         }
-                        if (cellWithPair.SubGridLoc == grid.Rows[i][j].SubGridLoc)
+                        if (cellWithPair.BlockLoc == grid.Rows[i][j].BlockLoc && cellWithPair != grid.Rows[i][j])
                         {
+                            nakedPairCount++;
                             int xStart = 0, yStart = 0;
-                            switch (cellWithPair.SubGridLoc)
+                            switch (cellWithPair.BlockLoc)
                             {
                                 case 1:
                                     xStart = 0;
@@ -166,7 +186,14 @@ namespace SudokuSolverSetter
                                     { grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[1]); changeMade = true; }
                                 }
                             }
-
+                            if (nakedPairCount > 1 && changeMade == false)
+                            {
+                                nakedPairCount = nakedPairCount;
+                            }
+                            //if (!changeMade)
+                            //{
+                            //    FindUniqueRectangle(grid, cellWithPair, grid.Rows[i][j]);
+                            //}
                         }
                     }
 
@@ -176,7 +203,7 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-        private bool FindHiddenNumbers(Grid grid)
+        private bool FindHiddenNumbers(SudokuGrid grid)
         {
             bool changeMade = false;
 
@@ -247,12 +274,12 @@ namespace SudokuSolverSetter
             }
 
             int xStart = 0, yStart = 0;
-            for (int sg = 0; sg < 9; sg++)//Finding Hidden Singles in subgrids
+            for (int sg = 0; sg < 9; sg++)//Finding Hidden Singles in blocks
             {
                 int[] freqOfEachCandi = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                for (int x = xStart; x < xStart + 3; x++)//Iterates through the subgrids rows
+                for (int x = xStart; x < xStart + 3; x++)//Iterates through the blocks rows
                 {
-                    for (int y = yStart; y < yStart + 3; y++)//Iterates through the subgrids columns
+                    for (int y = yStart; y < yStart + 3; y++)//Iterates through the blocks columns
                     {
                         for (int l = 0; l < grid.Rows[x][y].Candidates.Count; l++)
                         {
@@ -267,9 +294,9 @@ namespace SudokuSolverSetter
                 {
                     if (freqOfEachCandi[n] == 1)//Hidden singles obivously should only frequent once in 
                     {
-                        for (int x = xStart; x < xStart + 3; x++)//Iterates through the subgrids rows
+                        for (int x = xStart; x < xStart + 3; x++)//Iterates through the blocks rows
                         {
-                            for (int y = yStart; y < yStart + 3; y++)//Iterates through the subgrids columns
+                            for (int y = yStart; y < yStart + 3; y++)//Iterates through the blocks columns
                             {
                                 if (grid.Rows[x][y].Candidates.Contains(n + 1))
                                 {
@@ -289,9 +316,9 @@ namespace SudokuSolverSetter
                         Cell cell2 = new Cell();
                         int counter = 0;//Counter used to assign cell1 with the first cell and cell2 with the second.
 
-                        for (int x = xStart; x < xStart + 3; x++)//Iterates through the subgrids rows
+                        for (int x = xStart; x < xStart + 3; x++)//Iterates through the blocks rows
                         {
-                            for (int y = yStart; y < yStart + 3; y++)//Iterates through the subgrids columns
+                            for (int y = yStart; y < yStart + 3; y++)//Iterates through the blocks columns
                             {
                                 if (grid.Rows[x][y].Candidates.Contains(n + 1))
                                 {
@@ -380,13 +407,13 @@ namespace SudokuSolverSetter
         }
 
         /*Rule for Type1 Unique Rectangle:
-         *There must a four pairs in a rectangle that spans two sub-grids.
+         *There must four pairs in a rectangle that spans two blocks.
          *All of the pairs must be naked, apart from one.
          *The cell that contains more than just the pair is able to get rid of the pair from the candidate number list.
          * Reason: A sudoku puzzle cannot contain four conjugate pairs as there can only be one solution to the puzzle. 
          * If numbers are interchangeable, that means there is more than one solution
         */
-        public bool UniqueRectangle(Grid grid)
+        public bool FindUniqueRectangle(SudokuGrid grid, Cell pair1, Cell pair2)
         {
             bool changeMade = false;
 
@@ -402,7 +429,7 @@ namespace SudokuSolverSetter
          */
         #endregion
         #region Temporary Solver used in puzzle generator
-        public int SolveACell(int[] position, Grid grid)//Used in the generator - unfinshied!
+        public int SolveACell(int[] position, SudokuGrid grid)//Used in the generator - unfinshied!
         {
             int cellNum = 0;
             List<int> numberList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -410,7 +437,7 @@ namespace SudokuSolverSetter
             {
                 foreach (Cell cell in item)
                 {
-                    if ((grid.Rows[position[0]][position[1]].XLocation == cell.XLocation || grid.Rows[position[0]][position[1]].YLocation == cell.YLocation || grid.Rows[position[0]][position[1]].SubGridLoc == cell.SubGridLoc) && numberList.Contains(cell.Num))
+                    if ((grid.Rows[position[0]][position[1]].XLocation == cell.XLocation || grid.Rows[position[0]][position[1]].YLocation == cell.YLocation || grid.Rows[position[0]][position[1]].BlockLoc == cell.BlockLoc) && numberList.Contains(cell.Num))
                     {
                         numberList.Remove(cell.Num);
                     }
@@ -426,7 +453,7 @@ namespace SudokuSolverSetter
         }
         #endregion
         #region Solver for Solving Cell by Cell button
-        public Grid SolveCellByCell(Grid grid)
+        public SudokuGrid SolveCellByCell(SudokuGrid grid)
         {
             bool changeMade = false;
 
@@ -439,7 +466,7 @@ namespace SudokuSolverSetter
             return grid;
         }
 
-        private bool FindNakedNumbers1by1(Grid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
+        private bool FindNakedNumbers1by1(SudokuGrid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
         {
             bool changeMade = false;//Used to flag if a number has been discovered, so the grid can be checked again
 
@@ -449,14 +476,14 @@ namespace SudokuSolverSetter
                 {
                     if (grid.Rows[i][j].Num == 0)
                     {
-                        //Start checking the rows, columns or subgrid, eliminating numbers from the candidate list
+                        //Start checking the rows, columns or block, eliminating numbers from the candidate list
                         //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
                         foreach (Cell[] item in grid.Rows)
                         {
                             foreach (Cell cell in item)
                             {
                                 if (grid.Rows[i][j].Candidates.Contains(cell.Num) &&
-                                    (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].SubGridLoc == cell.SubGridLoc))
+                                    (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
                                 {
                                     grid.Rows[i][j].Candidates.Remove(cell.Num);
                                     changeMade = true;
@@ -482,7 +509,7 @@ namespace SudokuSolverSetter
             return changeMade;
         }
 
-        private bool FindNakedPair1by1(Grid grid, Cell cellWithPair)
+        private bool FindNakedPair1by1(SudokuGrid grid, Cell cellWithPair)
         {
             bool changeMade = false;
             for (int i = 0; i < grid.Rows.Length; i++)
@@ -511,10 +538,10 @@ namespace SudokuSolverSetter
                                 { grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[1]); return true; }
                             }
                         }
-                        if (cellWithPair.SubGridLoc == grid.Rows[i][j].SubGridLoc)
+                        if (cellWithPair.BlockLoc == grid.Rows[i][j].BlockLoc)
                         {
                             int xStart = 0, yStart = 0;
-                            switch (cellWithPair.SubGridLoc)
+                            switch (cellWithPair.BlockLoc)
                             {
                                 case 1:
                                     xStart = 0;
@@ -575,7 +602,7 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-        private bool FindHiddenNumbers1by1(Grid grid)
+        private bool FindHiddenNumbers1by1(SudokuGrid grid)
         {
             bool changeMade = false;
 
@@ -644,7 +671,7 @@ namespace SudokuSolverSetter
             }
 
             int xStart = 0, yStart = 0;
-            for (int sg = 0; sg < 9; sg++)//Finding Hidden Singles in subgrids
+            for (int sg = 0; sg < 9; sg++)//Finding Hidden Singles in blocks
             {
                 int[] freqOfEachCandi = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 for (int x = xStart; x < xStart + 3; x++)

@@ -12,19 +12,19 @@ namespace SudokuSolverSetter
         {
 
         }
-        public Cell(int num, int xLocation, int yLocation, int subGridLoc, List<int> candidates, bool readOnly)
+        public Cell(int num, int xLocation, int yLocation, int blockLoc, List<int> candidates, bool readOnly)
         {
             Num = num;
             XLocation = xLocation;
             YLocation = yLocation;
-            SubGridLoc = subGridLoc;
+            BlockLoc = blockLoc;
             Candidates = candidates;
             ReadOnly = readOnly;
         }
         public int Num { get; set; }
         public int XLocation { get; set; }
         public int YLocation { get; set; }
-        public int SubGridLoc { get; set; }
+        public int BlockLoc { get; set; }
         public List<int> Candidates { get; set; }
         public bool ReadOnly { get; set; }
 

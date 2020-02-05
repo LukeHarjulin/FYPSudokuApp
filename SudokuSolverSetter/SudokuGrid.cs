@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace SudokuSolverSetter
 {
-    public class Grid
+    public class SudokuGrid
     {
-        public Grid()
+        public SudokuGrid()
         {
 
         }
 
-        public Grid(Cell[][] rows, int puzzleID)
+        public SudokuGrid(Cell[][] rows, int puzzleID)
         {
             Rows = rows;
             PuzzleID = puzzleID;

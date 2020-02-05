@@ -8,28 +8,28 @@ namespace SudokuSolverSetter
 {
     public class PuzzleGenerator//INCOMPLETE!!!!!!!!!
     {
-        public Grid Setter()
+        public SudokuGrid Setter()
         {
             //Initialising objects
             PuzzleSolver solve = new PuzzleSolver();
             Random rand = new Random();
 
-            Grid grid = new Grid
+            SudokuGrid grid = new SudokuGrid
             {
                 Rows = new Cell[9][]
             };
             grid.PuzzleID = 1;//Temporary ID, will be random 6 digit number in future
             int value = 0;//value to be inserted into cell
             int vecPos = 0;//vector position, used for extracting a number out of the rowNumbers List
-            bool newNum = true;//flags if the value exists in the row, column, or subgrid so that it isn't placed in the cell.
+            bool newNum = true;//flags if the value exists in the row, column, or block so that it isn't placed in the cell.
             short clearIncr = 0;//Clears the grid when a row persists on failing to produce a valid row - might not be necessary
-            int subGridCounter = 0;//Sub-grid (aka box) value
+            int blockCounter = 0;//Block #
 
             /*  -Starts off by iterating through the rows, assigning an empty array of Cells to each row
-                -Next, the cells associated with the current row are iterated through, assigning a sub-grid number (aka box number), 
+                -Next, the cells associated with the current row are iterated through, assigning a block number, 
                 a row and column number, and an empty candidate list to each Cell
                 -Next, shuffle the numbers that can go in the row.
-                -Then test the chosen value against the existing numbers within the column/row/subgrid.
+                -Then test the chosen value against the existing numbers within the column/row/block.
                 -Once a grid is generated, begin removing numbers (WIP - unsure of how to do this part - need more research)
              */
             for (int i = 0; i < grid.Rows.Length; i++)
@@ -38,42 +38,42 @@ namespace SudokuSolverSetter
                 grid.Rows[i] = new Cell[9];
                 for (int j = 0; j < 9; j++)
                 {
-                    #region Assigning Sub-grid Value
+                    #region Assigning Block Value
                     if (i < 3 && j < 3)
                     {
-                        subGridCounter = 1;
+                        blockCounter = 1;
                     }
                     else if (i < 3 && (j >= 3 && j < 6))
                     {
-                        subGridCounter = 2;
+                        blockCounter = 2;
                     }
                     else if (i < 3 && j >= 6)
                     {
-                        subGridCounter = 3;
+                        blockCounter = 3;
                     }
                     else if ((i >= 3 && i < 6) && j < 3)
                     {
-                        subGridCounter = 4;
+                        blockCounter = 4;
                     }
                     else if ((i >= 3 && i < 6) && (j >= 3 && j < 6))
                     {
-                        subGridCounter = 5;
+                        blockCounter = 5;
                     }
                     else if ((i >= 3 && i < 6) && j >= 6)
                     {
-                        subGridCounter = 6;
+                        blockCounter = 6;
                     }
                     else if (i >= 6 && j < 3)
                     {
-                        subGridCounter = 7;
+                        blockCounter = 7;
                     }
                     else if (i >= 6 && (j >= 3 && j < 6))
                     {
-                        subGridCounter = 8;
+                        blockCounter = 8;
                     }
                     else if (i >= 6 && j >= 6)
                     {
-                        subGridCounter = 9;
+                        blockCounter = 9;
                     }
                     #endregion
                     grid.Rows[i][j] = new Cell
@@ -126,7 +126,7 @@ namespace SudokuSolverSetter
                                 break;
                             }
                         }
-                        for (int rowIndex = 0; rowIndex <= i; rowIndex++)//Checks through the values in the current subgrid against 'value'
+                        for (int rowIndex = 0; rowIndex <= i; rowIndex++)//Checks through the values in the current block against 'value'
                         {
                             if (!newNum)
                             {
@@ -136,7 +136,7 @@ namespace SudokuSolverSetter
                             for (int l = 0; l < 9; l++)
                             {
 
-                                if (grid.Rows[rowIndex][l].SubGridLoc == subGridCounter && grid.Rows[rowIndex][l].Num == value)
+                                if (grid.Rows[rowIndex][l].BlockLoc == blockCounter && grid.Rows[rowIndex][l].Num == value)
                                 {
                                     newNum = false;
                                     break;
@@ -167,7 +167,7 @@ namespace SudokuSolverSetter
                         {
                             Array.Clear(grid.Rows, 0, grid.Rows.Length);
                             i = -1;
-                            subGridCounter = 0;
+                            blockCounter = 0;
                             clearIncr = 0;
                             break;
                         }
@@ -198,7 +198,7 @@ namespace SudokuSolverSetter
                                                       new int[] { 8,0 }, new int[] { 8,1 }, new int[] { 8,2 }, new int[] { 8,3 }, new int[] { 8,4 }, new int[] { 8,5 }, new int[] { 8,6 }, new int[] { 8,7 }, new int[] { 8,8 }
             };
 
-            Grid gridSave = new Grid() { PuzzleID = grid.PuzzleID };
+            SudokuGrid gridSave = new SudokuGrid() { PuzzleID = grid.PuzzleID };
             gridSave.Rows = new Cell[9][];
             for (int r = 0; r < gridSave.Rows.Length; r++)
             {
@@ -209,7 +209,7 @@ namespace SudokuSolverSetter
                     {
                         Candidates = grid.Rows[r][c].Candidates,
                         Num = grid.Rows[r][c].Num,
-                        SubGridLoc = grid.Rows[r][c].SubGridLoc,
+                        BlockLoc = grid.Rows[r][c].BlockLoc,
                         XLocation = grid.Rows[r][c].XLocation,
                         YLocation = grid.Rows[r][c].YLocation,
                         ReadOnly = true
