@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SudokuSolverSetter
 {
     public class PuzzleGenerator//INCOMPLETE!!!!!!!!!
     {
-        public int numbersToRemove = 0, removed = 0;
-        
+        public int numbersToRemove = 0, removed = 0, escapeCounter = 0;
+
         public SudokuGrid Setter()
         {
-            
+
             //Initialising objects
             PuzzleSolver solve = new PuzzleSolver();
             Random rand = new Random();
@@ -43,7 +44,7 @@ namespace SudokuSolverSetter
                     //Assigning Block Value (starts from 0)
                     //Block number = row/3*3+column/3
                     blockCounter = (row / 3) * 3 + (col / 3) + 1;
-                    
+
                     grid.Rows[row][col] = new Cell { Candidates = new List<int>(9) };
                     grid.Rows[row][col].XLocation = row;
                     grid.Rows[row][col].YLocation = col;
@@ -113,18 +114,25 @@ namespace SudokuSolverSetter
                 }
             }
 
+
             //INCOMPLETE SECTION - NEED MORE RESEARCH!!!!
             //Able to remove a select number of values
             //Need to make sure there is only ONE solution
             numbersToRemove = rand.Next(45, 65);
+            numbersToRemove = 65;
             while (numbersToRemove > 0)
             {
                 grid = RemoveNumber(grid, rand);
+                if (escapeCounter > 1000)
+                {
+                    break;
+                }
                 
             }
-
+            Clipboard.SetText(SudokuToString(grid));
             return grid;
         }
+
 
         public List<int> Shuffler(List<int> rowNumbers, Random rand)
         {
@@ -139,151 +147,173 @@ namespace SudokuSolverSetter
             }
             return rowNumbers;
         }
-        
+
         public SudokuGrid RemoveNumber(SudokuGrid grid, Random rand)
         {
-            if (numbersToRemove > 0)
+            int randRow = 0, randCol = 0, saveNum = 0;
+           // int altRow = 0, altCol = 0, altSaveNum = 0;
+            randRow = rand.Next(0, 9);
+            randCol = rand.Next(0, 9);
+            //altRow = NumberSwitch(randRow);
+            //altCol = NumberSwitch(randCol);
+
+            if (grid.Rows[randRow][randCol].Num != 0/* && grid.Rows[altRow][altCol].Num != 0*/)
             {
-                int randRow = 0, randCol = 0, saveNum = 0;
-                //int altRow = 0, altCol = 0, altSaveNum = 0;
-                randRow = rand.Next(0, 9);
-                randCol = rand.Next(0, 9);
-                //altRow = NumberSwitch(randRow);
-                //altCol = NumberSwitch(randCol);
+                saveNum = grid.Rows[randRow][randCol].Num;
+                grid.Rows[randRow][randCol].Num = 0;
+                grid.Rows[randRow][randCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                //altSaveNum = grid.Rows[altRow][altCol].Num;
+                //grid.Rows[altRow][altCol].Num = 0;
+                //grid.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-                if (grid.Rows[randRow][randCol].Num != 0)
+                //Create a copy of the grid after a number is removed
+                SudokuGrid gridSave = new SudokuGrid() { PuzzleID = grid.PuzzleID };
+                gridSave.Rows = new Cell[9][];
+                for (int r = 0; r < gridSave.Rows.Length; r++)
                 {
-                    saveNum = grid.Rows[randRow][randCol].Num;
-                    grid.Rows[randRow][randCol].Num = 0;
-                    grid.Rows[randRow][randCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-                    //altSaveNum = grid.Rows[altRow][altCol].Num;
-                    //grid.Rows[altRow][altCol].Num = 0;
-                    //grid.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-                    //Create a copy of the grid after a number is removed
-                    SudokuGrid gridSave = new SudokuGrid() { PuzzleID = grid.PuzzleID };
-                    gridSave.Rows = new Cell[9][];
-                    for (int r = 0; r < gridSave.Rows.Length; r++)
+                    gridSave.Rows[r] = new Cell[9];
+                    for (int c = 0; c < gridSave.Rows[r].Length; c++)
                     {
-                        gridSave.Rows[r] = new Cell[9];
-                        for (int c = 0; c < gridSave.Rows[r].Length; c++)
+                        gridSave.Rows[r][c] = new Cell()
                         {
-                            gridSave.Rows[r][c] = new Cell()
-                            {
-                                Num = grid.Rows[r][c].Num,
-                                BlockLoc = grid.Rows[r][c].BlockLoc,
-                                XLocation = grid.Rows[r][c].XLocation,
-                                YLocation = grid.Rows[r][c].YLocation,
-                                ReadOnly = true
-                            };
-                            if (gridSave.Rows[r][c].Num == 0)
-                            { gridSave.Rows[r][c].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 }; }
-                            else
-                            { gridSave.Rows[r][c].Candidates = grid.Rows[r][c].Candidates; }
-                        }
+                            Num = grid.Rows[r][c].Num,
+                            BlockLoc = grid.Rows[r][c].BlockLoc,
+                            XLocation = grid.Rows[r][c].XLocation,
+                            YLocation = grid.Rows[r][c].YLocation,
+                            ReadOnly = true
+                        };
+                        if (gridSave.Rows[r][c].Num == 0)
+                        { gridSave.Rows[r][c].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 }; }
+                        else
+                        { gridSave.Rows[r][c].Candidates = grid.Rows[r][c].Candidates; }
                     }
-                    
-                    if (BruteSolve(grid, rand))
-                    {
-                        numbersToRemove--;
-                        gridSave.Rows[randRow][randCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-                        //gridSave.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-                        grid = gridSave;
-                        return grid;
-                    }
-                    else
-                    {
-                        grid = gridSave;
-                        grid.Rows[randRow][randCol].Num = saveNum;
-                        grid.Rows[randRow][randCol].Candidates = new List<int> {  };
-                        //grid.Rows[altRow][altCol].Num = altSaveNum;
-                        //grid.Rows[altRow][altCol].Candidates = new List<int> { };
-                        return grid;
-                    }
-
                 }
+                
+                if (BruteSolve(grid, rand))
+                {
+                    numbersToRemove--;
+                    gridSave.Rows[randRow][randCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                    //gridSave.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                    grid = gridSave;
+                    escapeCounter = 0;
+                    removed++;
+                    return grid;
+                }
+                else
+                {
+                    grid = gridSave;
+                    grid.Rows[randRow][randCol].Num = saveNum;
+                    grid.Rows[randRow][randCol].Candidates = new List<int> { };
+                    //grid.Rows[altRow][altCol].Num = altSaveNum;
+                    //grid.Rows[altRow][altCol].Candidates = new List<int> { };
+                    escapeCounter++;
+                    return grid;
+                }
+
             }
             return grid;
         }
 
         public bool BruteSolve(SudokuGrid grid, Random rand)
         {
-            for (int r = 0; r < 9; r++)//Time Complexity: O(9^2+3^2)
+            bool changeMade;
+            do
             {
-                for (int c = 0; c < 9; c++)
+                changeMade = false;
+                for (int r = 0; r < 9; r++)//Time Complexity: O(9^2+3^2)
                 {
-                    if (grid.Rows[r][c].Num == 0)
+                    for (int c = 0; c < 9; c++)
                     {
-                        //Start checking the rows, columns or block, eliminating numbers from the candidate list
-                        //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
-                        for (int n = 0; n < 9; n++)
+                        if (grid.Rows[r][c].Num == 0)
                         {
-                            if (grid.Rows[r][c].Candidates.Contains(grid.Rows[r][n].Num))
+                            //Start checking the rows, columns or block, eliminating numbers from the candidate list
+                            //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
+                            for (int n = 0; n < 9; n++)
                             {
-                                grid.Rows[r][c].Candidates.Remove(grid.Rows[r][n].Num);
-                            }
-                            else if (grid.Rows[r][c].Candidates.Contains(grid.Rows[n][c].Num))
-                            {
-                                grid.Rows[r][c].Candidates.Remove(grid.Rows[n][c].Num);
-                            }
-                            int xStart = 0, yStart = 0;
-                            switch (grid.Rows[r][c].BlockLoc)
-                            {
-                                case 1:
-                                    xStart = 0;
-                                    yStart = 0;
-                                    break;
-                                case 2:
-                                    xStart = 0;
-                                    yStart = 3;
-                                    break;
-                                case 3:
-                                    xStart = 0;
-                                    yStart = 6;
-                                    break;
-                                case 4:
-                                    xStart = 3;
-                                    yStart = 0;
-                                    break;
-                                case 5:
-                                    xStart = 3;
-                                    yStart = 3;
-                                    break;
-                                case 6:
-                                    xStart = 3;
-                                    yStart = 6;
-                                    break;
-                                case 7:
-                                    xStart = 6;
-                                    yStart = 0;
-                                    break;
-                                case 8:
-                                    xStart = 6;
-                                    yStart = 3;
-                                    break;
-                                case 9:
-                                    xStart = 6;
-                                    yStart = 6;
-                                    break;
-                                default:
-                                    break;
-                            }
-                            for (int x = xStart; x < xStart + 3; x++)
-                            {
-                                for (int y = yStart; y < yStart + 3; y++)
+                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[r][n].Num))
                                 {
-                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[x][y].Num);
+                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[r][n].Num);
+                                    changeMade = true;
+                                }
+                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[n][c].Num))
+                                {
+                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[n][c].Num);
+                                    changeMade = true;
+                                }
+
+                            }
+                            if (grid.Rows[r][c].Candidates.Count > 1)
+                            {
+                                int xStart = 0, yStart = 0;
+                                switch (grid.Rows[r][c].BlockLoc)
+                                {
+                                    case 1:
+                                        xStart = 0;
+                                        yStart = 0;
+                                        break;
+                                    case 2:
+                                        xStart = 0;
+                                        yStart = 3;
+                                        break;
+                                    case 3:
+                                        xStart = 0;
+                                        yStart = 6;
+                                        break;
+                                    case 4:
+                                        xStart = 3;
+                                        yStart = 0;
+                                        break;
+                                    case 5:
+                                        xStart = 3;
+                                        yStart = 3;
+                                        break;
+                                    case 6:
+                                        xStart = 3;
+                                        yStart = 6;
+                                        break;
+                                    case 7:
+                                        xStart = 6;
+                                        yStart = 0;
+                                        break;
+                                    case 8:
+                                        xStart = 6;
+                                        yStart = 3;
+                                        break;
+                                    case 9:
+                                        xStart = 6;
+                                        yStart = 6;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                for (int x = xStart; x < xStart + 3; x++)
+                                {
+                                    for (int y = yStart; y < yStart + 3; y++)
+                                    {
+                                        if (grid.Rows[r][c].Candidates.Contains(grid.Rows[x][y].Num))
+                                        {
+                                            grid.Rows[r][c].Candidates.Remove(grid.Rows[x][y].Num);
+                                            changeMade = true;
+                                        }
+
+                                    }
                                 }
                             }
-                        }
-                        if (grid.Rows[r][c].Candidates.Count == 1)
-                        {
-                            grid.Rows[r][c].Num = grid.Rows[r][c].Candidates[0];
-                        }
-                    }
 
+                            if (grid.Rows[r][c].Candidates.Count == 1)
+                            {
+                                grid.Rows[r][c].Num = grid.Rows[r][c].Candidates[0];
+                                changeMade = true;
+                            }
+                        }
+
+                    }
                 }
-            }
+            } while (changeMade);
+
+
+
+            int solutionCount = 0;
 
             if (!CheckIfSolved(grid))
             {
@@ -293,17 +323,19 @@ namespace SudokuSolverSetter
                     {
                         if (grid.Rows[i][j].Num == 0)
                         {
+                            solutionCount = 0;
                             grid.Rows[i][j].Candidates = Shuffler(grid.Rows[i][j].Candidates, rand);
                             for (int k = 0; k < grid.Rows[i][j].Candidates.Count; k++)
                             {
-                                grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
-                                if (BruteSolve(grid, rand))
+                                grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[k];
+                                if (BruteSolve(grid, rand) && ++solutionCount > 1)
                                 {
-                                    return true;
+                                    return false;
                                 }
-                                else if (k == grid.Rows[i][j].Candidates.Count-1)
+                                else if (k == grid.Rows[i][j].Candidates.Count - 1)
                                 {
                                     grid.Rows[i][j].Num = 0;
+                                    grid.Rows[i][j].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
                                     return false;
                                 }
                             }
@@ -315,11 +347,14 @@ namespace SudokuSolverSetter
             {
                 return true;
             }
-            
 
-            if (CheckIfSolved(grid))
+            if (CheckIfSolved(grid) && solutionCount < 2)
             {
                 return true;
+            }
+            else if (solutionCount > 1)
+            {
+                return false;
             }
             else
             {
@@ -376,6 +411,21 @@ namespace SudokuSolverSetter
                     break;
             }
             return newNum;
+        }
+
+        public string SudokuToString(SudokuGrid grid)
+        {
+            string sudokuExport = "";
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    sudokuExport += grid.Rows[i][j].Num;
+                }
+            }
+
+            return sudokuExport;
         }
     }
 }
