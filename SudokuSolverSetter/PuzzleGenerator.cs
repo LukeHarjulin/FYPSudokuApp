@@ -119,18 +119,34 @@ namespace SudokuSolverSetter
             //Able to remove a select number of values
             //Need to make sure there is only ONE solution
             numbersToRemove = rand.Next(45, 65);
-            numbersToRemove = 65;
+            numbersToRemove = 60;
             while (numbersToRemove > 0)
             {
-                grid = RemoveNumber(grid, rand);
-                if (escapeCounter > 1000)
+                if (escapeCounter < 50)
+                {
+                    grid = RemoveNumber(grid, rand);
+                }
+                else
                 {
                     break;
                 }
-                
+
+            }
+            if (escapeCounter >= 50 && numbersToRemove > 0)
+            {
+                for (int x = 0; x < 9; x++)
+                {
+                    for (int y = 0; y < 9; y++)
+                    {
+                        if (grid.Rows[x][y].Num != 0)
+                        {
+                            grid = ToughenPuzzle(grid, rand, x, y);
+                        }
+                    }
+                }
             }
             Clipboard.SetText(SudokuToString(grid));
-            return grid;
+            return grid;//Debug and find out where the solution counter is going wrong. Solution finder doesn't work perfectly, occasionally produces puzzles with multiple solutions. FIX!
         }
 
 
@@ -151,20 +167,20 @@ namespace SudokuSolverSetter
         public SudokuGrid RemoveNumber(SudokuGrid grid, Random rand)
         {
             int randRow = 0, randCol = 0, saveNum = 0;
-           // int altRow = 0, altCol = 0, altSaveNum = 0;
+            int altRow = 0, altCol = 0, altSaveNum = 0;
             randRow = rand.Next(0, 9);
             randCol = rand.Next(0, 9);
-            //altRow = NumberSwitch(randRow);
-            //altCol = NumberSwitch(randCol);
+            altRow = NumberSwitch(randRow);
+            altCol = NumberSwitch(randCol);
 
-            if (grid.Rows[randRow][randCol].Num != 0/* && grid.Rows[altRow][altCol].Num != 0*/)
+            if (grid.Rows[randRow][randCol].Num != 0 && grid.Rows[altRow][altCol].Num != 0)
             {
                 saveNum = grid.Rows[randRow][randCol].Num;
                 grid.Rows[randRow][randCol].Num = 0;
                 grid.Rows[randRow][randCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-                //altSaveNum = grid.Rows[altRow][altCol].Num;
-                //grid.Rows[altRow][altCol].Num = 0;
-                //grid.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                altSaveNum = grid.Rows[altRow][altCol].Num;
+                grid.Rows[altRow][altCol].Num = 0;
+                grid.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
                 //Create a copy of the grid after a number is removed
                 SudokuGrid gridSave = new SudokuGrid() { PuzzleID = grid.PuzzleID };
@@ -188,15 +204,14 @@ namespace SudokuSolverSetter
                         { gridSave.Rows[r][c].Candidates = grid.Rows[r][c].Candidates; }
                     }
                 }
-                
+
                 if (BruteSolve(grid, rand))
                 {
-                    numbersToRemove--;
+                    numbersToRemove -= 2;
                     gridSave.Rows[randRow][randCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-                    //gridSave.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                    gridSave.Rows[altRow][altCol].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
                     grid = gridSave;
-                    escapeCounter = 0;
-                    removed++;
+                    removed += 2;
                     return grid;
                 }
                 else
@@ -204,8 +219,8 @@ namespace SudokuSolverSetter
                     grid = gridSave;
                     grid.Rows[randRow][randCol].Num = saveNum;
                     grid.Rows[randRow][randCol].Candidates = new List<int> { };
-                    //grid.Rows[altRow][altCol].Num = altSaveNum;
-                    //grid.Rows[altRow][altCol].Candidates = new List<int> { };
+                    grid.Rows[altRow][altCol].Num = altSaveNum;
+                    grid.Rows[altRow][altCol].Candidates = new List<int> { };
                     escapeCounter++;
                     return grid;
                 }
@@ -213,7 +228,53 @@ namespace SudokuSolverSetter
             }
             return grid;
         }
+        public SudokuGrid ToughenPuzzle(SudokuGrid grid, Random rand, int x, int y)
+        {
+            int saveNum = 0;
 
+            saveNum = grid.Rows[x][y].Num;
+            grid.Rows[x][y].Num = 0;
+            grid.Rows[x][y].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            //Create a copy of the grid after a number is removed
+            SudokuGrid gridSave = new SudokuGrid() { PuzzleID = grid.PuzzleID };
+            gridSave.Rows = new Cell[9][];
+            for (int r = 0; r < gridSave.Rows.Length; r++)
+            {
+                gridSave.Rows[r] = new Cell[9];
+                for (int c = 0; c < gridSave.Rows[r].Length; c++)
+                {
+                    gridSave.Rows[r][c] = new Cell()
+                    {
+                        Num = grid.Rows[r][c].Num,
+                        BlockLoc = grid.Rows[r][c].BlockLoc,
+                        XLocation = grid.Rows[r][c].XLocation,
+                        YLocation = grid.Rows[r][c].YLocation,
+                        ReadOnly = true
+                    };
+                    if (gridSave.Rows[r][c].Num == 0)
+                    { gridSave.Rows[r][c].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 }; }
+                    else
+                    { gridSave.Rows[r][c].Candidates = grid.Rows[r][c].Candidates; }
+                }
+            }
+
+            if (BruteSolve(grid, rand))
+            {
+                numbersToRemove--;
+                gridSave.Rows[x][y].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                grid = gridSave;
+                removed++;
+                return grid;
+            }
+            else
+            {
+                grid = gridSave;
+                grid.Rows[x][y].Num = saveNum;
+                grid.Rows[x][y].Candidates = new List<int> { };
+                return grid;
+            }
+        }
         public bool BruteSolve(SudokuGrid grid, Random rand)
         {
             bool changeMade;
@@ -324,7 +385,7 @@ namespace SudokuSolverSetter
                         if (grid.Rows[i][j].Num == 0)
                         {
                             solutionCount = 0;
-                            grid.Rows[i][j].Candidates = Shuffler(grid.Rows[i][j].Candidates, rand);
+                            //grid.Rows[i][j].Candidates = Shuffler(grid.Rows[i][j].Candidates, rand);
                             for (int k = 0; k < grid.Rows[i][j].Candidates.Count; k++)
                             {
                                 grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[k];
