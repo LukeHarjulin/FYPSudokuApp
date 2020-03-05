@@ -55,8 +55,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Cell.cs" />
-    <Compile Include="HomePage.xaml.cs">
-      <DependentUpon>HomePage.xaml</DependentUpon>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PasswordBox.xaml.cs">
       <DependentUpon>PasswordBox.xaml</DependentUpon>
@@ -64,11 +64,11 @@
     <Compile Include="SudokuGrid.cs" />
     <Compile Include="PuzzleGenerator.cs" />
     <Compile Include="PuzzleSolver.cs" />
-    <Page Include="HomePage.xaml">
+    <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="DeveloperWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -76,8 +76,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="DeveloperWindow.xaml.cs">
+      <DependentUpon>DeveloperWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="PasswordBox.xaml">

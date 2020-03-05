@@ -8,11 +8,11 @@ namespace SudokuSolverSetter
 {
     public class PuzzleSolver
     {
-        public MainWindow mainWindow;
+        public DeveloperWindow mainWindow;
         #region Full Solver method
         public SudokuGrid Solver(SudokuGrid grid, bool bruteForce)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
         {
-            mainWindow = new MainWindow();
+            mainWindow = new DeveloperWindow();
             bool changeMade = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
@@ -68,7 +68,7 @@ namespace SudokuSolverSetter
                                     (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
                                 {
                                     grid.Rows[i][j].Candidates.Remove(cell.Num);
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                     changeMade = true;
                                 }
                             }
@@ -77,7 +77,7 @@ namespace SudokuSolverSetter
                         {
                             changeMade = true;
                             grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
-                            mainWindow.PopulateGrid(grid);
+                            //mainWindow.PopulateGrid(grid);
                         }
                         //If two candidates remain, then it attempts to find a naked pair (aka a Conjugate Pair) by calling the FindNakedPair() method
                         else if (grid.Rows[i][j].Candidates.Count == 2)
@@ -114,13 +114,13 @@ namespace SudokuSolverSetter
                                 {
                                     curCell.Candidates.Remove(cellWithPair.Candidates[0]);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                                 if (!cellWithPair.Equals(curCell) && !curCell.Equals(grid.Rows[i][j]) && curCell.Candidates.Contains(cellWithPair.Candidates[1]))
                                 {
                                     curCell.Candidates.Remove(cellWithPair.Candidates[1]);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                             }
                             //if (!changeMade)
@@ -141,13 +141,13 @@ namespace SudokuSolverSetter
                                 {
                                     grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[0]);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                                 if (!cellWithPair.Equals(grid.Rows[k][j]) && !grid.Rows[k][j].Equals(grid.Rows[i][j]) && grid.Rows[k][j].Candidates.Contains(cellWithPair.Candidates[1]))
                                 {
                                     grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[1]);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                             }
                             //if (!changeMade)
@@ -212,13 +212,13 @@ namespace SudokuSolverSetter
                                     {
                                         grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[0]);
                                         changeMade = true;
-                                        mainWindow.PopulateGrid(grid);
+                                        //mainWindow.PopulateGrid(grid);
                                     }
                                     if (!cellWithPair.Equals(grid.Rows[x][y]) && !grid.Rows[x][y].Equals(grid.Rows[i][j]) && grid.Rows[x][y].Candidates.Contains(cellWithPair.Candidates[1]))
                                     {
                                         grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[1]);
                                         changeMade = true;
-                                        mainWindow.PopulateGrid(grid);
+                                        //mainWindow.PopulateGrid(grid);
                                     }
                                 }
                             }
@@ -268,7 +268,7 @@ namespace SudokuSolverSetter
                             {
                                 grid.Rows[i][h].Num = n + 1;
                                 grid.Rows[i][h].Candidates.Clear();
-                                mainWindow.PopulateGrid(grid);
+                                //mainWindow.PopulateGrid(grid);
                                 changeMade = true;
                                 break;
                             }
@@ -301,7 +301,7 @@ namespace SudokuSolverSetter
                             {
                                 grid.Rows[h][colu].Num = n + 1;
                                 grid.Rows[h][colu].Candidates.Clear();
-                                mainWindow.PopulateGrid(grid);
+                                //mainWindow.PopulateGrid(grid);
                                 changeMade = true;
                                 break;
                             }
@@ -340,7 +340,7 @@ namespace SudokuSolverSetter
                                 {
                                     grid.Rows[x][y].Num = n + 1;//Assigns the number of the cell with the hidden single
                                     grid.Rows[x][y].Candidates.Clear();
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                     changeMade = true;
                                     break;
                                 }
@@ -382,7 +382,7 @@ namespace SudokuSolverSetter
                                 {
                                     grid.Rows[xLoc][c].Candidates.Remove(n + 1);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                             }
                         }
@@ -395,7 +395,7 @@ namespace SudokuSolverSetter
                                 {
                                     grid.Rows[c][yLoc].Candidates.Remove(n + 1);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                             }
                         }
@@ -431,7 +431,7 @@ namespace SudokuSolverSetter
                                 {
                                     grid.Rows[xLoc][c].Candidates.Remove(n + 1);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                             }
                         }
@@ -444,7 +444,7 @@ namespace SudokuSolverSetter
                                 {
                                     grid.Rows[c][yLoc].Candidates.Remove(n + 1);
                                     changeMade = true;
-                                    mainWindow.PopulateGrid(grid);
+                                    //mainWindow.PopulateGrid(grid);
                                 }
                             }
                         }
