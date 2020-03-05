@@ -8,31 +8,41 @@ namespace SudokuSolverSetter
 {
     public class PuzzleSolver
     {
+        public MainWindow mainWindow;
         #region Full Solver method
-        public SudokuGrid Solver(SudokuGrid grid)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
+        public SudokuGrid Solver(SudokuGrid grid, bool bruteForce)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
         {
+            mainWindow = new MainWindow();
             bool changeMade = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
              *  The if and elses are to make the process faster of solving faster, 
                 as it ensures that it tries the easiest less computationally heavy methods first before the more complex methods.
             */
-            do
+            if (!bruteForce)
             {
-                if (FindNakedNumbers(grid))
+                do
                 {
-                    changeMade = true;
-                }
-                else if (FindHiddenNumbers(grid))
-                {
-                    changeMade = true;
-                }
-                //More methods to add
-                else
-                {
-                    changeMade = false;
-                }
-            } while (changeMade);
+                    if (FindNakedNumbers(grid))
+                    {
+                        changeMade = true;
+                    }
+                    else if (FindHiddenNumbers(grid))
+                    {
+                        changeMade = true;
+                    }
+                    //More methods to add
+                    else
+                    {
+                        changeMade = false;
+                    }
+                } while (changeMade);
+            }
+            else
+            {
+                BruteForceSolve(grid);
+            }
+            
             
             return grid;
         }
@@ -58,6 +68,7 @@ namespace SudokuSolverSetter
                                     (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
                                 {
                                     grid.Rows[i][j].Candidates.Remove(cell.Num);
+                                    mainWindow.PopulateGrid(grid);
                                     changeMade = true;
                                 }
                             }
@@ -66,6 +77,7 @@ namespace SudokuSolverSetter
                         {
                             changeMade = true;
                             grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
+                            mainWindow.PopulateGrid(grid);
                         }
                         //If two candidates remain, then it attempts to find a naked pair (aka a Conjugate Pair) by calling the FindNakedPair() method
                         else if (grid.Rows[i][j].Candidates.Count == 2)
@@ -99,9 +111,17 @@ namespace SudokuSolverSetter
                             foreach (Cell curCell in grid.Rows[i])
                             {
                                 if (!cellWithPair.Equals(curCell) && !curCell.Equals(grid.Rows[i][j]) && curCell.Candidates.Contains(cellWithPair.Candidates[0]))
-                                { curCell.Candidates.Remove(cellWithPair.Candidates[0]); changeMade = true; }
+                                {
+                                    curCell.Candidates.Remove(cellWithPair.Candidates[0]);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                                 if (!cellWithPair.Equals(curCell) && !curCell.Equals(grid.Rows[i][j]) && curCell.Candidates.Contains(cellWithPair.Candidates[1]))
-                                { curCell.Candidates.Remove(cellWithPair.Candidates[1]); changeMade = true; }
+                                {
+                                    curCell.Candidates.Remove(cellWithPair.Candidates[1]);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                             }
                             //if (!changeMade)
                             //{
@@ -118,9 +138,17 @@ namespace SudokuSolverSetter
                             for (int k = 0; k < grid.Rows.Length; k++)
                             {
                                 if (!cellWithPair.Equals(grid.Rows[k][j]) && !grid.Rows[k][j].Equals(grid.Rows[i][j]) && grid.Rows[k][j].Candidates.Contains(cellWithPair.Candidates[0]))
-                                { grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[0]); changeMade = true; }
+                                {
+                                    grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[0]);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                                 if (!cellWithPair.Equals(grid.Rows[k][j]) && !grid.Rows[k][j].Equals(grid.Rows[i][j]) && grid.Rows[k][j].Candidates.Contains(cellWithPair.Candidates[1]))
-                                { grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[1]); changeMade = true; }
+                                {
+                                    grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[1]);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                             }
                             //if (!changeMade)
                             //{
@@ -181,9 +209,17 @@ namespace SudokuSolverSetter
                                 for (int y = yStart; y < yStart + 3; y++)
                                 {
                                     if (!cellWithPair.Equals(grid.Rows[x][y]) && !grid.Rows[x][y].Equals(grid.Rows[i][j]) && grid.Rows[x][y].Candidates.Contains(cellWithPair.Candidates[0]))
-                                    { grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[0]); changeMade = true; }
+                                    {
+                                        grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[0]);
+                                        changeMade = true;
+                                        mainWindow.PopulateGrid(grid);
+                                    }
                                     if (!cellWithPair.Equals(grid.Rows[x][y]) && !grid.Rows[x][y].Equals(grid.Rows[i][j]) && grid.Rows[x][y].Candidates.Contains(cellWithPair.Candidates[1]))
-                                    { grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[1]); changeMade = true; }
+                                    {
+                                        grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[1]);
+                                        changeMade = true;
+                                        mainWindow.PopulateGrid(grid);
+                                    }
                                 }
                             }
                             if (nakedPairCount > 1 && changeMade == false)
@@ -232,6 +268,7 @@ namespace SudokuSolverSetter
                             {
                                 grid.Rows[i][h].Num = n + 1;
                                 grid.Rows[i][h].Candidates.Clear();
+                                mainWindow.PopulateGrid(grid);
                                 changeMade = true;
                                 break;
                             }
@@ -264,6 +301,7 @@ namespace SudokuSolverSetter
                             {
                                 grid.Rows[h][colu].Num = n + 1;
                                 grid.Rows[h][colu].Candidates.Clear();
+                                mainWindow.PopulateGrid(grid);
                                 changeMade = true;
                                 break;
                             }
@@ -302,6 +340,7 @@ namespace SudokuSolverSetter
                                 {
                                     grid.Rows[x][y].Num = n + 1;//Assigns the number of the cell with the hidden single
                                     grid.Rows[x][y].Candidates.Clear();
+                                    mainWindow.PopulateGrid(grid);
                                     changeMade = true;
                                     break;
                                 }
@@ -340,7 +379,11 @@ namespace SudokuSolverSetter
                             for (int c = 0; c < 9; c++)
                             {
                                 if (grid.Rows[xLoc][c].Candidates.Contains(n + 1) && cell1.YLocation != c && cell2.YLocation != c)
-                                { grid.Rows[xLoc][c].Candidates.Remove(n + 1); changeMade = true; }
+                                {
+                                    grid.Rows[xLoc][c].Candidates.Remove(n + 1);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                             }
                         }
                         else if (cell1.YLocation == cell2.YLocation)
@@ -349,7 +392,11 @@ namespace SudokuSolverSetter
                             for (int c = 0; c < 9; c++)
                             {
                                 if (grid.Rows[c][yLoc].Candidates.Contains(n + 1) && cell1.XLocation != c && cell2.XLocation != c)
-                                { grid.Rows[c][yLoc].Candidates.Remove(n + 1); changeMade = true; }
+                                {
+                                    grid.Rows[c][yLoc].Candidates.Remove(n + 1);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                             }
                         }
                     }
@@ -381,7 +428,11 @@ namespace SudokuSolverSetter
                             for (int c = 0; c < 9; c++)
                             {
                                 if (grid.Rows[xLoc][c].Candidates.Contains(n + 1) && cell1.YLocation != c && cell2.YLocation != c && cell3.YLocation != c)
-                                { grid.Rows[xLoc][c].Candidates.Remove(n + 1); changeMade = true; }
+                                {
+                                    grid.Rows[xLoc][c].Candidates.Remove(n + 1);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                             }
                         }
                         else if (cell1.YLocation == cell2.YLocation && cell1.YLocation == cell3.YLocation)
@@ -390,7 +441,11 @@ namespace SudokuSolverSetter
                             for (int c = 0; c < 9; c++)
                             {
                                 if (grid.Rows[c][yLoc].Candidates.Contains(n + 1) && cell1.XLocation != c && cell2.XLocation != c && cell3.XLocation != c)
-                                { grid.Rows[c][yLoc].Candidates.Remove(n + 1); changeMade = true; }
+                                {
+                                    grid.Rows[c][yLoc].Candidates.Remove(n + 1);
+                                    changeMade = true;
+                                    mainWindow.PopulateGrid(grid);
+                                }
                             }
                         }
                     }
@@ -495,6 +550,7 @@ namespace SudokuSolverSetter
                                     (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
                                 {
                                     grid.Rows[i][j].Candidates.Remove(cell.Num);
+                                    
                                     changeMade = true;
                                 }
                             }
@@ -809,5 +865,141 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         #endregion
+
+        public bool BruteForceSolve(SudokuGrid grid)
+        {
+            PuzzleGenerator gen = new PuzzleGenerator();
+            bool changeMade;
+            do
+            {
+                changeMade = false;
+                for (int r = 0; r < 9; r++)//Time Complexity: O(9^2+3^2)
+                {
+                    for (int c = 0; c < 9; c++)
+                    {
+                        if (grid.Rows[r][c].Num == 0)
+                        {
+                            //Start checking the rows, columns or block, eliminating numbers from the candidate list
+                            //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
+                            for (int n = 0; n < 9; n++)
+                            {
+                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[r][n].Num))
+                                {
+                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[r][n].Num);
+                                    changeMade = true;
+                                }
+                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[n][c].Num))
+                                {
+                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[n][c].Num);
+                                    changeMade = true;
+                                }
+
+                            }
+                            if (grid.Rows[r][c].Candidates.Count > 1)
+                            {
+                                int xStart = 0, yStart = 0;
+                                switch (grid.Rows[r][c].BlockLoc)
+                                {
+                                    case 1:
+                                        xStart = 0;
+                                        yStart = 0;
+                                        break;
+                                    case 2:
+                                        xStart = 0;
+                                        yStart = 3;
+                                        break;
+                                    case 3:
+                                        xStart = 0;
+                                        yStart = 6;
+                                        break;
+                                    case 4:
+                                        xStart = 3;
+                                        yStart = 0;
+                                        break;
+                                    case 5:
+                                        xStart = 3;
+                                        yStart = 3;
+                                        break;
+                                    case 6:
+                                        xStart = 3;
+                                        yStart = 6;
+                                        break;
+                                    case 7:
+                                        xStart = 6;
+                                        yStart = 0;
+                                        break;
+                                    case 8:
+                                        xStart = 6;
+                                        yStart = 3;
+                                        break;
+                                    case 9:
+                                        xStart = 6;
+                                        yStart = 6;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                for (int x = xStart; x < xStart + 3; x++)
+                                {
+                                    for (int y = yStart; y < yStart + 3; y++)
+                                    {
+                                        if (grid.Rows[r][c].Candidates.Contains(grid.Rows[x][y].Num))
+                                        {
+                                            grid.Rows[r][c].Candidates.Remove(grid.Rows[x][y].Num);
+                                            changeMade = true;
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            if (grid.Rows[r][c].Candidates.Count == 1)
+                            {
+                                grid.Rows[r][c].Num = grid.Rows[r][c].Candidates[0];
+                                changeMade = true;
+                            }
+                        }
+
+                    }
+                }
+            } while (changeMade);
+
+            
+
+            if (!gen.CheckIfSolved(grid))
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        if (grid.Rows[i][j].Num == 0)
+                        {
+                            //grid.Rows[i][j].Candidates = Shuffler(grid.Rows[i][j].Candidates, rand);
+                            for (int k = 0; k < grid.Rows[i][j].Candidates.Count; k++)
+                            {
+                                grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[k];
+                                if (BruteForceSolve(grid))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return true;
+            }
+
+            if (gen.CheckIfSolved(grid))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

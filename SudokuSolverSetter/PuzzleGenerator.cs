@@ -119,7 +119,7 @@ namespace SudokuSolverSetter
             //Able to remove a select number of values
             //Need to make sure there is only ONE solution
             numbersToRemove = rand.Next(45, 65);
-            numbersToRemove = 60;
+            numbersToRemove = 65;
             while (numbersToRemove > 0)
             {
                 if (escapeCounter < 50)
@@ -132,6 +132,7 @@ namespace SudokuSolverSetter
                 }
 
             }
+            Clipboard.SetText(SudokuToString(grid));
             if (escapeCounter >= 50 && numbersToRemove > 0)
             {
                 for (int x = 0; x < 9; x++)
@@ -425,6 +426,8 @@ namespace SudokuSolverSetter
 
         public bool CheckIfSolved(SudokuGrid grid)
         {
+            bool blanks = false;
+            List<int> numberList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             for (int row = 0; row < 9; row++)
             {
                 for (int col = 0; col < 9; col++)
@@ -433,6 +436,19 @@ namespace SudokuSolverSetter
                     {
                         return false;
                     }
+                    else if (numberList.Contains(grid.Rows[row][col].Num))
+                    {
+                        numberList.Remove(grid.Rows[row][col].Num);
+                    }
+                    
+                }
+                if (numberList.Count > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    numberList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
                 }
             }
             return true;
