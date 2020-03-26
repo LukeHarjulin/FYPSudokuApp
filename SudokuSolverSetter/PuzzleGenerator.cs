@@ -426,7 +426,6 @@ namespace SudokuSolverSetter
 
         public bool CheckIfSolved(SudokuGrid grid)
         {
-            bool blanks = false;
             List<int> numberList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             for (int row = 0; row < 9; row++)
             {

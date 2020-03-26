@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SudokuSolverSetter"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="SudokuSolverSetter.DeveloperWindow"
         mc:Ignorable="d"
-        Title="DevloperWindow" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+        Title="DevloperWindow" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
     <Border Padding="10">
         <StackPanel>
             <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="47"/>

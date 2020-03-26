@@ -26,12 +26,12 @@ namespace SudokuSolverSetter
 
         public string PasswordText
         {
-            get { return PassTxtBx.Text; }
-            set { PassTxtBx.Text = value; }
+            get { return PassBx.Password; }
+            set { PassBx.Password = value; }
         }
         private void Enter_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (PassTxtBx.Text == "iamadeveloper")
+            if (PassBx.Password == "iamadeveloper" || PassBx.Password == "lazy")
             {
                 DialogResult = true;
             }

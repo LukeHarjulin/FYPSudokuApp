@@ -535,7 +535,7 @@ namespace SudokuSolverSetter
         {
             //Initialising objects
             PuzzleSolver solve = new PuzzleSolver();
-            List<TextBox> txtBxList = new List<TextBox>
+            txtBxList = new List<TextBox>
             { x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
               x2y1g1, x2y2g1, x2y3g1, x2y4g2, x2y5g2, x2y6g2, x2y7g3, x2y8g3, x2y9g3,
               x3y1g1, x3y2g1, x3y3g1, x3y4g2, x3y5g2, x3y6g2, x3y7g3, x3y8g3, x3y9g3,
@@ -663,7 +663,13 @@ namespace SudokuSolverSetter
         private void Back_Button_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
-            MainWindow homePage = new MainWindow();
+            homePage = new MainWindow();
+            homePage.Show();
+        }
+
+        private void Window_Close(object sender, EventArgs e)
+        {
+            homePage = new MainWindow();
             homePage.Show();
         }
     }

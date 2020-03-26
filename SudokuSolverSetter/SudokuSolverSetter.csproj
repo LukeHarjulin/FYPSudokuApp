@@ -61,6 +61,9 @@
     <Compile Include="PasswordBox.xaml.cs">
       <DependentUpon>PasswordBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PlaySudoku.xaml.cs">
+      <DependentUpon>PlaySudoku.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SudokuGrid.cs" />
     <Compile Include="PuzzleGenerator.cs" />
     <Compile Include="PuzzleSolver.cs" />
@@ -81,6 +84,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="PasswordBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PlaySudoku.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

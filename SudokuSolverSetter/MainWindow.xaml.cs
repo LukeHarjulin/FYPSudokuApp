@@ -19,6 +19,7 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class MainWindow : Window
     {
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -27,8 +28,8 @@ namespace SudokuSolverSetter
 
         private void DeveloperMode_Button_Click(object sender, RoutedEventArgs e)
         {
-            PasswordBox passBox = new PasswordBox();
 
+            PasswordBox passBox = new PasswordBox();
             if (passBox.ShowDialog() == true)
             {
                 DeveloperWindow developerWindow = new DeveloperWindow();
@@ -40,6 +41,42 @@ namespace SudokuSolverSetter
         private void Quit_btn_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void Play_Sudoku_Click(object sender, RoutedEventArgs e)
+        {
+            if (Difficulty_ComboBox.SelectedIndex == 0)
+            {
+                PlaySudoku playSudoku = new PlaySudoku(1);
+                playSudoku.Show();
+            }
+            else if (Difficulty_ComboBox.SelectedIndex == 1)
+            {
+                PlaySudoku playSudoku = new PlaySudoku(2);
+                playSudoku.Show();
+            }
+            else
+            {
+                PlaySudoku playSudoku = new PlaySudoku(3);
+                playSudoku.Show();
+            }
+
+            this.Hide();
+        }
+
+        private void Window_Close(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void Level_Selector_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
