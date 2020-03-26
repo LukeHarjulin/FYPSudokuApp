@@ -104,6 +104,7 @@
                 <Button Content="8" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click"/>
                 <Button Content="9" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click"/>
             </UniformGrid>
+            <Button x:Name="Back_btn" Content="Save &amp; Quit" HorizontalAlignment="Left" Click="Back_Button_Click" Width="135" Height="43" Canvas.Left="782" Canvas.Top="677" FontSize="22"/>
         </Canvas>
     </Border>
 </Window>

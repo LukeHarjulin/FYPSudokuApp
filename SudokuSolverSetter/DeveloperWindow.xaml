@@ -8,94 +8,94 @@
         mc:Ignorable="d"
         Title="DevloperWindow" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
     <Border Padding="10">
-        <StackPanel>
-            <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="47"/>
-            <CheckBox x:Name="BruteForceChckBx" Content="Bruteforce?" Checked="BruteForceChckBx_Checked" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="447,0"/>
-            <Button x:Name="b_Solve" Content="Solve" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button x:Name="b_Solve1by1" Content="Solve cell by cell" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <UniformGrid x:Name="SudokuGrid" Background="White" Height="630" Width="630">
-                <TextBox x:Name="x1y1g1" BorderBrush="Black" BorderThickness="0.75" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="0"/>
-                <TextBox x:Name="x1y2g1" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x1y3g1" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x1y4g2" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x1y5g2" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x1y6g2" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x1y7g3" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x1y8g3" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x1y9g3" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y1g1" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y2g1" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y3g1" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y4g2" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y5g2" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y6g2" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y7g3" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y8g3" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x2y9g3" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y1g1" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y2g1" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y3g1" BorderBrush="Black" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y4g2" BorderBrush="Black" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y5g2" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y6g2" BorderBrush="Black" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y7g3" BorderBrush="Black" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y8g3" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x3y9g3" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y1g4" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y2g4" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y3g4" BorderBrush="Black" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y4g5" BorderBrush="Black" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y5g5" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y6g5" BorderBrush="Black" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y7g6" BorderBrush="Black" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y8g6" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x4y9g6" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y1g4" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y2g4" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y3g4" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y4g5" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y5g5" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y6g5" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y7g6" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y8g6" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x5y9g6" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y1g4" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y2g4" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y3g4" BorderBrush="Black" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y4g5" BorderBrush="Black" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y5g5" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y6g5" BorderBrush="Black" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y7g6" BorderBrush="Black" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y8g6" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x6y9g6" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y1g7" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y2g7" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y3g7" BorderBrush="Black" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y4g8" BorderBrush="Black" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y5g8" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y6g8" BorderBrush="Black" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y7g9" BorderBrush="Black" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y8g9" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x7y9g9" BorderBrush="Black" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y1g7" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y2g7" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y3g7" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y4g8" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y5g8" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y6g8" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y7g9" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y8g9" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x8y9g9" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y1g7" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y2g7" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y3g7" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y4g8" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y5g8" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y6g8" BorderBrush="Black" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y7g9" BorderBrush="Black" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y8g9" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <TextBox x:Name="x9y9g9" BorderBrush="Black" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <Canvas>
+            <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="90" Height="25"/>
+            <CheckBox x:Name="BruteForceChckBx" Content="Bruteforce?" Checked="BruteForceChckBx_Checked" HorizontalAlignment="Center" VerticalAlignment="Center" Width="115" Canvas.Left="15" Canvas.Top="45" Height="20" FontSize="18"/>
+            <Button x:Name="b_Solve" Content="Solve" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="10" Canvas.Top="70" Height="45"/>
+            <Button x:Name="b_Solve1by1" Content="Solve cell by cell" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="120" Canvas.Left="10" Canvas.Top="120" Height="50"/>
+            <UniformGrid x:Name="SudokuGrid" Background="White" Height="630" Width="630" Canvas.Left="160" Canvas.Top="70">
+                <TextBox x:Name="x1y1g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="0"/>
+                <TextBox x:Name="x1y2g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x1y3g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x1y4g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x1y5g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x1y6g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x1y7g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x1y8g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x1y9g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y1g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y2g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y3g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y4g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y5g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y6g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y7g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y8g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x2y9g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y1g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y2g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y3g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y4g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y5g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y6g2" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y7g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y8g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x3y9g3" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y1g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y2g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y3g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y4g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y5g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y6g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y7g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y8g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x4y9g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y1g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y2g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y3g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y4g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y5g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y6g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y7g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y8g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x5y9g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y1g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y2g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y3g4" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y4g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y5g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y6g5" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y7g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y8g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x6y9g6" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,0.75,2" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y1g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y2g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y3g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y4g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y5g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y6g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y7g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y8g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x7y9g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,2,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y1g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y2g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y3g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y4g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y5g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y6g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y7g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y8g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x8y9g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y1g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y2g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y3g7" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y4g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y5g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y6g8" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y7g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="2,0.75,0.75,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y8g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox x:Name="x9y9g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             </UniformGrid>
-        </StackPanel>
+        </Canvas>
     </Border>
 </Window>

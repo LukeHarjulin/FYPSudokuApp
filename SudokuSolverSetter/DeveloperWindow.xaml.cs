@@ -488,39 +488,39 @@ namespace SudokuSolverSetter
             
             #endregion
 
-            PopulateGrid(grid);
+            PopulateGrid(grid, txtBxList);
             Clipboard.SetText(gen.SudokuToString(grid));
             //solve.Solver(grid);
             /*Tip for removing numbers.
             - Remove numbers till only one solution is possible. Then to make the puzzle more difficult, remove extra numbers and see if it is still solvable.
              */
         }
-        public void PopulateGrid(SudokuGrid grid)
+        public List<TextBox> PopulateGrid(SudokuGrid grid, List<TextBox> m_txtBxList)
         {
             /*This method populates the Uniform grid and its textboxes with all the given values from 'grid'.
             */
             int x = 0;//row number
             int y = 0;//column number
-            for (int i = 0; i < txtBxList.Count; i++)
+            for (int i = 0; i < m_txtBxList.Count; i++)
             {
                 if (grid.Rows[x][y].Num == 0) //0's are placeholders for when there is no value, so any 0's are turned into textboxes containing the candidate values.
                 {
-                    txtBxList[i].FontSize = 12;
-                    txtBxList[i].Text = "";
+                    m_txtBxList[i].FontSize = 12;
+                    m_txtBxList[i].Text = "";
                     for (int c = 0; c < grid.Rows[x][y].Candidates.Count; c++)
                     {
-                        txtBxList[i].Text += grid.Rows[x][y].Candidates[c].ToString() + " ";
+                        m_txtBxList[i].Text += grid.Rows[x][y].Candidates[c].ToString() + " ";
                     }
 
                 }
                 else
                 {
-                    txtBxList[i].FontSize = 36;
-                    txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
+                    m_txtBxList[i].FontSize = 36;
+                    m_txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
                     if (grid.Rows[x][y].ReadOnly == true)//The readonly property ensures that the default given values of the sudoku puzzle remain readonly.
                     {
-                        txtBxList[i].FontWeight = FontWeights.SemiBold;
-                        txtBxList[i].IsReadOnly = true;
+                        m_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                        m_txtBxList[i].IsReadOnly = true;
                     }
                 }
                 y++;
@@ -530,6 +530,7 @@ namespace SudokuSolverSetter
                     x++;
                 }
             }
+            return m_txtBxList;
         }
         private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the grid that it is presented
         {
@@ -590,7 +591,7 @@ namespace SudokuSolverSetter
                 bruteForce = true;
             }
             gridSolve = solve.Solver(gridSolve, bruteForce);
-            PopulateGrid(gridSolve);
+            PopulateGrid(gridSolve, txtBxList);
         }
 
         private void B_Solve1by1_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve in increments (e.g. once a value is placed into a cell, the solver stops)
@@ -652,7 +653,7 @@ namespace SudokuSolverSetter
             }
 
             gridSolve = solve.SolveCellByCell(gridSolve);
-            PopulateGrid(gridSolve);
+            PopulateGrid(gridSolve, txtBxList);
         }
 
         private void BruteForceChckBx_Checked(object sender, RoutedEventArgs e)
