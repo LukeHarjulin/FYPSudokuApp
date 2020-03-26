@@ -21,12 +21,12 @@ namespace SudokuSolverSetter
     public partial class PlaySudoku : Window
     {
         private MainWindow homePage = new MainWindow();
-        private TextBox selectedCell;
-        private string cellContents = "";
         private List<TextBox> txtBxList = new List<TextBox>();
         private PuzzleGenerator gen = new PuzzleGenerator();
         private SudokuGrid grid = new SudokuGrid();
-
+        private TextBox selectedCell;
+        private string cellContents = "";
+        private bool pencilMarker = false;
 
         public PlaySudoku() => InitializeComponent();
 
@@ -104,7 +104,21 @@ namespace SudokuSolverSetter
             {
                 if (!selectedCell.IsReadOnly)
                 {
-                    selectedCell.Text = ((Button)sender).Content.ToString();//Previously Selected Cell is given the number of the button
+                    if (pencilMarker)
+                    {
+                        selectedCell.FontSize = 16;
+                        if (!selectedCell.Text.Contains(((Button)sender).Content.ToString()))
+                        {
+                            selectedCell.Text += ((Button)sender).Content.ToString();//Previously Selected Cell is given the number of the button
+                        }
+                    }
+                    else
+                    {
+                        selectedCell.Text = ((Button)sender).Content.ToString();//Previously Selected Cell is given the number of the button
+
+                    }
+
+
                     selectedCell.Focus();
                 }
                 
@@ -120,6 +134,11 @@ namespace SudokuSolverSetter
         {
             if (selectedCell != null)
             {
+                selectedCell.FontSize = 36;
+                if (pencilMarker)
+                {
+                    selectedCell.FontSize = 16;
+                }
                 selectedCell.Background = Brushes.White;
             }
             
@@ -137,13 +156,28 @@ namespace SudokuSolverSetter
         {
             if (selectedCell != null)
             {
-                if (!int.TryParse(selectedCell.Text, out int result) || selectedCell.Text.Contains('0'))
+                if (!int.TryParse(selectedCell.Text, out int result) || selectedCell.Text.Contains('0') || selectedCell.Text.Length > 9)
                 {
                     selectedCell.Text = cellContents;
                 }
                 else if (selectedCell.Text.Length > 1)
                 {
-                    selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf(cellContents[0]));
+                    if (!pencilMarker)
+                    {
+                        selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf(cellContents[0]));
+                    }
+                    else
+                    {
+                        string numbers = "";
+                        for (int i = 0; i < selectedCell.Text.Length; i++)
+                        {                            
+                            if (!numbers.Contains(selectedCell.Text[i]))
+                            {
+                                numbers += (selectedCell.Text[i]);
+                            }                            
+                        }
+                        selectedCell.Text = numbers;
+                    }
                 }
                 if (cellContents != selectedCell.Text)
                 {
@@ -163,7 +197,7 @@ namespace SudokuSolverSetter
                             c = 0;
                             r++;
                         }
-                        if (txtBxList[i].Text == "")
+                        if (txtBxList[i].Text == "" || txtBxList[i].Text.Length > 1)
                         {
                             basicGrid[r][c] = '0';
                         }
@@ -249,6 +283,8 @@ namespace SudokuSolverSetter
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
             ((ToggleButton)sender).Content = "Pencil Marker ON";
+            pencilMarker = true;
+            selectedCell.Focus();
         }
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
@@ -259,6 +295,8 @@ namespace SudokuSolverSetter
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
             ((ToggleButton)sender).Content = "Pencil Marker OFF";
+            pencilMarker = false;
+            selectedCell.Focus();
         }
     }
 }
