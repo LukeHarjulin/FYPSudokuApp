@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -47,23 +48,54 @@ namespace SudokuSolverSetter
             if (difficulty == 1)
             {
                 Sudoku_Title.Content = "Beginner-Level Sudoku Puzzle";
+                grid = gen.Setter();//Temp
                 //pull random easy puzzle from xml file/database
             }
             else if (difficulty == 2)
             {
                 Sudoku_Title.Content = "Intermediate Sudoku Puzzle";
+                grid = gen.Setter();//Temp
                 //pull random medium puzzle from xml file/database
             }
             else if (difficulty == 3)
             {
                 Sudoku_Title.Content = "Advanced Sudoku Puzzle";
+                grid = gen.Setter();//Temp
                 //pull random hard puzzle from xml file/database
             }
-            grid = gen.Setter();
+            
             DeveloperWindow devWin = new DeveloperWindow();
-            devWin.PopulateGrid(grid, txtBxList);
+            PopulateGrid(grid, txtBxList);
             Clipboard.SetText(gen.SudokuToString(grid));
 
+        }
+
+        public void PopulateGrid(SudokuGrid grid, List<TextBox> m_txtBxList)
+        {
+            /*This method populates the Uniform grid and its textboxes with all the given values from 'grid'.
+            */
+            int x = 0;//row number
+            int y = 0;//column number
+            for (int i = 0; i < m_txtBxList.Count; i++)
+            {
+                if (grid.Rows[x][y].Num != 0) //0's are placeholders for when there is no value, so any 0's are turned into textboxes containing the candidate values.
+                {
+                    m_txtBxList[i].FontSize = 36;
+                    m_txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
+                    if (grid.Rows[x][y].ReadOnly == true)//The readonly property ensures that the default given values of the sudoku puzzle remain readonly.
+                    {
+                        m_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                        m_txtBxList[i].IsReadOnly = true;
+                    }
+                }
+                
+                y++;
+                if (y == 9)//row needs to increment and column needs to reset to 0 once it reaches the end of the row
+                {
+                    y = 0;
+                    x++;
+                }
+            }
         }
 
         private void Num_Button_Click(object sender, RoutedEventArgs e)
@@ -116,7 +148,7 @@ namespace SudokuSolverSetter
                 if (cellContents != selectedCell.Text)
                 {
                     //Check if solved
-                    bool solved = false;
+                    bool solved = true;
                     char[][] basicGrid = new char[9][];
                     for (int i = 0; i < basicGrid.Length; i++)
                     {
@@ -133,7 +165,7 @@ namespace SudokuSolverSetter
                         }
                         if (txtBxList[i].Text == "")
                         {
-                            basicGrid[c][i] = '0';
+                            basicGrid[r][c] = '0';
                         }
                         else
                         {
@@ -141,7 +173,7 @@ namespace SudokuSolverSetter
                         }
                     }
 
-                    List<int> numberList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                    List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                     for (int row = 0; row < 9; row++)
                     {
                         for (int col = 0; col < 9; col++)
@@ -161,13 +193,12 @@ namespace SudokuSolverSetter
                         }
                         else
                         {
-                            numberList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                            numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                         }
                     }
-                    solved = true;
                     if (solved)
                     {//Fix
-                        //Do something
+                        MessageBox.Show("Congratulations!\n\rSudoku Complete!");
                     }
                 }
                 cellContents = selectedCell.Text;
@@ -213,6 +244,21 @@ namespace SudokuSolverSetter
             this.Hide();
             homePage = new MainWindow();
             homePage.Show();
+        }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+            ((ToggleButton)sender).Content = "Pencil Marker ON";
+        }
+
+        private void ToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ((ToggleButton)sender).Content = "Pencil Marker OFF";
         }
     }
 }
