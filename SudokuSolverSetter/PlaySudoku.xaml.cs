@@ -22,13 +22,28 @@ namespace SudokuSolverSetter
         MainWindow homePage = new MainWindow();
         TextBox selectedCell;
         string cellContents = "";
-        public PlaySudoku()
+        List<TextBox> txtBxList = new List<TextBox>();
+        
+    
+    public PlaySudoku()
         {
             InitializeComponent();
+            
         }
         public PlaySudoku(int difficulty)
         {
             InitializeComponent();
+            txtBxList = new List<TextBox> {
+                bx1,bx2,bx3,bx4,bx5,bx6,bx7,bx8,bx9,
+                bx10,bx11,bx12,bx13,bx14,bx15,bx16,bx17,bx18,bx19,
+                bx20,bx21,bx22,bx23,bx24,bx25,bx26,bx27,bx28,bx29,
+                bx30,bx31,bx32,bx33,bx34,bx35,bx36,bx37,bx38,bx39,
+                bx40,bx41,bx42,bx43,bx44,bx45,bx46,bx47,bx48,bx49,
+                bx50,bx51,bx52,bx53,bx54,bx55,bx56,bx57,bx58,bx59,
+                bx60,bx61,bx62,bx63,bx64,bx65,bx66,bx67,bx68,bx69,
+                bx70,bx71,bx72,bx73,bx74,bx75,bx76,bx77,bx78,bx79,
+                bx80,bx81
+            };
             if (difficulty == 1)
             {
                 Sudoku_Title.Content = "Beginner-Level Sudoku Puzzle";
@@ -48,7 +63,11 @@ namespace SudokuSolverSetter
 
         private void Num_Button_Click(object sender, RoutedEventArgs e)
         {
-            selectedCell.Text = ((Button)sender).Content.ToString();//Previously Selected Cell is given the number of the button
+            if (selectedCell != null)
+            {
+                selectedCell.Text = ((Button)sender).Content.ToString();//Previously Selected Cell is given the number of the button
+                selectedCell.Focus();
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -66,12 +85,10 @@ namespace SudokuSolverSetter
             if (selectedCell != null)
             {
                 selectedCell.Background = Brushes.White;
-                selectedCell.FontWeight = FontWeights.Normal;
             }
             
             selectedCell = ((TextBox)sender);
             ((TextBox)sender).Background = new SolidColorBrush(Color.FromArgb(255, 138, 255, 208));
-            selectedCell.FontWeight = FontWeights.SemiBold;
             cellContents = selectedCell.Text;
         }
 
@@ -95,6 +112,39 @@ namespace SudokuSolverSetter
                 cellContents = selectedCell.Text;
             }
             
+        }
+
+        private void Cell_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    if (txtBxList.IndexOf(selectedCell) - 1 >= 0)
+                    {
+                        txtBxList[txtBxList.IndexOf(selectedCell) - 1].Focus();
+                    }
+                    break;
+                case Key.Up:
+                    if (txtBxList.IndexOf(selectedCell) - 9 >= 0)
+                    {
+                        txtBxList[txtBxList.IndexOf(selectedCell) - 9].Focus();
+                    }
+                    break;
+                case Key.Right:
+                    if (txtBxList.IndexOf(selectedCell) + 1 <= 80)
+                    {
+                        txtBxList[txtBxList.IndexOf(selectedCell) + 1].Focus();
+                    }
+                    break;
+                case Key.Down:
+                    if (txtBxList.IndexOf(selectedCell) + 9 <= 80)
+                    {
+                        txtBxList[txtBxList.IndexOf(selectedCell) + 9].Focus();
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
