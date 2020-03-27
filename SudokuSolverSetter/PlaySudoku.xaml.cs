@@ -26,8 +26,7 @@ namespace SudokuSolverSetter
         private SudokuGrid grid = new SudokuGrid();
         private TextBox selectedCell;
         private string cellContents = "";
-        private bool pencilMarker = false;
-
+        private bool pencilMarker = false, allowTextChanged = true;
         public PlaySudoku() => InitializeComponent();
 
         public PlaySudoku(int difficulty)
@@ -134,12 +133,11 @@ namespace SudokuSolverSetter
         {
             if (selectedCell != null)
             {
-                selectedCell.FontSize = 36;
-                if (pencilMarker)
-                {
-                    selectedCell.FontSize = 16;
-                }
                 selectedCell.Background = Brushes.White;
+                //if (selectedCell.Text.Length < 2)
+                //{
+
+                //}
             }
             
             selectedCell = ((TextBox)sender);
@@ -151,91 +149,118 @@ namespace SudokuSolverSetter
         {
 
         }
+        
 
         private void Cell_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (selectedCell != null)
+            if (selectedCell != null && allowTextChanged)
             {
-                if (!int.TryParse(selectedCell.Text, out int result) || selectedCell.Text.Contains('0') || selectedCell.Text.Length > 9)
+                allowTextChanged = false;
+                selectedCell.Text = selectedCell.Text.Trim(' '); 
+                if (selectedCell.Text.Contains('p')) { selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf('p'), 1); }
+                else if (selectedCell.Text.Contains('-')) { selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf('-'), 1); }
+                else if (selectedCell.Text.Contains('+')) { selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf('+'), 1); }
+
+                if (selectedCell.Text != cellContents)
                 {
-                    selectedCell.Text = cellContents;
-                }
-                else if (selectedCell.Text.Length > 1)
-                {
-                    if (!pencilMarker)
+                    
+                    if (selectedCell.Text != "" && !int.TryParse(selectedCell.Text, out int result) || selectedCell.Text.Contains('0') || selectedCell.Text.Length > 9)
                     {
-                        selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf(cellContents[0]));
+                        selectedCell.Text = cellContents;
+                        allowTextChanged = true;
+                        return;
                     }
-                    else
+                    else if (selectedCell.Text.Length > 1)
                     {
-                        string numbers = "";
-                        for (int i = 0; i < selectedCell.Text.Length; i++)
-                        {                            
-                            if (!numbers.Contains(selectedCell.Text[i]))
+                        if (!pencilMarker)
+                        {
+                            for (int i = 0; i < cellContents.Length; i++)
                             {
-                                numbers += (selectedCell.Text[i]);
-                            }                            
-                        }
-                        selectedCell.Text = numbers;
-                    }
-                }
-                if (cellContents != selectedCell.Text)
-                {
-                    //Check if solved
-                    bool solved = true;
-                    char[][] basicGrid = new char[9][];
-                    for (int i = 0; i < basicGrid.Length; i++)
-                    {
-                        basicGrid[i] = new char[9];
-                    }
-                    int c = 0;
-                    int r = 0;
-                    for (int i = 0; i < txtBxList.Count; i++, c++)//populate basic grid so it can be checked.
-                    {
-                        if (c == 9)
-                        {
-                            c = 0;
-                            r++;
-                        }
-                        if (txtBxList[i].Text == "" || txtBxList[i].Text.Length > 1)
-                        {
-                            basicGrid[r][c] = '0';
+                                selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf(cellContents[i]), 1);
+
+                            }
                         }
                         else
                         {
-                            basicGrid[r][c] = txtBxList[i].Text[0];
+                            string numbers = "";
+                            for (int i = 0; i < selectedCell.Text.Length; i++)
+                            {
+                                if (!numbers.Contains(selectedCell.Text[i]))
+                                {
+                                    numbers += (selectedCell.Text[i]);
+                                }
+                            }
+                            selectedCell.Text = numbers;
                         }
                     }
-
-                    List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                    for (int row = 0; row < 9; row++)
+                    if (cellContents != selectedCell.Text && selectedCell.Text.Length > 1)
                     {
-                        for (int col = 0; col < 9; col++)
+                        //Check if solved
+                        bool solved = true;
+                        char[][] basicGrid = new char[9][];
+                        for (int i = 0; i < basicGrid.Length; i++)
                         {
-                            if (basicGrid[row][col] == 0)
+                            basicGrid[i] = new char[9];
+                        }
+                        int c = 0;
+                        int r = 0;
+                        for (int i = 0; i < txtBxList.Count; i++, c++)//populate basic grid so it can be checked.
+                        {
+                            if (c == 9)
+                            {
+                                c = 0;
+                                r++;
+                            }
+                            if (txtBxList[i].Text == "" || txtBxList[i].Text.Length > 1)
+                            {
+                                basicGrid[r][c] = '0';
+                            }
+                            else
+                            {
+                                basicGrid[r][c] = txtBxList[i].Text[0];
+                            }
+                        }
+
+                        List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                        for (int row = 0; row < 9; row++)
+                        {
+                            for (int col = 0; col < 9; col++)
+                            {
+                                if (basicGrid[row][col] == 0)
+                                {
+                                    solved = false;
+                                }
+                                else if (numberList.Contains(basicGrid[row][col]))
+                                {
+                                    numberList.Remove(basicGrid[row][col]);
+                                }
+                            }
+                            if (numberList.Count > 0)
                             {
                                 solved = false;
                             }
-                            else if (numberList.Contains(basicGrid[row][col]))
+                            else
                             {
-                                numberList.Remove(basicGrid[row][col]);
+                                numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                             }
                         }
-                        if (numberList.Count > 0)
-                        {
-                            solved = false;
-                        }
-                        else
-                        {
-                            numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                        if (solved)
+                        {//Fix!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            MessageBox.Show("Congratulations!\n\rSudoku Complete!");
                         }
                     }
-                    if (solved)
-                    {//Fix
-                        MessageBox.Show("Congratulations!\n\rSudoku Complete!");
+                    cellContents = selectedCell.Text;
+                    if (!pencilMarker)
+                    {
+                        selectedCell.FontSize = 36;
+
+                    }
+                    else
+                    {
+                        selectedCell.FontSize = 16;
                     }
                 }
-                cellContents = selectedCell.Text;
+                allowTextChanged = true;
             }
             
         }
@@ -268,6 +293,29 @@ namespace SudokuSolverSetter
                         txtBxList[txtBxList.IndexOf(selectedCell) + 9].Focus();
                     }
                     break;
+                case Key.Delete:
+                    if (!selectedCell.IsReadOnly && selectedCell.Text.Length > 0)
+                    {
+                        selectedCell.Text = "";
+                    }
+                    break;
+                case Key.P:
+                    if (TogglePencil.IsChecked == false)
+                    {
+                        TogglePencil.IsChecked = true;
+                        TogglePencil.Content = "Pencil Marker ON (P)";
+                        pencilMarker = true;
+                        selectedCell.Focus();
+                    }
+                    else if (TogglePencil.IsChecked == true)
+                    {
+                        TogglePencil.IsChecked = false;
+                        TogglePencil.Content = "Pencil Marker OFF (P)";
+                        pencilMarker = false;
+                        selectedCell.Focus();
+                    }
+
+                    break;
                 default:
                     break;
             }
@@ -282,9 +330,9 @@ namespace SudokuSolverSetter
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            ((ToggleButton)sender).Content = "Pencil Marker ON";
+            ((ToggleButton)sender).Content = "Pencil Marker ON (P)";
             pencilMarker = true;
-            selectedCell.Focus();
+            if (selectedCell != null) selectedCell.Focus();
         }
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
@@ -294,9 +342,26 @@ namespace SudokuSolverSetter
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
-            ((ToggleButton)sender).Content = "Pencil Marker OFF";
+            ((ToggleButton)sender).Content = "Pencil Marker OFF (P)";
             pencilMarker = false;
-            selectedCell.Focus();
+            if (selectedCell != null) selectedCell.Focus();
+        }
+
+        private void Delete_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (!selectedCell.IsReadOnly && selectedCell != null)
+            {
+                if (selectedCell.Text.Length > 1)
+                {
+                    selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.Length - 1);
+                }
+                else
+                {
+                    selectedCell.Text = "";
+                }
+                selectedCell.Focus();
+            }
+            
         }
     }
 }

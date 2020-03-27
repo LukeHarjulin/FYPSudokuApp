@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="PlaySudoku" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close" KeyDown="Cell_PreviewKeyDown">
+        Title="PlaySudoku" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close" >
+    <Window.InputBindings>
+        <KeyBinding Key="P" Command="{Binding MessageCommand}" CommandParameter="You pressed P"/>
+    </Window.InputBindings>
     <Border Padding="3">
         <Canvas>
             <UniformGrid x:Name="SudokuGrid" Background="White" Height="700" Width="700" Canvas.Top="50" Canvas.Left="10">
@@ -92,7 +95,7 @@
                 <TextBox x:Name="bx81" TextChanged="Cell_TextChanged"  Cursor="Arrow" LostFocus="Cell_LostFocus" PreviewKeyDown="Cell_PreviewKeyDown" BorderBrush="Black" BorderThickness="0.75" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="Cell_Selected"/>
             </UniformGrid>
 
-            <ToggleButton Height="65" Width="250" Canvas.Left="720" Canvas.Top="417" Content="Pencil Marker OFF" FontSize="24" Checked="ToggleButton_Checked" Click="ToggleButton_Click" Unchecked="ToggleButton_Unchecked"/>
+            <ToggleButton x:Name="TogglePencil" Height="65" Width="250" Canvas.Left="720" Canvas.Top="487" Content="Pencil Marker OFF (P)" FontSize="24" Checked="ToggleButton_Checked" Click="ToggleButton_Click" Unchecked="ToggleButton_Unchecked" />
             <Label x:Name="Sudoku_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="44" FontSize="24" Content="&lt;Difficulty&gt; Sudoku Puzzle" Canvas.Left="11" Canvas.Top="7" FontFamily="Verdana"/>
             <UniformGrid Width="250" Height="250" Canvas.Left="720" Canvas.Top="127">
                 <Button Content="1" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click"/>
@@ -106,6 +109,7 @@
                 <Button Content="9" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click"/>
             </UniformGrid>
             <Button x:Name="Back_btn" Content="Save &amp; Quit" HorizontalAlignment="Left" Click="Back_Button_Click" Width="135" Height="43" Canvas.Left="782" Canvas.Top="677" FontSize="22"/>
+            <Button Content="Delete" FontSize="24" FontFamily="Verdana" Click="Delete_Button_Click" Height="63" Canvas.Left="782" Canvas.Top="389" Width="120"/>
         </Canvas>
     </Border>
 </Window>
