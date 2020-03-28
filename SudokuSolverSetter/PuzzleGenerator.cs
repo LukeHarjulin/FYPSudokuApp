@@ -453,7 +453,7 @@ namespace SudokuSolverSetter
             return true;
         }
 
-        public int NumberSwitch(int origNum)
+        public int NumberSwitch(int origNum)//method to get the number of the cell that is rotationally symmetrical to the current cell
         {
             int newNum = 0;
             switch (origNum)
@@ -489,7 +489,7 @@ namespace SudokuSolverSetter
             return newNum;
         }
 
-        public string SudokuToString(SudokuGrid grid)
+        public string SudokuToString(SudokuGrid grid)//used for copying the generated puzzle to clipboard - can be imported to www.sudokuwiki.org/sudoku.htm
         {
             string sudokuExport = "";
 
