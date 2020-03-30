@@ -673,5 +673,11 @@ namespace SudokuSolverSetter
             homePage = new MainWindow();
             homePage.Show();
         }
+
+        private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
+        {
+            CreatePuzzles createPuzzles = new CreatePuzzles();
+            createPuzzles.Show();
+        }
     }
 }

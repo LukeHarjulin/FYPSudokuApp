@@ -23,18 +23,32 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class PlaySudoku : Window
     {
+        #region Global variables
         private MainWindow homePage = new MainWindow();
         private List<TextBox> txtBxList = new List<TextBox>();
         private PuzzleGenerator gen = new PuzzleGenerator();
         private SudokuGrid grid = new SudokuGrid();
         private TextBox selectedCell;
         private string cellContents = "", currentTime = "";
-        private bool pencilMarker = false, allowTextChanged = true, puzzledSolved = false;
+        private bool pencilMarker = false, toggleRecursion = true, puzzledSolved = false;
         private Stopwatch timer;
         private DispatcherTimer dT;
         public PlaySudoku() => InitializeComponent();
 
-        public PlaySudoku(int difficulty)
+        private SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
+        private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
+        private SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
+        private SolidColorBrush backgroundCol;
+        private SolidColorBrush darkFocusCell;
+        private SolidColorBrush darkHoverCell;
+        private SolidColorBrush darkerColour;
+        private SolidColorBrush darkColour;
+        private SolidColorBrush darkButtonColour;
+        private SolidColorBrush textColour;
+        private SolidColorBrush buttonColour;
+        #endregion
+
+        public PlaySudoku(int difficulty)//Initialize window
         {
             InitializeComponent();
             timer_txtbx.Text = "0:00";
@@ -76,7 +90,7 @@ namespace SudokuSolverSetter
             StartTimer();
             
         }
-
+        #region Functions
         private void StartTimer()
         {
             timer = new Stopwatch();
@@ -86,7 +100,98 @@ namespace SudokuSolverSetter
             timer.Start();
             dT.Start();
         }
+        private void PauseTimer()
+        {
+            if (timer.IsRunning)
+            {
+                timer.Stop();
+                dT.Stop();
+            }
+            else
+            {
+                timer.Start();
+                dT.Start();
+            }
+        }
+        private void PencilMarkONOFF(char source)//source is either button click or 'n' key down
+        {
+            if (source == 'b')
+            {
+                if (TogglePencil.IsChecked == true)
+                {
+                    TogglePencil.Content = "Notes ON (N)";
+                    pencilMarker = true;
+                    if (selectedCell != null)
+                    {
+                        selectedCell.Focus();
+                    }
+                }
+                else if (TogglePencil.IsChecked == false)
+                {
+                    TogglePencil.Content = "Notes OFF (N)";
+                    pencilMarker = false;
+                    if (selectedCell != null)
+                    {
+                        selectedCell.Focus();
+                    }
+                }
+            }
+            else if (source == 'k')
+            {
+                if (TogglePencil.IsChecked == false)
+                {
+                    TogglePencil.IsChecked = true;
+                    TogglePencil.Content = "Notes ON (N)";
+                    pencilMarker = true;
+                    if (selectedCell != null)
+                    {
+                        selectedCell.Focus();
+                    }
+                }
+                else if (TogglePencil.IsChecked == true)
+                {
+                    TogglePencil.IsChecked = false;
+                    TogglePencil.Content = "Notes OFF (N)";
+                    pencilMarker = false;
+                    if (selectedCell != null)
+                    {
+                        selectedCell.Focus();
+                    }
+                }
+            }
+            
+            
+        }
 
+        public void PopulateGrid(SudokuGrid grid, List<TextBox> m_txtBxList)
+        {
+            /*This method populates the Uniform grid and its textboxes with all the given values from 'grid'.
+            */
+            int x = 0;//row number
+            int y = 0;//column number
+            for (int i = 0; i < m_txtBxList.Count; i++)
+            {
+                if (grid.Rows[x][y].Num != 0) //0's are placeholders for when there is no value, so any 0's are turned into textboxes containing the candidate values.
+                {
+                    m_txtBxList[i].FontSize = 36;
+                    m_txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
+                    if (grid.Rows[x][y].ReadOnly == true)//The readonly property ensures that the default given values of the sudoku puzzle remain readonly.
+                    {
+                        m_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                        m_txtBxList[i].IsReadOnly = true;
+                    }
+                }
+
+                y++;
+                if (y == 9)//row needs to increment and column needs to reset to 0 once it reaches the end of the row
+                {
+                    y = 0;
+                    x++;
+                }
+            }
+        }
+        #endregion
+        #region All Event Actions
         private void DT_Tick(object sender, EventArgs e)
         {
             if (timer.IsRunning)
@@ -111,46 +216,9 @@ namespace SudokuSolverSetter
         }
         private void Pause_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (timer.IsRunning)
-            {
-                timer.Stop();
-                dT.Stop();
-            }
-            else
-            {
-                timer.Start();
-                dT.Start();
-            }
+            PauseTimer();
         }
-
-        public void PopulateGrid(SudokuGrid grid, List<TextBox> m_txtBxList)
-        {
-            /*This method populates the Uniform grid and its textboxes with all the given values from 'grid'.
-            */
-            int x = 0;//row number
-            int y = 0;//column number
-            for (int i = 0; i < m_txtBxList.Count; i++)
-            {
-                if (grid.Rows[x][y].Num != 0) //0's are placeholders for when there is no value, so any 0's are turned into textboxes containing the candidate values.
-                {
-                    m_txtBxList[i].FontSize = 36;
-                    m_txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
-                    if (grid.Rows[x][y].ReadOnly == true)//The readonly property ensures that the default given values of the sudoku puzzle remain readonly.
-                    {
-                        m_txtBxList[i].FontWeight = FontWeights.SemiBold;
-                        m_txtBxList[i].IsReadOnly = true;
-                    }
-                }
                 
-                y++;
-                if (y == 9)//row needs to increment and column needs to reset to 0 once it reaches the end of the row
-                {
-                    y = 0;
-                    x++;
-                }
-            }
-        }
-
         private void Num_Button_Click(object sender, RoutedEventArgs e)
         {
             if (selectedCell != null)
@@ -185,41 +253,51 @@ namespace SudokuSolverSetter
         }
         private void Cell_Selected(object sender, RoutedEventArgs e)
         {
-            if (selectedCell != null)
+            if (selectedCell != null)//sets previously focused cell to default colour
             {
                 if (nightmode_chkbx.IsChecked == false)
                 {
-                    selectedCell.Background = null;
+                    selectedCell.Background = cellColour;
                 }
                 else
                 {
-                    selectedCell.Background = new SolidColorBrush(Color.FromArgb(100, 45, 45, 45));
+                    selectedCell.Background = darkColour;
                 }
             }
             
             selectedCell = ((TextBox)sender);
-            if (nightmode_chkbx.IsChecked == false)
+            if (nightmode_chkbx.IsChecked == false)//sets the current focused cell to a more prominent colour
             {
-                ((TextBox)sender).Background = new SolidColorBrush(Color.FromArgb(255, 138, 255, 208));
+                ((TextBox)sender).Background = focusCell;
             }
             else
             {
-                ((TextBox)sender).Background = new SolidColorBrush(Color.FromArgb(100, 75, 75, 75));
+                ((TextBox)sender).Background = darkFocusCell;
             }
             cellContents = selectedCell.Text;
         }
 
         private void Cell_LostFocus(object sender, RoutedEventArgs e)
         {
-
+            if (selectedCell.Text.Length > 1)
+            {
+                List<int> sortNotes = new List<int>(selectedCell.Text.Length);
+                for (int i = 0; i < selectedCell.Text.Length; i++)
+                {
+                    sortNotes.Add(int.Parse(selectedCell.Text[i].ToString()));
+                }
+                sortNotes.Sort();
+                selectedCell.Text = string.Join("", sortNotes);
+            }
+            
         }
         
 
         private void Cell_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (selectedCell != null && allowTextChanged)
+            if (selectedCell != null && toggleRecursion)
             {
-                allowTextChanged = false;
+                toggleRecursion = false;
                 selectedCell.Text = selectedCell.Text.Trim(' '); 
                 if (selectedCell.Text.Contains('n')) { selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf('n'), 1); }
                 else if (selectedCell.Text.Contains('-')) { selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.IndexOf('-'), 1); }
@@ -231,7 +309,7 @@ namespace SudokuSolverSetter
                     if (selectedCell.Text != "" && !int.TryParse(selectedCell.Text, out int result) || selectedCell.Text.Contains('0') || selectedCell.Text.Length > 9)
                     {
                         selectedCell.Text = cellContents;
-                        allowTextChanged = true;
+                        toggleRecursion = true;
                         return;
                     }
                     else if (selectedCell.Text.Length > 1)
@@ -323,7 +401,7 @@ namespace SudokuSolverSetter
                         selectedCell.FontSize = 16;
                     }
                 }
-                allowTextChanged = true;
+                toggleRecursion = true;
             }
             
         }
@@ -363,21 +441,10 @@ namespace SudokuSolverSetter
                     }
                     break;
                 case Key.N:
-                    if (TogglePencil.IsChecked == false)
-                    {
-                        TogglePencil.IsChecked = true;
-                        TogglePencil.Content = "Notes ON (N)";
-                        pencilMarker = true;
-                        selectedCell.Focus();
-                    }
-                    else if (TogglePencil.IsChecked == true)
-                    {
-                        TogglePencil.IsChecked = false;
-                        TogglePencil.Content = "Notes OFF (N)";
-                        pencilMarker = false;
-                        selectedCell.Focus();
-                    }
-
+                    PencilMarkONOFF('k');
+                    break;
+                case Key.P:
+                    PauseTimer();
                     break;
                 default:
                     break;
@@ -393,9 +460,7 @@ namespace SudokuSolverSetter
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            ((ToggleButton)sender).Content = "Notes ON (N)";
-            pencilMarker = true;
-            if (selectedCell != null) selectedCell.Focus();
+            PencilMarkONOFF('b');
         }
 
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
@@ -405,9 +470,12 @@ namespace SudokuSolverSetter
 
         private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
-            ((ToggleButton)sender).Content = "Notes OFF (N)";
-            pencilMarker = false;
-            if (selectedCell != null) selectedCell.Focus();
+            if (toggleRecursion)
+            {
+                toggleRecursion = false;
+                PencilMarkONOFF('b');
+                toggleRecursion = true;
+            }
         }
 
         private void New_Btn_Click(object sender, RoutedEventArgs e)
@@ -420,28 +488,33 @@ namespace SudokuSolverSetter
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             //DarkMode
-            SolidColorBrush darkerColour = new SolidColorBrush(Color.FromArgb(100, 30, 30, 30));
-            SolidColorBrush darkColour = new SolidColorBrush(Color.FromArgb(100, 45, 45, 45));
-            SolidColorBrush buttonColour = new SolidColorBrush(Color.FromArgb(100, 60, 60, 60));
-            SolidColorBrush textColour = new SolidColorBrush(Color.FromArgb(100, 240, 240, 240));
-            
+            if (darkerColour == null)//reduces memory clutter by only ever assigning these colours once. Also, the objects are only created if the user activates darkmode.
+            {
+                darkerColour = new SolidColorBrush(Color.FromArgb(255, 30, 30, 30));
+                darkColour = new SolidColorBrush(Color.FromArgb(255, 45, 45, 45));
+                darkButtonColour = new SolidColorBrush(Color.FromArgb(255, 60, 60, 60));
+                textColour = new SolidColorBrush(Color.FromArgb(150, 240, 240, 240));
+                darkFocusCell = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
+                darkHoverCell = new SolidColorBrush(Color.FromArgb(255, 95, 95, 95));
+            }
+                
             this.Background = darkColour;
             cnvs.Background = darkerColour;
             Sudoku_Title.Foreground = textColour;
             time_lbl.Foreground = textColour;
             timer_txtbx.Foreground = textColour;
-            TogglePencil.Foreground = textColour; TogglePencil.Background = buttonColour;
-            Back_btn.Foreground = textColour; Back_btn.Background = buttonColour;
-            del_btn.Foreground = textColour; del_btn.Background = buttonColour;
-            newPuzzle_btn.Foreground = textColour; newPuzzle_btn.Background = buttonColour;
-            Help_btn.Foreground = textColour; Help_btn.Background = buttonColour;
-            Pause_btn.Foreground = textColour; Pause_btn.Background = buttonColour;
+            TogglePencil.Foreground = textColour; TogglePencil.Background = darkButtonColour;
+            Back_btn.Foreground = textColour; Back_btn.Background = darkButtonColour;
+            del_btn.Foreground = textColour; del_btn.Background = darkButtonColour;
+            newPuzzle_btn.Foreground = textColour; newPuzzle_btn.Background = darkButtonColour;
+            Help_btn.Foreground = textColour; Help_btn.Background = darkButtonColour;
+            Pause_btn.Foreground = textColour; Pause_btn.Background = darkButtonColour;
             nightmode_chkbx.Foreground = textColour;
 
             btn1.Foreground = textColour; btn2.Foreground = textColour; btn3.Foreground = textColour; btn4.Foreground = textColour;
             btn5.Foreground = textColour; btn6.Foreground = textColour; btn7.Foreground = textColour; btn8.Foreground = textColour; btn9.Foreground = textColour;
-            btn1.Background = darkColour; btn2.Background = darkColour;btn3.Background = darkColour; btn4.Background = darkColour;
-            btn5.Background = darkColour; btn6.Background = darkColour; btn7.Background = darkColour; btn8.Background = darkColour; btn9.Background = darkColour;
+            btn1.Background = darkButtonColour; btn2.Background = darkButtonColour;btn3.Background = darkButtonColour; btn4.Background = darkButtonColour;
+            btn5.Background = darkButtonColour; btn6.Background = darkButtonColour; btn7.Background = darkButtonColour; btn8.Background = darkButtonColour; btn9.Background = darkButtonColour;
 
             for (int i = 0; i < txtBxList.Count; i++)
             {
@@ -450,11 +523,21 @@ namespace SudokuSolverSetter
                 txtBxList[i].BorderBrush = textColour;
                 txtBxList[i].SelectionBrush = textColour;
             }
+            if (selectedCell != null)
+            {
+                selectedCell.Focus();
+            }
         }
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             //LightMode
-            SolidColorBrush buttonColour = new SolidColorBrush(Color.FromArgb(100, 221, 221, 221));
+                //reduces memory clutter by only ever assigning these colours once. Also, the object is only created if the user deactivates darkmode.
+            if (buttonColour == null)
+            {
+                buttonColour = new SolidColorBrush(Color.FromArgb(255, 255, 247, 230));
+                backgroundCol = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
+            }
+
             this.Background = Brushes.White;
             cnvs.Background = Brushes.White;
             Sudoku_Title.Foreground = Brushes.Black;
@@ -470,17 +553,83 @@ namespace SudokuSolverSetter
 
             btn1.Foreground = Brushes.Black; btn2.Foreground = Brushes.Black; btn3.Foreground = Brushes.Black; btn4.Foreground = Brushes.Black;
             btn5.Foreground = Brushes.Black; btn6.Foreground = Brushes.Black; btn7.Foreground = Brushes.Black; btn8.Foreground = Brushes.Black; btn9.Foreground = Brushes.Black;
-            btn1.Background = Brushes.White; btn2.Background = Brushes.White; btn3.Background = Brushes.White; btn4.Background = Brushes.White;
-            btn5.Background = Brushes.White; btn6.Background = Brushes.White; btn7.Background = Brushes.White; btn8.Background = Brushes.White; btn9.Background = Brushes.White;
+            btn1.Background = buttonColour; btn2.Background = buttonColour; btn3.Background = buttonColour; btn4.Background = buttonColour;
+            btn5.Background = buttonColour; btn6.Background = buttonColour; btn7.Background = buttonColour; btn8.Background = buttonColour; btn9.Background = buttonColour;
 
             for (int i = 0; i < txtBxList.Count; i++)
             {
-                txtBxList[i].Background = Brushes.White;
+                txtBxList[i].Background = cellColour;
                 txtBxList[i].Foreground = Brushes.Black;
                 txtBxList[i].BorderBrush = Brushes.Black;
                 txtBxList[i].SelectionBrush = Brushes.Black;
             }
+            if (selectedCell != null)
+            {
+                selectedCell.Focus();
+            }
         }
+
+        private void Button_Mouse_Enter(object sender, MouseEventArgs e)
+        {
+            if (nightmode_chkbx.IsChecked == true)
+            {
+                if (sender.GetType().Name == "Button")
+                {
+                    ((Button)sender).Foreground = Brushes.Black;
+                }
+                else
+                {
+                    ((ToggleButton)sender).Foreground = Brushes.Black;
+                }
+            }
+        }
+
+        private void Button_Mouse_Leave(object sender, MouseEventArgs e)
+        {
+            if (nightmode_chkbx.IsChecked == true)
+            {
+                if (sender.GetType().Name == "Button")
+                {
+                    ((Button)sender).Foreground = textColour;
+                }
+                else
+                {
+                    ((ToggleButton)sender).Foreground = textColour;
+                }
+            }
+        }
+
+        private void MouseEnter_Cell(object sender, MouseEventArgs e)
+        {
+            if (selectedCell != (TextBox)sender)
+            {
+                if (nightmode_chkbx.IsChecked == false)
+                {
+                    ((TextBox)sender).Background = hoverCell;
+                }
+                else
+                {
+                    ((TextBox)sender).Background = darkHoverCell;
+                }
+            }
+        }
+
+        private void MouseLeave_Cell(object sender, MouseEventArgs e)
+        {
+            if (selectedCell != (TextBox)sender)
+            {
+                if (nightmode_chkbx.IsChecked == false)
+                {
+                    ((TextBox)sender).Background = cellColour;
+                }
+                else
+                {
+                    ((TextBox)sender).Background = darkColour;
+                }
+            }
+            
+        }
+
         private void Help_btn_Click(object sender, RoutedEventArgs e)
         {
             //Produce help window
@@ -495,21 +644,16 @@ namespace SudokuSolverSetter
         {
             if (selectedCell != null)
             {
-                if (!selectedCell.IsReadOnly)
+                if (!selectedCell.IsReadOnly && selectedCell.Text.Length > 0)
                 {
-                    if (selectedCell.Text.Length > 1)
-                    {
-                        selectedCell.Text = selectedCell.Text.Remove(selectedCell.Text.Length - 1);
-                    }
-                    else
-                    {
-                        selectedCell.Text = "";
-                    }
+                    selectedCell.Text = "";
+                    
                     selectedCell.Focus();
                 }
                 
             }
             
         }
+        #endregion
     }
 }

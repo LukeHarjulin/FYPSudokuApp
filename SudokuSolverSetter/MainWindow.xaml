@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
-    <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}">
-        <Button x:Name="Developer_Mode" Content="Developer Window" HorizontalAlignment="Left" Margin="54,706,0,0" VerticalAlignment="Top" Width="142" Click="DeveloperMode_Button_Click" Height="38"/>
-        <Button x:Name="Quit_btn" Content="QUIT" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="50" UseLayoutRounding="False" Margin="0,450,0,0"/>
-        <Button x:Name="Play_Sudoku_Btn" Content="PLAY SUDOKU!" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Play_Sudoku_Click" Height="50" Margin="0,300,0,0"/>
-        <Button x:Name="Level_Selector_Btn" Content="LEVEL SELECTOR" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="50" Margin="0,375,0,0"/>
+    <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}" Background="#FFEEF1FF">
+        <Button x:Name="Developer_Mode" Background="#FFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="54,706,0,0" VerticalAlignment="Top" Width="142" Click="DeveloperMode_Button_Click" Height="38"/>
+        <Button x:Name="Quit_btn" Background="#FFF7E6" Content="QUIT" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="50" UseLayoutRounding="False" Margin="0,450,0,0"/>
+        <Button x:Name="Play_Sudoku_Btn" Background="#FFF7E6" Content="PLAY SUDOKU!" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Play_Sudoku_Click" Height="50" Margin="0,300,0,0"/>
+        <Button x:Name="Level_Selector_Btn" Background="#FFF7E6" Content="LEVEL SELECTOR" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="50" Margin="0,375,0,0"/>
         <Label Content="TITLE NAME" HorizontalAlignment="Center" VerticalAlignment="Top" Height="100" Width="450" Margin="272,90,272,0" FontStretch="Expanded" FontStyle="Oblique" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="48" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-        <ComboBox x:Name="Difficulty_ComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="680,297,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True">
+        <ComboBox x:Name="Difficulty_ComboBox" Background="#FFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="655,314,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6">
             <ComboBoxItem IsSelected="True" Content="Beginner"/>
             <ComboBoxItem Content="Intermediate"/>
             <ComboBoxItem Content="Advanced"/>

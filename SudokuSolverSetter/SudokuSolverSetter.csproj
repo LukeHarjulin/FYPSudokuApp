@@ -55,6 +55,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Cell.cs" />
+    <Compile Include="CreatePuzzles.xaml.cs">
+      <DependentUpon>CreatePuzzles.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -67,6 +70,10 @@
     <Compile Include="SudokuGrid.cs" />
     <Compile Include="PuzzleGenerator.cs" />
     <Compile Include="PuzzleSolver.cs" />
+    <Page Include="CreatePuzzles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
