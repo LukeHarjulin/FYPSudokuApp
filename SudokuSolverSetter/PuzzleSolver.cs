@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SudokuSolverSetter
 {
@@ -32,6 +33,10 @@ namespace SudokuSolverSetter
                         changeMade = true;
                     }
                     //More methods to add
+                    else if (FindXWing(grid))
+                    {
+                        changeMade = true;
+                    }
                     else
                     {
                         changeMade = false;
@@ -40,10 +45,10 @@ namespace SudokuSolverSetter
             }
             else
             {
-                BruteForceSolve(grid);
+                BruteForceSolve(grid, 0, 0);
             }
-            
-            
+
+
             return grid;
         }
 
@@ -491,6 +496,75 @@ namespace SudokuSolverSetter
         /*X-Wing Strategy:
          * 
          */
+
+
+        public bool FindXWing(SudokuGrid grid)
+        {
+            bool changeMade = false;
+            byte numCounter = 0;//'numCounter' used to count how many occurences of a candidate number there are in a row/column. 
+            byte rowCounter = 0;//'rowCounter' counts how many rows conform to 2 cells with the correct candidate number
+            int[] cL = new int[8];//cell locations
+            int repeat = 0;
+            while (++repeat < 3)//repeat so that it can switch and check for finding x-wings in the opposite axis
+            {
+                for (int i = 1; i <= 9; i++)//iterates through numbers
+                {
+                    for (int x = 0; x < 9; x++)//iterates through rows
+                    {
+                        numCounter = 0;
+                        for (int y = 0; y < 9; y++)//iterates through columns
+                        {
+                            if (repeat == 2)//switch for finding x-wings in the opposite axis
+                            {
+                                int temp = x;
+                                x = y;
+                                y = temp;
+                            }
+                            if (grid.Rows[x][y].Num == i)
+                            {
+                                cL[cL.Length] = x;
+                                cL[cL.Length] = y;
+                                if (++numCounter > 2)
+                                {
+                                    cL = new int[8];
+                                    break;
+                                }
+                            }
+                        }
+                        if (numCounter == 2)
+                        {
+                            ++rowCounter;
+
+                        }
+                    }
+                    if (rowCounter == 2)//x-wing found
+                    {
+
+                        //use string to look at cells in x-wing, then look at the columns and remove any of i's from the candidate lists
+                        for (int n = 0; n < 8; n++)
+                        {
+                            if (grid.Rows[cL[0]][cL[1]].NeighbourCells[1][n].Candidates.Contains(i))
+                            {
+                                grid.Rows[cL[0]][cL[1]].NeighbourCells[1][n].Candidates.Remove(i);
+                                changeMade = true;
+                            }
+
+                        }
+                    }
+                    else if (rowCounter > 2)//condition should NEVER occur
+                    {
+
+                    }
+                    else
+                    {
+                        cL = new int[8];
+                    }
+                }
+            }
+
+
+            return changeMade;
+        }
         #endregion
         #region Temporary Solver used in puzzle generator
         public int SolveACell(int[] position, SudokuGrid grid)//Used in the generator - unfinshied!
@@ -550,7 +624,7 @@ namespace SudokuSolverSetter
                                     (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
                                 {
                                     grid.Rows[i][j].Candidates.Remove(cell.Num);
-                                    
+
                                     changeMade = true;
                                 }
                             }
@@ -865,141 +939,271 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         #endregion
-
-        public bool BruteForceSolve(SudokuGrid grid)
+        public bool RemoveCands(SudokuGrid grid, int row, int col)
+        {
+            grid.Rows[row][col].Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            for (int index = 0; index < 3; index++)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    if (grid.Rows[row][col].Candidates.Contains(grid.Rows[row][col].NeighbourCells[index][i].Num))
+                    {
+                        grid.Rows[row][col].Candidates.Remove(grid.Rows[row][col].NeighbourCells[index][i].Num);
+                    }
+                    if (grid.Rows[row][col].Candidates.Count == 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            if (grid.Rows[row][col].Candidates.Count == 1)
+            {
+                grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];
+            }
+            return true;
+        }
+        public bool BruteForceSolve(SudokuGrid grid, int row, int col)
         {
             PuzzleGenerator gen = new PuzzleGenerator();
-            bool changeMade;
-            do
+            //            do
+            //            {
+            //                changeMade = false;
+            //                for (int r = 0; r < 9; r++)//Time Complexity: O(9^2+3^2)
+            //                {
+            //                    for (int c = 0; c < 9; c++)
+            //                    {
+            //                        if (grid.Rows[r][c].Num == 0)
+            //                        {
+            //                            //Start checking the rows, columns or block, eliminating numbers from the candidate list
+            //                            //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
+            #region Original Brute force - broken i think
+            //                            /*for (int n = 0; n < 9; n++)
+            //                            {
+            //                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[r][n].Num))
+            //                                {
+            //                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[r][n].Num);
+            //                                    changeMade = true;
+            //                                }
+            //                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[n][c].Num))
+            //                                {
+            //                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[n][c].Num);
+            //                                    changeMade = true;
+            //                                }
+
+            //                            }
+            //                            if (grid.Rows[r][c].Candidates.Count > 1)
+            //                            {
+            //                                int xStart = 0, yStart = 0;
+            //                                switch (grid.Rows[r][c].BlockLoc)
+            //                                {
+            //                                    case 1:
+            //                                        xStart = 0;
+            //                                        yStart = 0;
+            //                                        break;
+            //                                    case 2:
+            //                                        xStart = 0;
+            //                                        yStart = 3;
+            //                                        break;
+            //                                    case 3:
+            //                                        xStart = 0;
+            //                                        yStart = 6;
+            //                                        break;
+            //                                    case 4:
+            //                                        xStart = 3;
+            //                                        yStart = 0;
+            //                                        break;
+            //                                    case 5:
+            //                                        xStart = 3;
+            //                                        yStart = 3;
+            //                                        break;
+            //                                    case 6:
+            //                                        xStart = 3;
+            //                                        yStart = 6;
+            //                                        break;
+            //                                    case 7:
+            //                                        xStart = 6;
+            //                                        yStart = 0;
+            //                                        break;
+            //                                    case 8:
+            //                                        xStart = 6;
+            //                                        yStart = 3;
+            //                                        break;
+            //                                    case 9:
+            //                                        xStart = 6;
+            //                                        yStart = 6;
+            //                                        break;
+            //                                    default:
+            //                                        break;
+            //                                }
+            //                                for (int x = xStart; x < xStart + 3; x++)
+            //                                {
+            //                                    for (int y = yStart; y < yStart + 3; y++)
+            //                                    {
+            //                                        if (grid.Rows[r][c].Candidates.Contains(grid.Rows[x][y].Num))
+            //                                        {
+            //                                            grid.Rows[r][c].Candidates.Remove(grid.Rows[x][y].Num);
+            //                                            changeMade = true;
+            //                                        }
+
+            //                                    }
+            //                                }
+            //                            }
+
+            //                            if (grid.Rows[r][c].Candidates.Count == 1)
+            //                            {
+            //                                grid.Rows[r][c].Num = grid.Rows[r][c].Candidates[0];
+            //                                changeMade = true;
+            //                            }*/
+            #endregion
+            //                            for (int index = 0; index < 3; index++)
+            //                            {
+            //                                for (int i = 0; i < 8; i++)
+            //                                {
+            //                                    if (grid.Rows[r][c].Candidates.Contains(grid.Rows[r][c].NeighbourCells[index][i].Num))
+            //                                    {
+            //                                        grid.Rows[r][c].Candidates.Remove(grid.Rows[r][c].NeighbourCells[index][i].Num);
+            //                                        changeMade = true;
+            //                                    }
+            //                                    if (grid.Rows[r][c].Candidates.Count == 1)
+            //                                    {
+            //                                        grid.Rows[r][c].Num = grid.Rows[r][c].Candidates[0];
+            //                                        changeMade = true;
+            //                                        break;
+            //                                    }
+            //                                }
+            //                            }
+            //                        }
+
+            //                    }
+            //                }
+            //            } while (changeMade);
+
+            if (col == 9 && row == 9)
             {
-                changeMade = false;
-                for (int r = 0; r < 9; r++)//Time Complexity: O(9^2+3^2)
+                if (gen.CheckIfSolved(grid))
                 {
-                    for (int c = 0; c < 9; c++)
+                    return true;
+                }
+                else
+                {
+                    grid.Rows[--row][--col].Num = 0;
+                    return false;
+                }
+            }
+            //Searches for next empty cell
+            if (grid.Rows[row][col].Num != 0)
+            {
+                bool emptyCell = false;
+                do 
+                {
+                    if (++col == 9)
                     {
-                        if (grid.Rows[r][c].Num == 0)
+                        if (++row == 9)
                         {
-                            //Start checking the rows, columns or block, eliminating numbers from the candidate list
-                            //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
-                            for (int n = 0; n < 9; n++)
+                            if (gen.CheckIfSolved(grid))
                             {
-                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[r][n].Num))
-                                {
-                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[r][n].Num);
-                                    changeMade = true;
-                                }
-                                if (grid.Rows[r][c].Candidates.Contains(grid.Rows[n][c].Num))
-                                {
-                                    grid.Rows[r][c].Candidates.Remove(grid.Rows[n][c].Num);
-                                    changeMade = true;
-                                }
-
+                                return true;
                             }
-                            if (grid.Rows[r][c].Candidates.Count > 1)
+                            else
                             {
-                                int xStart = 0, yStart = 0;
-                                switch (grid.Rows[r][c].BlockLoc)
-                                {
-                                    case 1:
-                                        xStart = 0;
-                                        yStart = 0;
-                                        break;
-                                    case 2:
-                                        xStart = 0;
-                                        yStart = 3;
-                                        break;
-                                    case 3:
-                                        xStart = 0;
-                                        yStart = 6;
-                                        break;
-                                    case 4:
-                                        xStart = 3;
-                                        yStart = 0;
-                                        break;
-                                    case 5:
-                                        xStart = 3;
-                                        yStart = 3;
-                                        break;
-                                    case 6:
-                                        xStart = 3;
-                                        yStart = 6;
-                                        break;
-                                    case 7:
-                                        xStart = 6;
-                                        yStart = 0;
-                                        break;
-                                    case 8:
-                                        xStart = 6;
-                                        yStart = 3;
-                                        break;
-                                    case 9:
-                                        xStart = 6;
-                                        yStart = 6;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                for (int x = xStart; x < xStart + 3; x++)
-                                {
-                                    for (int y = yStart; y < yStart + 3; y++)
-                                    {
-                                        if (grid.Rows[r][c].Candidates.Contains(grid.Rows[x][y].Num))
-                                        {
-                                            grid.Rows[r][c].Candidates.Remove(grid.Rows[x][y].Num);
-                                            changeMade = true;
-                                        }
-
-                                    }
-                                }
-                            }
-
-                            if (grid.Rows[r][c].Candidates.Count == 1)
-                            {
-                                grid.Rows[r][c].Num = grid.Rows[r][c].Candidates[0];
-                                changeMade = true;
+                                grid.Rows[--row][--col].Num = 0;
+                                return false;
                             }
                         }
+                        else
+                            col = 0;
 
                     }
-                }
-            } while (changeMade);
-
-            
-
-            if (!gen.CheckIfSolved(grid))
-            {
-                for (int i = 0; i < 9; i++)
-                {
-                    for (int j = 0; j < 9; j++)
-                    {
-                        if (grid.Rows[i][j].Num == 0)
-                        {
-                            //grid.Rows[i][j].Candidates = Shuffler(grid.Rows[i][j].Candidates, rand);
-                            for (int k = 0; k < grid.Rows[i][j].Candidates.Count; k++)
-                            {
-                                grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[k];
-                                if (BruteForceSolve(grid))
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
+                    if (grid.Rows[row][col].Num == 0)
+                        emptyCell = true;
+                } while (!emptyCell);
             }
-            else
+            Clipboard.SetText(gen.SudokuToString(grid));
+            if (!RemoveCands(grid, row, col))//if it returns false, candidates count must be 0 - i.e. something went wrong
             {
-                return true;
-            }
-
-            if (gen.CheckIfSolved(grid))
-            {
-                return true;
-            }
-            else
-            {
+                grid.Rows[row][col].Num = 0;                
                 return false;
             }
+           
+            int nextRow = row, nextCol = col;
+            if (++nextCol == 9)
+            {
+                if (++nextRow == 9)
+                {
+                    foreach (int candidate in grid.Rows[row][col].Candidates)
+                    {
+                        grid.Rows[row][col].Num = candidate;
+                        if (gen.CheckIfSolved(grid))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            grid.Rows[row][col].Num = 0;
+                            return false;
+                        }
+
+                    }
+                }
+                else nextCol = 0;
+            }
+            if (grid.Rows[row][col].Num == 0)
+            {
+                foreach (int candidate in grid.Rows[row][col].Candidates)
+                {
+                    grid.Rows[row][col].Num = candidate;
+                    if (BruteForceSolve(grid, nextRow, nextCol))
+                        return true;
+                }
+            }
+            else
+            {
+                if (BruteForceSolve(grid, nextRow, nextCol))
+                    return true;
+                else
+                {
+                    grid.Rows[row][col].Num = 0;
+                    return false;
+                }
+            }
+            grid.Rows[row][col].Num = 0;
+            return false;//should never be hit
+            //if (!gen.CheckIfSolved(grid))
+            //{
+
+            //    for (int i = 0; i < 9; i++)
+            //    {
+
+            //        for (int j = 0; j < 9; j++)
+            //        {
+            //            if (grid.Rows[i][j].Num == 0)
+            //            {
+            //                //grid.Rows[i][j].Candidates = Shuffler(grid.Rows[i][j].Candidates, rand);
+            //                for (int k = 0; k < grid.Rows[i][j].Candidates.Count; k++)
+            //                {
+            //                    grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[k];
+            //                    if (BruteForceSolve(grid))//ISSUE: REMOVING CANDIDATES IN RECURSIVE STATES
+            //                    {
+            //                        return true;
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    return true;
+            //}
+
+            //if (gen.CheckIfSolved(grid))
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
     }
 }

@@ -6,13 +6,16 @@
         xmlns:local="clr-namespace:SudokuSolverSetter"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="SudokuSolverSetter.DeveloperWindow"
         mc:Ignorable="d"
-        Title="DevloperWindow" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
+        Title="Devloper Window" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
     <Border Padding="10">
         <Canvas>
             <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="90" Height="25"/>
             <CheckBox x:Name="BruteForceChckBx" Content="Bruteforce?" Checked="BruteForceChckBx_Checked" HorizontalAlignment="Center" VerticalAlignment="Center" Width="115" Canvas.Left="15" Canvas.Top="45" Height="20" FontSize="18"/>
             <Button x:Name="b_Solve" Content="Solve" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="70" Height="45"/>
             <Button x:Name="b_Solve1by1" Content="Solve cell by cell" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="120" Height="50"/>
+            <Button x:Name="Generate_Puzzle" Content="Generate" Click="GeneratePuzzle_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="175" Height="45"/>
+            <Button x:Name="Import_Puzzle" Content="Import" Click="Import_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="225" Height="45"/>
+
             <UniformGrid x:Name="SudokuGrid" Background="White" Height="630" Width="630" Canvas.Left="160" Canvas.Top="70">
                 <TextBox x:Name="x1y1g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="0"/>
                 <TextBox x:Name="x1y2g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
@@ -96,7 +99,8 @@
                 <TextBox x:Name="x9y8g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <TextBox x:Name="x9y9g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             </UniformGrid>
-            <Button x:Name="Create_Store_Puzzles_btn" Content="Create Puzzles" Canvas.Left="15" Canvas.Top="175" Width="120" Height="50" Click="Create_Store_Puzzles_btn_Click"/>
+            <Button x:Name="Create_Store_Puzzles_btn" Content="Create Puzzles" Canvas.Left="15" Canvas.Top="355" Width="120" Height="50" Click="Create_Store_Puzzles_btn_Click"/>
+            <TextBox x:Name="Import_textbox" Height="23" Canvas.Left="15" TextWrapping="Wrap" Canvas.Top="275" Width="120" Margin="0"/>
         </Canvas>
     </Border>
 </Window>

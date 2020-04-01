@@ -5,18 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
+        Title="Sudoku Project" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
     <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}" Background="#FFEEF1FF">
-        <Button x:Name="Developer_Mode" Background="#FFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="54,706,0,0" VerticalAlignment="Top" Width="142" Click="DeveloperMode_Button_Click" Height="38"/>
-        <Button x:Name="Quit_btn" Background="#FFF7E6" Content="QUIT" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="50" UseLayoutRounding="False" Margin="0,450,0,0"/>
-        <Button x:Name="Play_Sudoku_Btn" Background="#FFF7E6" Content="PLAY SUDOKU!" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Play_Sudoku_Click" Height="50" Margin="0,300,0,0"/>
-        <Button x:Name="Level_Selector_Btn" Background="#FFF7E6" Content="LEVEL SELECTOR" Width="200" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="50" Margin="0,375,0,0"/>
-        <Label Content="TITLE NAME" HorizontalAlignment="Center" VerticalAlignment="Top" Height="100" Width="450" Margin="272,90,272,0" FontStretch="Expanded" FontStyle="Oblique" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="48" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-        <ComboBox x:Name="Difficulty_ComboBox" Background="#FFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="655,314,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6">
+        <Button x:Name="Developer_Mode" Background="#FFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="54,706,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16"/>
+        <Button x:Name="Quit_btn" Background="#FFF7E6" Content="QUIT" Width="305" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,540,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3"/>
+        <Button x:Name="Play_Sudoku_Btn" Background="#FFF7E6" Content="PLAY SUDOKU" Width="400" Click="Play_Sudoku_Click" Height="60" Margin="0,360,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <Button x:Name="Level_Selector_Btn" Background="#FFF7E6" Content="LEVEL SELECTOR" Width="400" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,450,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3"/>
+        <Label Content="TITLE NAME" HorizontalAlignment="Center" VerticalAlignment="Top" Height="100" Width="450" Margin="272,90,272,0" FontWeight="Medium" FontSize="48" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" TextOptions.TextFormattingMode="Display" FontStyle="Oblique"/>
+        <ComboBox x:Name="Difficulty_ComboBox" Background="#FFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="846,370,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="30" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538">
             <ComboBoxItem IsSelected="True" Content="Beginner"/>
             <ComboBoxItem Content="Intermediate"/>
             <ComboBoxItem Content="Advanced"/>
         </ComboBox>
+        <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="702,365,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium"/>
 
 
     </Grid>

@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudokuSolverSetter", "SudokuSolverSetter\SudokuSolverSetter.csproj", "{EA853EE9-2B6C-441A-A955-24E7384AF92E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudokuSolverSetterTests", "SudokuSolverSetterTests\SudokuSolverSetterTests.csproj", "{A76D1527-A92D-477A-9292-EFFA83F74463}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{EA853EE9-2B6C-441A-A955-24E7384AF92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA853EE9-2B6C-441A-A955-24E7384AF92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA853EE9-2B6C-441A-A955-24E7384AF92E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A76D1527-A92D-477A-9292-EFFA83F74463}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A76D1527-A92D-477A-9292-EFFA83F74463}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A76D1527-A92D-477A-9292-EFFA83F74463}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A76D1527-A92D-477A-9292-EFFA83F74463}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

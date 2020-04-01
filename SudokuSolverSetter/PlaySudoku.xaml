@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="PlaySudoku" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close" >
+        Title="Play Sudoku" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close" >
 
     <Border Padding="3">
         <Canvas x:Name="cnvs" Background="#FFEEF1FF">
@@ -93,7 +93,7 @@
                 <TextBox x:Name="bx81" TextChanged="Cell_TextChanged"  Cursor="Arrow" LostFocus="Cell_LostFocus" PreviewKeyDown="Cell_PreviewKeyDown" MouseEnter="MouseEnter_Cell" MouseLeave="MouseLeave_Cell" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,0.75,4,4" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="Cell_Selected"/>
             </UniformGrid>
 
-            <ToggleButton x:Name="TogglePencil" Height="65" Width="250" Background="#FFF7E6" Canvas.Left="720" Canvas.Top="487" Content="Notes OFF (N)" FontSize="24" Checked="ToggleButton_Checked" Click="ToggleButton_Click" Unchecked="ToggleButton_Unchecked" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Toggles note/pencil marks"/>
+            <ToggleButton x:Name="TogglePencil" Height="70" Width="250" Background="#FFF7E6" Canvas.Left="728" Canvas.Top="487" Content="Notes OFF (N)" FontSize="24" Checked="ToggleButton_Checked" Click="ToggleButton_Click" Unchecked="ToggleButton_Unchecked" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Toggles note/pencil marks" FontFamily="Verdana"/>
             <Label x:Name="Sudoku_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="44" FontSize="24" Content="&lt;Difficulty&gt; Sudoku Puzzle" Canvas.Left="11" Canvas.Top="7" FontFamily="Verdana"/>
             <UniformGrid Width="250" Height="250" Canvas.Left="720" Canvas.Top="127">
                 <Button x:Name="btn1" Content="1" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '1' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
@@ -106,14 +106,14 @@
                 <Button x:Name="btn8" Content="8" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '8' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
                 <Button x:Name="btn9" Content="9" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '9' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
             </UniformGrid>
-            <Button x:Name="Back_btn" Content="Save &amp; Quit" HorizontalAlignment="Left" Click="Back_Button_Click" Width="135" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Height="50" Canvas.Left="782" Canvas.Top="672" FontSize="22" ToolTip="Saves and exits to the Main Menu" Background="#FFF7E6"/>
-            <Button x:Name="del_btn" Content="Delete (Del)" FontSize="24" FontFamily="Verdana" Click="Delete_Button_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Height="63" Canvas.Left="762" Canvas.Top="394" Width="155" ToolTip="Deletes a number from the selected cell" Background="#FFF7E6"/>
-            <Button x:Name="newPuzzle_btn" Content="New Puzzle" Canvas.Left="782" Canvas.Top="592" Width="135" Height="50" FontSize="22" Click="New_Btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Starts a new Sudoku game" Background="#FFF7E6"/>
-            <Button x:Name="Help_btn" Content="Help" Canvas.Left="895" Canvas.Top="15" Width="75" Height="50" Click="Help_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6"/>
-            <Label x:Name="time_lbl" Content="Time: " Canvas.Left="452" Canvas.Top="7" Width="60" FontSize="20"/>
-            <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" Canvas.Left="512" Canvas.Top="11" Width="90" FontSize="20" IsReadOnly="True" TextChanged="Timer_txtbx_TextChanged" BorderBrush="{x:Null}"/>
-            <Button x:Name="Pause_btn" Content="Pause (P)" Canvas.Left="737" Canvas.Top="15" Width="135" Height="50" FontSize="22" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Pauses the stopwatch" Background="#FFF7E6"/>
-            <CheckBox x:Name="nightmode_chkbx" Content="Night mode" Canvas.Left="786" Canvas.Top="82" Checked="CheckBox_Checked" Height="30" Unchecked="CheckBox_Unchecked" FontSize="22" Width="146"/>
+            <Button x:Name="Back_btn" Content="Save &amp; Quit" HorizontalAlignment="Left" Click="Back_Button_Click" Width="200" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Height="65" Canvas.Left="750" Canvas.Top="685" FontSize="22" ToolTip="Saves and exits to the Main Menu" Background="#FFF7E6" FontFamily="Verdana"/>
+            <Button x:Name="del_btn" Content="Delete (Del)" FontSize="24" FontFamily="Verdana" Click="Delete_Button_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Height="65" Canvas.Left="750" Canvas.Top="397" Width="200" ToolTip="Deletes a number from the selected cell" Background="#FFF7E6"/>
+            <Button x:Name="newPuzzle_btn" Content="New Puzzle" Canvas.Left="750" Canvas.Top="587" Width="200" Height="65" FontSize="22" Click="New_Btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Starts a new Sudoku game" Background="#FFF7E6" FontFamily="Verdana"/>
+            <Button x:Name="Help_btn" Content="Help" Canvas.Left="885" Canvas.Top="7" Width="85" Height="65" Click="Help_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6" FontFamily="Verdana"/>
+            <Label x:Name="time_lbl" Content="Time: " Canvas.Left="452" Canvas.Top="7" Width="60" FontSize="20" FontFamily="Verdana"/>
+            <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" Canvas.Left="512" Canvas.Top="11" Width="90" FontSize="20" IsReadOnly="True" TextChanged="Timer_txtbx_TextChanged" BorderBrush="{x:Null}" FontFamily="Verdana"/>
+            <Button x:Name="Pause_btn" Content="Pause (P)" Canvas.Left="728" Canvas.Top="7" Width="135" Height="65" FontSize="22" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Pauses the stopwatch" Background="#FFF7E6" FontFamily="Verdana"/>
+            <CheckBox x:Name="nightmode_chkbx" Content="Night mode" Canvas.Left="786" Canvas.Top="82" Checked="CheckBox_Checked" Height="30" Unchecked="CheckBox_Unchecked" FontSize="22" Width="146" FontFamily="Verdana"/>
         </Canvas>
     </Border>
 </Window>

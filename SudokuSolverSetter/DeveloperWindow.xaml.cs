@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace SudokuSolverSetter
 {
@@ -45,7 +46,7 @@ namespace SudokuSolverSetter
             //Currently using pre-made sudoku puzzles found on sudokuwiki.org to develop my puzzle solver
             //Need to develop a method that takes a csv file/string of numbers and displays it as a puzzle
             #region Manual Puzzle Generation
-
+            /*
             Cell[][] cells = new Cell[9][];
             for (int t = 0; t < cells.Length; t++)
             { cells[t] = new Cell[9]; }
@@ -132,7 +133,7 @@ namespace SudokuSolverSetter
             //cells[8][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
             //cells[8][6] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
             //cells[8][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };*/
+            //cells[8][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
             #endregion Test Puzzle One
             #region Test Puzzle Two
             cells[0][0] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
@@ -381,7 +382,7 @@ namespace SudokuSolverSetter
             //cells[8][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
             //cells[8][6] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
             //cells[8][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][8] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };*/
+            //cells[8][8] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
             #endregion
             #region Test Puzzle Five
             //cells[0][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
@@ -476,20 +477,20 @@ namespace SudokuSolverSetter
                     {
                         cells[x][y].ReadOnly = true;
                     }
-                    
+
                 }
             }
-            
+
             SudokuGrid grid = new SudokuGrid()
             {
                 PuzzleID = 0,
                 Rows = cells
             };
-            
+            */
             #endregion
 
-            PopulateGrid(grid, txtBxList);
-            Clipboard.SetText(gen.SudokuToString(grid));
+            //PopulateGrid(grid, txtBxList);
+            //Clipboard.SetText(gen.SudokuToString(grid));
             //solve.Solver(grid);
             /*Tip for removing numbers.
             - Remove numbers till only one solution is possible. Then to make the puzzle more difficult, remove extra numbers and see if it is still solvable.
@@ -536,6 +537,7 @@ namespace SudokuSolverSetter
         {
             //Initialising objects
             PuzzleSolver solve = new PuzzleSolver();
+            PuzzleGenerator gen = new PuzzleGenerator();
             txtBxList = new List<TextBox>
             { x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
               x2y1g1, x2y2g1, x2y3g1, x2y4g2, x2y5g2, x2y6g2, x2y7g3, x2y8g3, x2y9g3,
@@ -567,7 +569,8 @@ namespace SudokuSolverSetter
                             Num = Convert.ToInt32(txtBxList[cellNum].Text),
                             BlockLoc = Convert.ToInt32(blockLoc),
                             XLocation = r,
-                            YLocation = c
+                            YLocation = c,
+                            ReadOnly = false
                         };
                     }
                     else
@@ -578,11 +581,57 @@ namespace SudokuSolverSetter
                             Num = Convert.ToInt32(txtBxList[cellNum].Text),
                             BlockLoc = Convert.ToInt32(blockLoc),
                             XLocation = r,
-                            YLocation = c
+                            YLocation = c,
+                            ReadOnly = true
                         };
                     }
 
                     cellNum++;
+                }
+            }
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    int nbCounter = 0;//nbCounter is neighbourcounter
+                    gridSolve.Rows[i][j].NeighbourCells = new List<Cell[]>
+                    {
+                        new Cell[8],
+                        new Cell[8],
+                        new Cell[8]
+                    };
+                    for (int k = 0; k < 9; k++)
+                    {
+                        if (j != k)
+                        {
+                            gridSolve.Rows[i][j].NeighbourCells[0][nbCounter] = gridSolve.Rows[i][k];//add neighbour in i
+                            nbCounter++;
+                        }
+                    }
+                    nbCounter = 0;
+                    for (int l = 0; l < 9; l++)
+                    {
+                        if (l != i)
+                        {
+                            gridSolve.Rows[i][j].NeighbourCells[1][nbCounter] = gridSolve.Rows[l][j];//add neighbour in column
+                            nbCounter++;
+                        }
+                    }
+                    nbCounter = 0;
+                    int[] blockIndexes = gen.BlockIndexGetter(gridSolve.Rows[i][j].BlockLoc);
+
+                    for (int x = blockIndexes[0]; x < blockIndexes[0] + 3; x++)
+                    {
+                        for (int y = blockIndexes[1]; y < blockIndexes[1] + 3; y++)
+                        {
+                            if (gridSolve.Rows[x][y] != gridSolve.Rows[i][j])
+                            {
+                                gridSolve.Rows[i][j].NeighbourCells[2][nbCounter] = gridSolve.Rows[x][y];//add neighbour in block
+                                nbCounter++;
+                            }
+                        }
+                    }
                 }
             }
             bool bruteForce = false;
@@ -678,6 +727,32 @@ namespace SudokuSolverSetter
         {
             CreatePuzzles createPuzzles = new CreatePuzzles();
             createPuzzles.Show();
+        }
+
+        private void Import_Click(object sender, RoutedEventArgs e)
+        {
+            string importStr = Import_textbox.Text;
+            Regex rgx = new Regex(@"[1-9]");
+            for (int i = 0; i < 81; i++)
+            {
+                if (!rgx.IsMatch(importStr[i].ToString()))
+                {
+                    txtBxList[i].FontSize = 12;
+                    txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
+                    txtBxList[i].FontWeight = FontWeights.Normal;
+                }
+                else
+                {
+                    txtBxList[i].FontSize = 36;
+                    txtBxList[i].Text = importStr[i].ToString();
+                    txtBxList[i].FontWeight = FontWeights.SemiBold;
+                }
+            }
+        }
+
+        private void GeneratePuzzle_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
