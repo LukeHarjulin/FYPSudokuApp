@@ -61,6 +61,9 @@
     <Compile Include="CreatePuzzles.xaml.cs">
       <DependentUpon>CreatePuzzles.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ImportPuzzle.xaml.cs">
+      <DependentUpon>ImportPuzzle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -74,6 +77,10 @@
     <Compile Include="PuzzleGenerator.cs" />
     <Compile Include="PuzzleSolver.cs" />
     <Page Include="CreatePuzzles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImportPuzzle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -130,6 +137,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon_v3.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="puzzles.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

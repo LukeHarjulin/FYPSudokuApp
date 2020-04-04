@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
+using System.Diagnostics;
 
 namespace SudokuSolverSetter
 {
@@ -31,60 +32,83 @@ namespace SudokuSolverSetter
             
         }
 
+        private char[][] SudokuGridToArray(SudokuGrid grid, char[][] puzzle)
+        {
+            
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    puzzle[x][y] = grid.Rows[x][y].Num;
+                }
+            }
+            return puzzle;
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
             PuzzleGenerator generator = new PuzzleGenerator();
-            try
+            PuzzleSolver solver = new PuzzleSolver();
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            long averageTime = 0;
+            int numPuzzles = int.Parse(Number_List_combo.SelectedItem.ToString());
+
+            for (int i = 0; i < numPuzzles; i++)
             {
-                for (int i = 0; i < Number_List_combo.Items.Count; i++)
+                sudokuPuzzles.Add(generator.Setter());
+                char[][] puzzle = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+                for (int x = 0; x < 10; x++)
                 {
-                    sudokuPuzzles.Add(generator.Setter());
+                    puzzle = SudokuGridToArray(sudokuPuzzles[i], puzzle);
+                    watch = Stopwatch.StartNew();
+                    solver.BruteForceSolve_array(puzzle, 0, 0, 0);
+                    watch.Stop();
+                    averageTime += watch.ElapsedMilliseconds;
                 }
+
             }
-            catch (Exception exc)
-            {
-                throw;
-            }
+            
             
             using (XmlWriter writer = XmlWriter.Create("puzzles.xml"))
             {
+                
                 writer.WriteStartDocument();
-                writer.WriteStartElement("SudokuPuzzles");
-                writer.WriteStartElement("UnsolvedPuzzles");
+                writer.WriteStartElement("\r\nSudokuPuzzles");
+                writer.WriteStartElement("\r\nUnsolvedPuzzles");
 
                 if (Difficulty_ComboBox.SelectedIndex == 0)
                 {
-                    writer.WriteStartElement("Difficulty_1");
+                    writer.WriteStartElement("\r\nDifficulty_1");
                     foreach (SudokuGrid puzzle in sudokuPuzzles)
                     {
-                        writer.WriteStartElement("Puzzle");
-                        writer.WriteElementString("ID", "1");
-                        writer.WriteElementString("PuzzleString", generator.SudokuToString(puzzle));
+                        writer.WriteStartElement("\r\nPuzzle");
+                        writer.WriteElementString("\r\nID", puzzle.PuzzleID.ToString());
+                        writer.WriteElementString("\r\nPuzzleString", generator.SudokuToString(puzzle));
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement();
                 }
                 else if (Difficulty_ComboBox.SelectedIndex == 1)
                 {
-                    writer.WriteStartElement("Difficulty_2");
+                    writer.WriteStartElement("\r\nDifficulty_2");
                     foreach (SudokuGrid puzzle in sudokuPuzzles)
                     {
-                        writer.WriteStartElement("Puzzle");
-                        writer.WriteElementString("ID", "1");
-                        writer.WriteElementString("PuzzleString", generator.SudokuToString(puzzle));
+                        writer.WriteStartElement("\r\nPuzzle");
+                        writer.WriteElementString("\r\nID", puzzle.PuzzleID.ToString());
+                        writer.WriteElementString("\r\nPuzzleString", generator.SudokuToString(puzzle));
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement();
                 }
                 else
                 {
-                    writer.WriteStartElement("Difficulty_3");
+                    writer.WriteStartElement("\r\nDifficulty_3");
                     foreach (SudokuGrid puzzle in sudokuPuzzles)
                     {
-                        writer.WriteStartElement("Puzzle");
-                        writer.WriteElementString("ID", "1");
-                        writer.WriteElementString("PuzzleString", generator.SudokuToString(puzzle));
+                        writer.WriteStartElement("\r\nPuzzle");
+                        writer.WriteElementString("\r\nID", puzzle.PuzzleID.ToString());
+                        writer.WriteElementString("\r\nPuzzleString", generator.SudokuToString(puzzle));
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement();

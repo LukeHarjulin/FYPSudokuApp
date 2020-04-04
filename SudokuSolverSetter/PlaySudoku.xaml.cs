@@ -85,7 +85,7 @@ namespace SudokuSolverSetter
             
             DeveloperWindow devWin = new DeveloperWindow();
             PopulateGrid(grid, txtBxList);
-            Clipboard.SetText(gen.SudokuToString(grid));
+            //Clipboard.SetText(gen.SudokuToString(grid));
 
             StartTimer();
             

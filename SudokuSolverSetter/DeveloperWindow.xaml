@@ -99,8 +99,7 @@
                 <TextBox x:Name="x9y8g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <TextBox x:Name="x9y9g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             </UniformGrid>
-            <Button x:Name="Create_Store_Puzzles_btn" Content="Create Puzzles" Canvas.Left="15" Canvas.Top="355" Width="120" Height="50" Click="Create_Store_Puzzles_btn_Click"/>
-            <TextBox x:Name="Import_textbox" Height="23" Canvas.Left="15" TextWrapping="Wrap" Canvas.Top="275" Width="120" Margin="0"/>
+            <Button x:Name="Create_Store_Puzzles_btn" Content="Create Puzzles" Canvas.Left="15" Canvas.Top="275" Width="120" Height="50" Click="Create_Store_Puzzles_btn_Click"/>
         </Canvas>
     </Border>
 </Window>

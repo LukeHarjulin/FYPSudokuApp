@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Threading;
 using System.Text.RegularExpressions;
 
 namespace SudokuSolverSetter
@@ -22,14 +12,16 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class DeveloperWindow : Window
     {
-        List<TextBox> txtBxList = new List<TextBox>();
-        MainWindow homePage = new MainWindow();
-        
+        private List<TextBox> txtBxList = new List<TextBox>();
+        private MainWindow homePage = new MainWindow();
+        private PuzzleGenerator gen = new PuzzleGenerator();
+        private PuzzleSolver solve = new PuzzleSolver();
+        private string currentTime = "";
+
         public DeveloperWindow()
         {
             InitializeComponent();
-            PuzzleGenerator gen = new PuzzleGenerator();
-            PuzzleSolver solve = new PuzzleSolver();
+            
             //Create list of all the cells so that they can be transformed
             txtBxList = new List<TextBox> {  x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
                                              x2y1g1, x2y2g1, x2y3g1, x2y4g2, x2y5g2, x2y6g2, x2y7g3, x2y8g3, x2y9g3,
@@ -565,8 +557,8 @@ namespace SudokuSolverSetter
                         txtBxList[cellNum].Text = "0";
                         gridSolve.Rows[r][c] = new Cell()
                         {
-                            Candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
-                            Num = Convert.ToInt32(txtBxList[cellNum].Text),
+                            Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' },
+                            Num = '0',
                             BlockLoc = Convert.ToInt32(blockLoc),
                             XLocation = r,
                             YLocation = c,
@@ -577,8 +569,8 @@ namespace SudokuSolverSetter
                     {
                         gridSolve.Rows[r][c] = new Cell()
                         {
-                            Candidates = new List<int> { },
-                            Num = Convert.ToInt32(txtBxList[cellNum].Text),
+                            Candidates = new List<char> { },
+                            Num = txtBxList[cellNum].Text[0],
                             BlockLoc = Convert.ToInt32(blockLoc),
                             XLocation = r,
                             YLocation = c,
@@ -639,10 +631,13 @@ namespace SudokuSolverSetter
             {
                 bruteForce = true;
             }
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             gridSolve = solve.Solver(gridSolve, bruteForce);
+            watch.Stop();
+            currentTime = "Time taken to solve: " + watch.Elapsed.ToString();
             PopulateGrid(gridSolve, txtBxList);
+            MessageBox.Show(currentTime);
         }
-
         private void B_Solve1by1_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve in increments (e.g. once a value is placed into a cell, the solver stops)
         {
             //Initialising objects
@@ -671,15 +666,14 @@ namespace SudokuSolverSetter
                     string blockLoc = txtBxList[cellNum].Name[5].ToString();
                     if (txtBxList[cellNum].Text.Length > 1)
                     {
-                        List<string> passCandiList = new List<string>();
-                        passCandiList.AddRange(txtBxList[cellNum].Text.Split(' '));
-                        passCandiList.Remove("");
-                        List<int> intPassCandiList = passCandiList.Select(int.Parse).ToList();
+                        List<char> candiList = new List<char>();
+                        candiList.AddRange(txtBxList[cellNum].Text.ToCharArray());
+                        candiList.RemoveAll(item => item == ' ');
                         gridSolve.Rows[r][c] = new Cell()
                         {
 
-                            Candidates = intPassCandiList,
-                            Num = 0,
+                            Candidates = candiList,
+                            Num = '0',
                             BlockLoc = Convert.ToInt32(blockLoc),
                             XLocation = r,
                             YLocation = c
@@ -689,8 +683,8 @@ namespace SudokuSolverSetter
                     {
                         gridSolve.Rows[r][c] = new Cell()
                         {
-                            Candidates = new List<int> { },
-                            Num = Convert.ToInt32(txtBxList[cellNum].Text),
+                            Candidates = new List<char> { },
+                            Num = txtBxList[cellNum].Text[0],
                             BlockLoc = Convert.ToInt32(blockLoc),
                             XLocation = r,
                             YLocation = c
@@ -731,28 +725,36 @@ namespace SudokuSolverSetter
 
         private void Import_Click(object sender, RoutedEventArgs e)
         {
-            string importStr = Import_textbox.Text;
-            Regex rgx = new Regex(@"[1-9]");
-            for (int i = 0; i < 81; i++)
+            ImportPuzzle importPuzzle = new ImportPuzzle();
+            
+            if (importPuzzle.ShowDialog() == true)
             {
-                if (!rgx.IsMatch(importStr[i].ToString()))
+                string importStr = importPuzzle.puzzleStr;
+                Regex rgx = new Regex(@"[1-9]");
+                for (int i = 0; i < 81; i++)
                 {
-                    txtBxList[i].FontSize = 12;
-                    txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
-                    txtBxList[i].FontWeight = FontWeights.Normal;
-                }
-                else
-                {
-                    txtBxList[i].FontSize = 36;
-                    txtBxList[i].Text = importStr[i].ToString();
-                    txtBxList[i].FontWeight = FontWeights.SemiBold;
+                    if (!rgx.IsMatch(importStr[i].ToString()))
+                    {
+                        txtBxList[i].FontSize = 12;
+                        txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
+                        txtBxList[i].FontWeight = FontWeights.Normal;
+                    }
+                    else
+                    {
+                        txtBxList[i].FontSize = 36;
+                        txtBxList[i].Text = importStr[i].ToString();
+                        txtBxList[i].FontWeight = FontWeights.SemiBold;
+                    }
                 }
             }
+            
         }
 
         private void GeneratePuzzle_Click(object sender, RoutedEventArgs e)
         {
-
+            SudokuGrid grid = gen.Setter();//Calling the automated puzzle generator method to create a puzzle
+            txtBxList = PopulateGrid(grid, txtBxList);
+            Clipboard.SetText(gen.SudokuToString(grid));
         }
     }
 }
