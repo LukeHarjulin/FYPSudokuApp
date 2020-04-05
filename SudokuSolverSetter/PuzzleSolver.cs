@@ -10,47 +10,221 @@ namespace SudokuSolverSetter
     public class PuzzleSolver
     {
         #region Full Solver method
-        public SudokuGrid Solver(SudokuGrid grid, bool bruteForce)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="method">method '1' is human-strategy solver. '2' is bruteforce solver. '3' is bruteforce solver using char[][]</param>
+        /// <returns></returns>
+        public bool Solver(SudokuGrid grid, char method)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
         {
-            DeveloperWindow mainWindow = new DeveloperWindow();
             bool changeMade = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
              *  The if and elses are to make the process faster of solving faster, 
                 as it ensures that it tries the easiest less computationally heavy methods first before the more complex methods.
             */
-            if (!bruteForce)
+            if (method == '1')
             {
                 do
                 {
-                    if (FindNakedNumbers(grid))
+                    if (FindNakedSingles(grid))
                     {
                         changeMade = true;
                     }
-                    else if (FindHiddenNumbers(grid))
+                    else if (FindHiddenSingles(grid))
                     {
                         changeMade = true;
                     }
-                    //More methods to add
+                    else if (FindHiddenPair(grid))
+                    {
+                        changeMade = true;
+                    }                    
                     else if (FindXWing(grid))
                     {
                         changeMade = true;
                     }
+                    else if (FindUniqueRectangleType1(grid))
+                    {
+                        changeMade = true;
+                    }
+                    //More methods to add
                     else
                     {
                         changeMade = false;
                     }
                 } while (changeMade);
             }
-            else
+            else if (method == '2')
             {
                 BruteForceSolve(grid, 0, 0, 0);
             }
+            PuzzleGenerator gen = new PuzzleGenerator();
+            return gen.CheckIfSolved(grid);
 
-
-            return grid;
         }
 
+        private bool FindNakedSingles(SudokuGrid grid)
+        {
+            bool changeMade = false, escapeLoop = true;
+            do
+            {
+                escapeLoop = true;
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        if (grid.Rows[i][j].Num == '0')
+                        {
+
+                            for (int n = 0; n < 8; n++)
+                            {
+                                if (grid.Rows[i][j].Candidates.Contains(grid.Rows[i][j].NeighbourCells[0][n].Num))
+                                {
+                                    grid.Rows[i][j].Candidates.Remove(grid.Rows[i][j].NeighbourCells[0][n].Num);
+                                    changeMade = true;
+                                    escapeLoop = false;
+                                }
+                                if (grid.Rows[i][j].Candidates.Contains(grid.Rows[i][j].NeighbourCells[1][n].Num))
+                                {
+                                    grid.Rows[i][j].Candidates.Remove(grid.Rows[i][j].NeighbourCells[1][n].Num);
+                                    changeMade = true;
+                                    escapeLoop = false;
+                                }
+                                if (grid.Rows[i][j].Candidates.Contains(grid.Rows[i][j].NeighbourCells[2][n].Num))
+                                {
+                                    grid.Rows[i][j].Candidates.Remove(grid.Rows[i][j].NeighbourCells[2][n].Num);
+                                    changeMade = true;
+                                    escapeLoop = false;
+                                }
+                            }
+                            if (grid.Rows[i][j].Candidates.Count == 1)
+                            {
+                                grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
+                                changeMade = true;
+                                escapeLoop = false;
+                            }
+
+                        }
+                    }
+                }
+            } while (!escapeLoop);
+            
+            return changeMade;
+        }
+        private bool FindHiddenSingles(SudokuGrid grid)
+        {
+            bool changeMade = false, escapeLoop = true; ;
+            do
+            {
+                escapeLoop = true;
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        if (grid.Rows[i][j].Num == '0')
+                        {
+                            List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                            for (int index = 0; index < 3 && grid.Rows[i][j].Num == '0'; index++)
+                            {
+                                foreach (char candidate in grid.Rows[i][j].Candidates)
+                                {
+                                    int counter = 0;
+                                    foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
+                                    {
+                                        if (neighbour.Num == candidate || neighbour.Num == '0' && neighbour.Candidates.Contains(candidate))
+                                        {
+                                            if (++counter > 0)
+                                                break;
+                                        }
+                                    }
+                                    if (counter == 0)
+                                    {
+                                        grid.Rows[i][j].Num = candidate;
+                                        changeMade = true;
+                                        escapeLoop = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } while (!escapeLoop);
+            
+            return changeMade;
+        }
+        /// <summary>
+        /// Hidden Pairs: 
+        /// -Iterate through cells till an empty cell with a candidate list count of greater than 2 is found.
+        /// -Search through each group (row/column/block) and iterate over each candidate of the focused cell
+        /// -If a candidate is only found once in the focused cell's currently focused group, then add the neighbour to a list of cells and the candidate to list of candidates
+        /// -If the cell list magnitude is > 1, iterate over the cell list.
+        /// -If two cells in that list are the same, you can safely say a hidden pair is found. 
+        /// -Then remove all candidates that the two cells do not have in common
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindHiddenPair(SudokuGrid grid)
+        {
+            bool changeMade = false, escapeLoop = true;
+            do
+            {
+                escapeLoop = true;
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        if (grid.Rows[i][j].Num != '0' && grid.Rows[i][j].Candidates.Count > 2)
+                        {
+                            for (int index = 0; index < 3 && grid.Rows[i][j].Candidates.Count > 2; index++)
+                            {
+                                List<Cell> cellList = new List<Cell>(9);
+                                List<char> candis = new List<char>(9);
+                                foreach (char candidate in grid.Rows[i][j].Candidates)
+                                {
+                                    int counter = 0;
+                                    foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
+                                    {
+                                        if (neighbour.Candidates.Contains(candidate))
+                                        {
+                                            if (++counter > 1)
+                                            {
+                                                cellList.RemoveAt(cellList.Count - 1);
+                                                break;
+                                            }
+                                            cellList.Add(neighbour);
+                                        }
+                                    }
+                                    if (counter == 1)//find a pair
+                                    {
+                                        candis.Add(candidate);
+                                    }
+                                }
+                                if (cellList.Count > 1)
+                                {
+                                    for (int c1 = 0; c1 < cellList.Count; c1++)
+                                    {
+                                        for (int c2 = c1 + 1; c2 < cellList.Count; c2++)
+                                        {
+                                            if (cellList[c1] == cellList[c2])
+                                            {
+                                                grid.Rows[i][j].Candidates.RemoveAll(candidate => candidate != candis[c1] && candidate != candis[c2]);//Removes all candidates but then common candidates
+                                                cellList[c2].Candidates.RemoveAll(candidate => candidate != candis[c1] && candidate != candis[c2]);
+                                                changeMade = true;
+                                                escapeLoop = false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } while (!escapeLoop);
+            
+            return changeMade;
+        }
 
         private bool FindNakedNumbers(SudokuGrid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
         {
@@ -472,7 +646,7 @@ namespace SudokuSolverSetter
          * Reason: A sudoku puzzle cannot contain four conjugate pairs as there can only be one solution to the puzzle. 
          * If numbers are interchangeable, that means there is more than one solution
         */
-        public bool FindUniqueRectangle(SudokuGrid grid, Cell pair1, Cell pair2)
+        public bool FindUniqueRectangleType1(SudokuGrid grid)
         {
             bool changeMade = false;
 
@@ -480,9 +654,48 @@ namespace SudokuSolverSetter
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    if (true)
+                    if (grid.Rows[i][j].Candidates.Count == 2 && grid.Rows[i][j].Num == '0')
                     {
-
+                        for (int bn = 0; bn < 8; bn++)//bn=block neighbour
+                        {
+                            if (grid.Rows[i][j].NeighbourCells[2][bn].Num == '0' && grid.Rows[i][j].NeighbourCells[2][bn].Candidates == grid.Rows[i][j].Candidates && grid.Rows[i][j].NeighbourCells[2][bn].YLocation == j)//if true, start searching for UR's across from the cells
+                            {
+                                //grid.Rows[i][j] is cellA
+                                Cell cellB = grid.Rows[i][j].NeighbourCells[2][bn];
+                                for (int rn = 0; rn < 8; rn++)//rn = row neighbour
+                                {
+                                    if (grid.Rows[i][j].NeighbourCells[0][rn].Num == '0' && grid.Rows[i][j].NeighbourCells[0][rn].Candidates == grid.Rows[i][j].Candidates)
+                                    {
+                                        Cell cellC = grid.Rows[i][j].NeighbourCells[0][rn];
+                                        if (grid.Rows[i][cellC.YLocation].Candidates.Contains(cellC.Candidates[0]) && grid.Rows[i][cellC.YLocation].Candidates.Contains(cellC.Candidates[1]))
+                                        {
+                                            grid.Rows[i][cellC.YLocation].Candidates.Remove(cellC.Candidates[0]);
+                                            grid.Rows[i][cellC.YLocation].Candidates.Remove(cellC.Candidates[1]);
+                                            changeMade = true;
+                                        }
+                                    }
+                                }
+                            }
+                            else if (grid.Rows[i][j].NeighbourCells[2][bn].Candidates == grid.Rows[i][j].Candidates && grid.Rows[i][j].NeighbourCells[2][bn].XLocation == i)//if true, start searching for UR's in the Y axis
+                            {
+                                Cell neighbourB = grid.Rows[i][j].NeighbourCells[2][bn];
+                                //grid.Rows[i][j] is cellA
+                                Cell cellB = grid.Rows[i][j].NeighbourCells[2][bn];
+                                for (int cn = 0; cn < 8; cn++)//rn = row neighbour
+                                {
+                                    if (grid.Rows[i][j].NeighbourCells[1][cn].Num == '0' && grid.Rows[i][j].NeighbourCells[1][cn].Candidates == grid.Rows[i][j].Candidates)
+                                    {
+                                        Cell cellC = grid.Rows[i][j].NeighbourCells[1][cn];
+                                        if (grid.Rows[cellC.XLocation][j].Candidates.Contains(cellC.Candidates[0]) && grid.Rows[cellC.XLocation][j].Candidates.Contains(cellC.Candidates[1]))
+                                        {
+                                            grid.Rows[cellC.XLocation][j].Candidates.Remove(cellC.Candidates[0]);
+                                            grid.Rows[cellC.XLocation][j].Candidates.Remove(cellC.Candidates[1]);
+                                            changeMade = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -636,7 +849,7 @@ namespace SudokuSolverSetter
             return false;
         }
         #endregion
-        #region Temporary Solver used in puzzle generator
+
         public int SolveACell(int[] position, SudokuGrid grid)//Used in the generator - unfinshied!
         {
             int cellNum = 0;
@@ -659,7 +872,6 @@ namespace SudokuSolverSetter
             }
             return cellNum;
         }
-        #endregion
         #region Solver for Solving Cell by Cell button
         public SudokuGrid SolveCellByCell(SudokuGrid grid)
         {
@@ -1153,154 +1365,5 @@ namespace SudokuSolverSetter
             return false;//gets hit if each brute force attempt with each 'candidate' returns false in the foreach
         }
         
-        public bool RemoveCands_array(char[][] grid, int row, int col, List<char> candidates)
-        {
-            PuzzleGenerator gen = new PuzzleGenerator();
-            int blockNumber = 0;
-            int[] indexes = new int[2];
-            blockNumber = (row / 3) * 3 + (col / 3) + 1;
-            indexes = gen.BlockIndexGetter(blockNumber);
-            for (int i = 0; i < 9; i++)
-            {
-                if (candidates.Contains(grid[row][i]) && i != col)
-                {
-                    candidates.Remove(grid[row][i]);
-                }
-                if (candidates.Contains(grid[i][col]) && i != row)
-                {
-                    candidates.Remove(grid[i][col]);
-                }
-                
-                if (candidates.Contains(grid[indexes[0]][indexes[1]]) && indexes[0] != row && indexes[1] != col)
-                {
-                    candidates.Remove(grid[indexes[0]][indexes[1]]);
-                }
-                indexes[1]++;
-                if (indexes[1] == 3 || indexes[1] == 6 || indexes[1] == 9)
-                {
-                    indexes[0]++;
-                    indexes[1] -= 3;
-
-                }
-            }
-            if (candidates.Count == 1)
-            {
-                grid[row][col] = candidates[0];
-            }
-            return true;
-        }
-        /// <summary>
-        /// This brute force solver uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
-        /// It initially starts from the top left cell and, with each recursive instance, looks at the next cell over in the current row.
-        /// Once the last cell in the row is reached, the column counter is incremented and the row counter is set back to 0. 
-        /// For example, if [i,j] is a cell, when looking at cell [0,8], the next cell to be looked at is [1,0].
-        /// </summary>
-        /// <param name="grid">Sudoku grid that is passed into and mutated in the method</param>
-        /// <param name="row">Current row number being examined in this instance of the method</param>
-        /// <param name="col">Current column number being examined in this instance of the method</param>
-        /// <param name="variator">The value of this changes whether the candidate list is reversed ('1') or not ('0')</param>
-        /// <returns>Returns true if solver completes puzzle with all values in the correct place. 
-        /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
-        public bool BruteForceSolve_array(char[][] grid, int row, int col, byte variator)
-        {
-            PuzzleGenerator gen = new PuzzleGenerator();
-
-            if (col == 9 && row == 9)//If somehow the method tries to look at this non-existent cell, this catches the exception
-            {
-                if (gen.CheckIfSolved_array(grid))
-                {
-                    return true;
-                }
-                else
-                {
-                    grid[--row][--col] = '0';
-                    return false;
-                }
-            }
-
-            if (grid[row][col] != '0')
-            {
-                bool emptyCell = false;
-                do//Searches for next empty cell
-                {
-                    if (++col == 9)
-                    {
-                        if (++row == 9)
-                        {
-                            if (gen.CheckIfSolved_array(grid))
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                grid[--row][--col] = '0';
-                                return false;
-                            }
-                        }
-                        else
-                            col = 0;
-
-                    }
-                    if (grid[row][col] == '0')
-                        emptyCell = true;
-                } while (!emptyCell);
-            }
-            List<char> candidates = new List<char>(9);
-            if (variator == 0)
-                candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-            else if (variator == 1)
-                candidates = new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' };
-            else if (variator == 2)
-                candidates = gen.Shuffler(new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' });
-            //Reversed list is for checking for multiple solutions or shuffle if given the generating
-            if (!RemoveCands_array(grid, row, col, candidates))//if it returns false, candidates count must be 0 so a contradiction is found
-            {
-                grid[row][col] = '0';
-                return false;
-            }
-
-            int nextRow = row, nextCol = col;
-            if (++nextCol == 9)//increments the nextCol value which is used in conjunction with nextRow to look at the next cell in the sequence. If it is 9, it must be reset to 0
-            {
-                if (++nextRow == 9)//Currently looking at cell 81 in grid
-                {
-                    grid[row][col] = candidates[0];//Sets the last cell to be the only value possible, then the solution is checked.
-                    if (gen.CheckIfSolved_array(grid))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        grid[row][col] = '0';//cell value must be set to 0 to backtrack
-                        return false;
-                    }
-                }
-                else nextCol = 0;
-            }
-            if (grid[row][col] == '0')
-            {
-                foreach (char candidate in candidates)//iterates through each candidate value, assigning it to the current cell number.  
-                {
-                    grid[row][col] = candidate;
-                    //A new instance of BruteForceSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
-                    if (BruteForceSolve_array(grid, nextRow, nextCol, variator))
-                        return true;
-                }
-            }
-            else
-            {
-                //If the current cell contains a number found from a naked single strategy,
-                //then it is dismissed and a new instance of BruteForceSolver is called and is provided with the next cell coordinates
-                if (BruteForceSolve_array(grid, nextRow, nextCol, variator))
-                    return true;
-                else
-                {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
-                    grid[row][col] = '0';
-                    return false;
-                }
-            }
-            grid[row][col] = '0';//cell value must be set to 0 to backtrack
-            return false;//gets hit if each brute force attempt with each 'candidate' returns false in the foreach
-        }
     }
 }

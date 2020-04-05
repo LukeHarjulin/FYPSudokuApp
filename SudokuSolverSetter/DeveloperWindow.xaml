@@ -9,14 +9,13 @@
         Title="Devloper Window" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
     <Border Padding="10">
         <Canvas>
-            <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="90" Height="25"/>
-            <CheckBox x:Name="BruteForceChckBx" Content="Bruteforce?" Checked="BruteForceChckBx_Checked" HorizontalAlignment="Center" VerticalAlignment="Center" Width="115" Canvas.Left="15" Canvas.Top="45" Height="20" FontSize="18"/>
-            <Button x:Name="b_Solve" Content="Solve" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="70" Height="45"/>
-            <Button x:Name="b_Solve1by1" Content="Solve cell by cell" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="120" Height="50"/>
-            <Button x:Name="Generate_Puzzle" Content="Generate" Click="GeneratePuzzle_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="175" Height="45"/>
-            <Button x:Name="Import_Puzzle" Content="Import" Click="Import_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="15" Canvas.Top="225" Height="45"/>
+            <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="90" Height="25" FontSize="16"/>
+            <Button x:Name="b_Solve" Content="Solve using objects" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="160" Canvas.Left="10" Canvas.Top="98" Height="50" FontSize="14"/>
+            <Button x:Name="b_Solve1by1" Content="Solve cell by cell" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160" Canvas.Left="10" Canvas.Top="153" Height="50" FontSize="14"/>
+            <Button x:Name="Generate_Puzzle" Content="Generate" Click="GeneratePuzzle_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="435" Canvas.Top="10" Height="45" FontSize="14"/>
+            <Button x:Name="Import_Puzzle" Content="Import" Click="Import_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="315" Canvas.Top="10" Height="45" FontSize="14"/>
 
-            <UniformGrid x:Name="SudokuGrid" Background="White" Height="630" Width="630" Canvas.Left="160" Canvas.Top="70">
+            <UniformGrid x:Name="SudokuGrid" Background="White" Height="630" Width="630" Canvas.Left="0" Canvas.Top="0" Margin="175,60,100,0" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBox x:Name="x1y1g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="0"/>
                 <TextBox x:Name="x1y2g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <TextBox x:Name="x1y3g1" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
@@ -99,7 +98,12 @@
                 <TextBox x:Name="x9y8g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <TextBox x:Name="x9y9g9" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             </UniformGrid>
-            <Button x:Name="Create_Store_Puzzles_btn" Content="Create Puzzles" Canvas.Left="15" Canvas.Top="275" Width="120" Height="50" Click="Create_Store_Puzzles_btn_Click"/>
+            <Button x:Name="Create_Store_Puzzles_btn" Content="Create Puzzles" Canvas.Left="555" Canvas.Top="10" Width="120" Height="45" Click="Create_Store_Puzzles_btn_Click" FontSize="14"/>
+            <Label Content="" Canvas.Left="15" Canvas.Top="37"/>
+            <Button x:Name="Brute_Solve_char" Content="Brute-force solver using char[][]" Click="BruteSolve_char_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="160" Canvas.Left="10" Canvas.Top="263" Height="50" FontSize="11"/>
+            <Button x:Name="Brute_Solve_Obj" Content="Brute-force solver using objects" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="160" Canvas.Left="10" Canvas.Top="208" Height="50" FontSize="11"/>
+            <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16" Canvas.Left="120" Canvas.Top="68"/>
+            <Label Content="Number of solves:" Canvas.Left="10" Canvas.Top="67"/>
         </Canvas>
     </Border>
 </Window>

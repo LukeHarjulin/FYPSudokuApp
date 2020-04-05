@@ -322,7 +322,7 @@ namespace SudokuSolverSetter
 
 
             } while (removed <= 45 && changeMade);
-            return grid;//Debug and find out where the solution counter is going wrong. Solution finder doesn't work perfectly, occasionally produces puzzles with multiple solutions. FIX!
+            return grid;
         }
 
         private SudokuGrid RestartPuzzle(SudokuGrid grid, char[][] sudokuArray)
@@ -836,17 +836,17 @@ namespace SudokuSolverSetter
                     int[] indexes = new int[2];
                     for (int i = 0; i < 9; i++)
                     {
-                        if (grid[row][col] == grid[row][i] && i == col)
+                        if (grid[row][col] == grid[row][i] && i != col)
                         {
                             return false;
                         }
-                        if (grid[row][col] == grid[i][col] && i == row)
+                        if (grid[row][col] == grid[i][col] && i != row)
                         {
                             return false;
                         }
                         blockNumber = (row / 3) * 3 + (col / 3) + 1;
                         indexes = BlockIndexGetter(blockNumber);
-                        if (grid[row][col] == grid[indexes[0]][indexes[1]] && indexes[0] == row && indexes[1] == col)
+                        if (grid[row][col] == grid[indexes[0]][indexes[1]] && indexes[0] != row && indexes[1] != col)
                         {
                             return false;
                         }

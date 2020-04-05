@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 using System.Xml;
 using System.Diagnostics;
 
@@ -48,74 +50,84 @@ namespace SudokuSolverSetter
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
-            PuzzleGenerator generator = new PuzzleGenerator();
-            PuzzleSolver solver = new PuzzleSolver();
+            PuzzleGenerator gen = new PuzzleGenerator();
+            PuzzleSolverCharVer solver = new PuzzleSolverCharVer();
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            long averageTime = 0;
+            
             int numPuzzles = int.Parse(Number_List_combo.SelectedItem.ToString());
 
-            for (int i = 0; i < numPuzzles; i++)
+            try
             {
-                sudokuPuzzles.Add(generator.Setter());
-                char[][] puzzle = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
-                for (int x = 0; x < 10; x++)
-                {
-                    puzzle = SudokuGridToArray(sudokuPuzzles[i], puzzle);
-                    watch = Stopwatch.StartNew();
-                    solver.BruteForceSolve_array(puzzle, 0, 0, 0);
-                    watch.Stop();
-                    averageTime += watch.ElapsedMilliseconds;
-                }
-
-            }
-            
-            
-            using (XmlWriter writer = XmlWriter.Create("puzzles.xml"))
-            {
-                
-                writer.WriteStartDocument();
-                writer.WriteStartElement("\r\nSudokuPuzzles");
-                writer.WriteStartElement("\r\nUnsolvedPuzzles");
-
-                if (Difficulty_ComboBox.SelectedIndex == 0)
-                {
-                    writer.WriteStartElement("\r\nDifficulty_1");
-                    foreach (SudokuGrid puzzle in sudokuPuzzles)
-                    {
-                        writer.WriteStartElement("\r\nPuzzle");
-                        writer.WriteElementString("\r\nID", puzzle.PuzzleID.ToString());
-                        writer.WriteElementString("\r\nPuzzleString", generator.SudokuToString(puzzle));
-                        writer.WriteEndElement();
-                    }
-                    writer.WriteEndElement();
-                }
-                else if (Difficulty_ComboBox.SelectedIndex == 1)
-                {
-                    writer.WriteStartElement("\r\nDifficulty_2");
-                    foreach (SudokuGrid puzzle in sudokuPuzzles)
-                    {
-                        writer.WriteStartElement("\r\nPuzzle");
-                        writer.WriteElementString("\r\nID", puzzle.PuzzleID.ToString());
-                        writer.WriteElementString("\r\nPuzzleString", generator.SudokuToString(puzzle));
-                        writer.WriteEndElement();
-                    }
-                    writer.WriteEndElement();
+                XDocument doc;
+                string filename = @"SudokuPuzzles.xml";
+                if (File.Exists(filename))
+                {                    
+                    doc = XDocument.Load(filename);
                 }
                 else
                 {
-                    writer.WriteStartElement("\r\nDifficulty_3");
-                    foreach (SudokuGrid puzzle in sudokuPuzzles)
-                    {
-                        writer.WriteStartElement("\r\nPuzzle");
-                        writer.WriteElementString("\r\nID", puzzle.PuzzleID.ToString());
-                        writer.WriteElementString("\r\nPuzzleString", generator.SudokuToString(puzzle));
-                        writer.WriteEndElement();
-                    }
-                    writer.WriteEndElement();
+                    doc = new XDocument(
+                        new XDeclaration("1.0", "utf-8", "yes"),
+                        new XComment("This is a new comment"),
+                        new XElement("SudokuPuzzles",
+                            new XElement("NotStarted",
+                                new XElement("Beginner"),
+                                new XElement("Intermediate"),
+                                new XElement("Advanced")
+                                ),
+                            new XElement("Started",
+                                new XElement("Beginner"),
+                                new XElement("Intermediate"),
+                                new XElement("Advanced")
+                                ),
+                            new XElement("Complete",
+                                new XElement("Beginner"),
+                                new XElement("Intermediate"),
+                                new XElement("Advanced")
+                                )
+                            )
+                        );
                 }
                 
-                writer.WriteEndElement();
-                writer.WriteEndElement();
+                for (int i = 0; i < numPuzzles; i++)
+                {
+                    sudokuPuzzles.Add(gen.Setter());
+                    char[][] puzzle = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+                    
+                    long averageTime = 0;
+                    for (int x = 0; x < 10; x++)
+                    {
+                        puzzle = SudokuGridToArray(sudokuPuzzles[i], puzzle);
+                        watch = Stopwatch.StartNew();
+                        solver.BruteForceSolve(puzzle, 0, 0, 0);
+                        watch.Stop();
+                        averageTime += watch.ElapsedMilliseconds;
+                    }
+                    if(averageTime < 1000)
+                    {
+                        sudokuPuzzles[i].Difficulty = "Beginner";
+                    }
+                    else if (averageTime >= 1000 && averageTime < 2500)
+                    {
+                        sudokuPuzzles[i].Difficulty = "Intermediate";
+                    }
+                    else
+                    {
+                        sudokuPuzzles[i].Difficulty = "Advanced";
+                    }
+                    doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
+                        new XElement("puzzle",
+                            new XElement("ID", sudokuPuzzles[i].PuzzleID),
+                            new XElement("SudokuString", gen.SudokuToString(sudokuPuzzles[i]))
+                            )
+                        );
+                }
+                doc.Save(filename);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error with writing: " + ex);
+                throw;
             }
         }
     }

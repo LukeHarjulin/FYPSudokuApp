@@ -73,6 +73,7 @@
     <Compile Include="PlaySudoku.xaml.cs">
       <DependentUpon>PlaySudoku.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PuzzleSolverCharVer.cs" />
     <Compile Include="SudokuGrid.cs" />
     <Compile Include="PuzzleGenerator.cs" />
     <Compile Include="PuzzleSolver.cs" />
@@ -137,9 +138,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon_v3.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="puzzles.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

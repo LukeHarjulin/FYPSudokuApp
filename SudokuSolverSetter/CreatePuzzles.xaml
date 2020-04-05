@@ -11,12 +11,6 @@
         <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" Margin="229,89,0,0" VerticalAlignment="Top" Width="50" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16"/>
         <Label Content="Number of puzzles:" HorizontalAlignment="Left" Margin="55,80,0,0" VerticalAlignment="Top" Width="169" FontSize="18"/>
         <Label Content="Create &amp; Store More Puzzles" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" FontSize="22" Height="40" Width="290" AutomationProperties.IsOffscreenBehavior="FromClip"/>
-        <Label Content="Puzzle Difficulty:" HorizontalAlignment="Left" Margin="55,119,0,0" VerticalAlignment="Top" Width="143" FontSize="18"/>
-        <ComboBox x:Name="Difficulty_ComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Margin="203,123,0,0" IsReadOnly="True" Height="30" FontSize="16">
-            <ComboBoxItem IsSelected="True" Content="Beginner"/>
-            <ComboBoxItem Content="Intermediate"/>
-            <ComboBoxItem Content="Advanced"/>
-        </ComboBox>
 
     </Grid>
 </Window>

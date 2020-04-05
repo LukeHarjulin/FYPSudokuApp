@@ -21,7 +21,13 @@ namespace SudokuSolverSetter
         public DeveloperWindow()
         {
             InitializeComponent();
-            
+            Number_List_combo.Items.Add(1);
+            Number_List_combo.Items.Add(10);
+            Number_List_combo.Items.Add(25);
+            Number_List_combo.Items.Add(50);
+            Number_List_combo.Items.Add(100);
+            Number_List_combo.Items.Add(500);
+            Number_List_combo.Items.Add(1000);
             //Create list of all the cells so that they can be transformed
             txtBxList = new List<TextBox> {  x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
                                              x2y1g1, x2y2g1, x2y3g1, x2y4g2, x2y5g2, x2y6g2, x2y7g3, x2y8g3, x2y9g3,
@@ -496,7 +502,7 @@ namespace SudokuSolverSetter
             int y = 0;//column number
             for (int i = 0; i < m_txtBxList.Count; i++)
             {
-                if (grid.Rows[x][y].Num == 0) //0's are placeholders for when there is no value, so any 0's are turned into textboxes containing the candidate values.
+                if (grid.Rows[x][y].Num == '0') //0's are placeholders for when there is no value, so any 0's are turned into textboxes containing the candidate values.
                 {
                     m_txtBxList[i].FontSize = 12;
                     m_txtBxList[i].Text = "";
@@ -626,17 +632,47 @@ namespace SudokuSolverSetter
                     }
                 }
             }
-            bool bruteForce = false;
-            if (BruteForceChckBx.IsChecked == true)
+            char method = '1';
+            if (((Button)sender) == Brute_Solve_Obj)
             {
-                bruteForce = true;
+                method = '2';
             }
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            gridSolve = solve.Solver(gridSolve, bruteForce);
-            watch.Stop();
-            currentTime = "Time taken to solve: " + watch.Elapsed.ToString();
+            int iterations = int.Parse(Number_List_combo.SelectedItem.ToString());
+            string puzzleString = gen.SudokuToString(gridSolve);
+            double averageTime = 0;
+            bool solved = false;
+            for (int i = 0; i < iterations; i++)
+            {
+                if (i != 0)
+                {
+                    int counter = 0;
+                    for (int x = 0; x < 9; x++)
+                    {
+                        for (int y = 0; y < 9; y++)
+                        {
+                            gridSolve.Rows[x][y].Num = puzzleString[counter];
+                            counter++;
+                        }
+                    }
+                }                
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                solved = solve.Solver(gridSolve, method);
+                watch.Stop();
+                averageTime += watch.ElapsedMilliseconds;
+            }
+            averageTime = averageTime / iterations;
+            currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
+            
             PopulateGrid(gridSolve, txtBxList);
-            MessageBox.Show(currentTime);
+            if (solved)
+            {
+                MessageBox.Show("SOLVED\r\n" + currentTime);
+            }
+            else
+            {
+                MessageBox.Show("FAILED\r\n" + currentTime);
+            }
+
         }
         private void B_Solve1by1_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve in increments (e.g. once a value is placed into a cell, the solver stops)
         {
@@ -755,6 +791,79 @@ namespace SudokuSolverSetter
             SudokuGrid grid = gen.Setter();//Calling the automated puzzle generator method to create a puzzle
             txtBxList = PopulateGrid(grid, txtBxList);
             Clipboard.SetText(gen.SudokuToString(grid));
+        }
+
+        private void BruteSolve_char_Click(object sender, RoutedEventArgs e)
+        {
+            PuzzleSolverCharVer solver = new PuzzleSolverCharVer();
+            char[][] puzzle = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+            int counter = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (txtBxList[counter].Text.Length > 1 || txtBxList[counter].Text == "0" || txtBxList[counter].Text.Length == 0)
+                    {
+                        puzzle[i][j] = '0';
+                    }
+                    else
+                    {
+                        puzzle[i][j] = txtBxList[counter].Text[0];
+                    }
+                    counter++;
+                }
+            }
+            char method = '1';
+            if (((Button)sender) == Brute_Solve_char)
+            {
+                method = '2';
+            }
+            int iterations = int.Parse(Number_List_combo.SelectedItem.ToString());
+            char[][] puzzleTemp = new char[9][];
+            double averageTime = 0;
+            bool solved = false;
+            for (int i = 0; i < iterations; i++)
+            {
+                puzzleTemp = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+                for (int x = 0; x < 9; x++)
+                {
+                    for (int y = 0; y < 9; y++)
+                    {
+                        puzzleTemp[x][y] = puzzle[x][y];
+                    }
+                }
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                solved = solver.Solvers(puzzleTemp, '2');
+                watch.Stop();
+                averageTime += watch.ElapsedMilliseconds;
+            }
+            averageTime = averageTime / iterations;
+            currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
+            counter = 0;
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    if (puzzleTemp[x][y] != '0')
+                    {
+                        txtBxList[counter].FontSize = 36;
+                        txtBxList[counter].Text = puzzleTemp[x][y].ToString();
+                    }
+                    else//should never really happpen
+                    {
+                        txtBxList[counter].Text = "0";
+                    }
+                    counter++;
+                }
+            }
+            if (solved)
+            {
+                MessageBox.Show("SOLVED\r\n" + currentTime);
+            }
+            else
+            {
+                MessageBox.Show("FAILED\r\n" + currentTime);
+            }
         }
     }
 }
