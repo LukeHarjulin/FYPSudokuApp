@@ -510,6 +510,7 @@ namespace SudokuSolverSetter
                     {
                         m_txtBxList[i].Text += grid.Rows[x][y].Candidates[c].ToString() + " ";
                     }
+                    
 
                 }
                 else
@@ -650,6 +651,10 @@ namespace SudokuSolverSetter
                     {
                         for (int y = 0; y < 9; y++)
                         {
+                            if (puzzleString[counter] == '0')
+                            {
+                                gridSolve.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                            }
                             gridSolve.Rows[x][y].Num = puzzleString[counter];
                             counter++;
                         }
@@ -789,6 +794,13 @@ namespace SudokuSolverSetter
         private void GeneratePuzzle_Click(object sender, RoutedEventArgs e)
         {
             SudokuGrid grid = gen.Setter();//Calling the automated puzzle generator method to create a puzzle
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    grid.Rows[i][j].Candidates = grid.Rows[i][j].Num == 0 ? new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' } : grid.Rows[i][j].Candidates;
+                }
+            }
             txtBxList = PopulateGrid(grid, txtBxList);
             Clipboard.SetText(gen.SudokuToString(grid));
         }

@@ -9,6 +9,7 @@ namespace SudokuSolverSetter
 {
     public class PuzzleSolver
     {
+        public int difficulty = 0;
         #region Full Solver method
         /// <summary>
         /// 
@@ -26,6 +27,7 @@ namespace SudokuSolverSetter
             */
             if (method == '1')
             {
+                
                 do
                 {
                     if (FindNakedSingles(grid))
@@ -36,11 +38,35 @@ namespace SudokuSolverSetter
                     {
                         changeMade = true;
                     }
+                    else if (FindNakedPair(grid))
+                    {
+                        changeMade = true;
+                    }
                     else if (FindHiddenPair(grid))
                     {
                         changeMade = true;
-                    }                    
+                    }
+                    else if (FindNakedTriple(grid))
+                    {
+                        changeMade = true;
+                    }
+                    else if (FindHiddenTriple(grid))
+                    {
+                        changeMade = true;
+                    }
+                    else if (FindPointingNumbers(grid))
+                    {
+                        changeMade = true;
+                    }
                     else if (FindXWing(grid))
+                    {
+                        changeMade = true;
+                    }
+                    else if (FindYWing(grid))
+                    {
+                        changeMade = true;
+                    }
+                    else if (FindSingleChains(grid))
                     {
                         changeMade = true;
                     }
@@ -63,7 +89,11 @@ namespace SudokuSolverSetter
             return gen.CheckIfSolved(grid);
 
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
         private bool FindNakedSingles(SudokuGrid grid)
         {
             bool changeMade = false, escapeLoop = true;
@@ -101,8 +131,10 @@ namespace SudokuSolverSetter
                             if (grid.Rows[i][j].Candidates.Count == 1)
                             {
                                 grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
+                                grid.Rows[i][j].Candidates.Clear();
                                 changeMade = true;
                                 escapeLoop = false;
+                                difficulty++;
                             }
 
                         }
@@ -112,46 +144,98 @@ namespace SudokuSolverSetter
             
             return changeMade;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
         private bool FindHiddenSingles(SudokuGrid grid)
         {
-            bool changeMade = false, escapeLoop = true; ;
-            do
+            bool changeMade = false;
+            
+            for (int i = 0; i < 9; i++)
             {
-                escapeLoop = true;
-                for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
                 {
-                    for (int j = 0; j < 9; j++)
+                    if (grid.Rows[i][j].Num == '0')
                     {
-                        if (grid.Rows[i][j].Num == '0')
+                        List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                        for (int index = 0; index < 3 && grid.Rows[i][j].Num == '0'; index++)
                         {
-                            List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                            for (int index = 0; index < 3 && grid.Rows[i][j].Num == '0'; index++)
+                            foreach (char candidate in grid.Rows[i][j].Candidates)
                             {
-                                foreach (char candidate in grid.Rows[i][j].Candidates)
+                                int counter = 0;
+                                foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
                                 {
-                                    int counter = 0;
-                                    foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
+                                    if (neighbour.Num == candidate || neighbour.Num == '0' && neighbour.Candidates.Contains(candidate))
                                     {
-                                        if (neighbour.Num == candidate || neighbour.Num == '0' && neighbour.Candidates.Contains(candidate))
-                                        {
-                                            if (++counter > 0)
-                                                break;
-                                        }
+                                        if (++counter > 0)
+                                            break;
                                     }
-                                    if (counter == 0)
+                                }
+                                if (counter == 0)
+                                {
+                                    grid.Rows[i][j].Num = candidate;
+                                    grid.Rows[i][j].Candidates.Clear();
+                                    changeMade = true;
+                                    difficulty += 2;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return changeMade;
+        }
+        /// <summary>
+        /// FindNakedPair:
+        /// -Find empty cell with two candidates, call it 'Cell'
+        /// -Foreach group associated with 'Cell', look at each cell within the group, call these cells 'Neighbours'
+        /// -If a neighbour's candidate list is identical to 'Cell's candidate list, you have found a naked pair.
+        /// -Foreach cell in the same group that the pair was found in (call each of these cells 'outlier'), look at the candidate list 
+        /// -If there exists any candidates in that list that also exist in the pair's candidate list, remove the candidates from the 'outlier's list.
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindNakedPair(SudokuGrid grid)
+        {
+            bool changeMade = false;
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count == 2)
+                    {
+                        for (int index = 0; index < 3; index++)
+                        {
+                            foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
+                            {
+                                if (neighbour.Num == '0' && neighbour.Candidates.SequenceEqual(grid.Rows[i][j].Candidates))
+                                {
+                                    foreach (Cell cell in grid.Rows[i][j].NeighbourCells[index])
                                     {
-                                        grid.Rows[i][j].Num = candidate;
-                                        changeMade = true;
-                                        escapeLoop = false;
-                                        break;
+                                        if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[0]))
+                                        {
+                                            cell.Candidates.Remove(neighbour.Candidates[0]);
+                                            changeMade = true;
+                                            difficulty += 2;
+                                        }
+                                        if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[1]))
+                                        {
+                                            cell.Candidates.Remove(neighbour.Candidates[1]);
+                                            changeMade = true;
+                                            difficulty += 2;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            } while (!escapeLoop);
-            
+            }
+
             return changeMade;
         }
         /// <summary>
@@ -167,53 +251,48 @@ namespace SudokuSolverSetter
         /// <returns></returns>
         private bool FindHiddenPair(SudokuGrid grid)
         {
-            bool changeMade = false, escapeLoop = true;
-            do
+            bool changeMade = false;
+            for (int i = 0; i < 9; i++)
             {
-                escapeLoop = true;
-                for (int i = 0; i < 9; i++)
+                for (int j = 0; j < 9; j++)
                 {
-                    for (int j = 0; j < 9; j++)
+                    if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count > 2)
                     {
-                        if (grid.Rows[i][j].Num != '0' && grid.Rows[i][j].Candidates.Count > 2)
+                        for (int index = 0; index < 3 && grid.Rows[i][j].Candidates.Count > 2; index++)
                         {
-                            for (int index = 0; index < 3 && grid.Rows[i][j].Candidates.Count > 2; index++)
+                            List<Cell> cellList = new List<Cell>(9);
+                            List<char> candis = new List<char>(9);
+                            foreach (char candidate in grid.Rows[i][j].Candidates)
                             {
-                                List<Cell> cellList = new List<Cell>(9);
-                                List<char> candis = new List<char>(9);
-                                foreach (char candidate in grid.Rows[i][j].Candidates)
+                                int counter = 0;
+                                foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
                                 {
-                                    int counter = 0;
-                                    foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
+                                    if (neighbour.Candidates.Contains(candidate))
                                     {
-                                        if (neighbour.Candidates.Contains(candidate))
+                                        if (++counter > 1)
                                         {
-                                            if (++counter > 1)
-                                            {
-                                                cellList.RemoveAt(cellList.Count - 1);
-                                                break;
-                                            }
-                                            cellList.Add(neighbour);
+                                            cellList.RemoveAt(cellList.Count - 1);
+                                            break;
                                         }
-                                    }
-                                    if (counter == 1)//find a pair
-                                    {
-                                        candis.Add(candidate);
+                                        cellList.Add(neighbour);
                                     }
                                 }
-                                if (cellList.Count > 1)
+                                if (counter == 1)//find a pair
                                 {
-                                    for (int c1 = 0; c1 < cellList.Count; c1++)
+                                    candis.Add(candidate);
+                                }
+                            }
+                            if (cellList.Count > 1)
+                            {
+                                for (int c1 = 0; c1 < cellList.Count; c1++)
+                                {
+                                    for (int c2 = c1 + 1; c2 < cellList.Count; c2++)
                                     {
-                                        for (int c2 = c1 + 1; c2 < cellList.Count; c2++)
+                                        if (cellList[c1] == cellList[c2])
                                         {
-                                            if (cellList[c1] == cellList[c2])
-                                            {
-                                                grid.Rows[i][j].Candidates.RemoveAll(candidate => candidate != candis[c1] && candidate != candis[c2]);//Removes all candidates but then common candidates
-                                                cellList[c2].Candidates.RemoveAll(candidate => candidate != candis[c1] && candidate != candis[c2]);
-                                                changeMade = true;
-                                                escapeLoop = false;
-                                            }
+                                            grid.Rows[i][j].Candidates.RemoveAll(candidate => candidate != candis[c1] && candidate != candis[c2]);//Removes all candidates but then common candidates
+                                            cellList[c2].Candidates.RemoveAll(candidate => candidate != candis[c1] && candidate != candis[c2]);
+                                            changeMade = true;
                                         }
                                     }
                                 }
@@ -221,52 +300,223 @@ namespace SudokuSolverSetter
                         }
                     }
                 }
-            } while (!escapeLoop);
+            }
             
             return changeMade;
         }
-
-        private bool FindNakedNumbers(SudokuGrid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
+        /// <summary>
+        /// A naked triple is where any three cells that share a group contain, in total, three candidate numbers.
+        /// The combinations of candidates for a naked triple are:
+        /// [x,y,z] [x,y,z] [x,y,z]
+        /// [x,y,z] [x,y,z] [x,y] 
+        /// [x,y,z] [x,y]   [x,z] 
+        /// [x,y]   [x,z]   [y,z]
+        /// Find Naked Triple:
+        /// -Iterate over cells till an empty cell is found containing two/three candidates, call that cell 'CellA'
+        /// -Iterate over each cell in each group associated with CellA
+        /// -
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindNakedTriple(SudokuGrid grid)
         {
-            bool changeMade = false;//Used to flag if a number has been discovered, so the grid can be checked again
-
-            for (int i = 0; i < grid.Rows.Length; i++)
+            bool changeMade = false;
+            for (int i = 0; i < 9; i++)
             {
-                for (int j = 0; j < grid.Rows[i].Length; j++)
+                for (int j = 0; j < 9; j++)
                 {
-                    if (grid.Rows[i][j].Num == 0)
+
+                }
+            }
+
+            return changeMade;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindHiddenTriple(SudokuGrid grid)
+        {
+            bool changeMade = false;
+
+
+            return changeMade;
+        }
+        /// <summary>
+        /// Find Hidden Triple:
+        /// -Iterate over cells till an empty cell is found, call that cell 'CellA'
+        /// -Iterate over each candidate from CellA's candidate list
+        /// -Iterate over each cell in the block associated with CellA, counting how many empty cells within the block have 'candidate' in their candidate list.
+        /// -If the counter is equal to one (or two), check if CellA shares a row or column with the cell that contains the common candidate (or both cells).
+        /// -If they share a row/column, you can remove the candidate from any cells in that row/column.
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindPointingNumbers(SudokuGrid grid)
+        {
+            bool changeMade = false;
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (grid.Rows[i][j].Num == '0')
                     {
-                        //Start checking the rows, columns or block, eliminating numbers from the candidate list
-                        //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
-                        foreach (Cell[] item in grid.Rows)
+                        foreach (char candidate in grid.Rows[i][j].Candidates)
                         {
-                            foreach (Cell cell in item)
+                            List<Cell> cellSave = new List<Cell>(2);
+                            foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[2])
                             {
-                                if (grid.Rows[i][j].Candidates.Contains(cell.Num) &&
-                                    (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
+                                if (neighbour.Candidates.Contains(candidate))
                                 {
-                                    grid.Rows[i][j].Candidates.Remove(cell.Num);
-                                    //mainWindow.PopulateGrid(grid);
-                                    changeMade = true;
+                                    cellSave.Add(neighbour);
+                                    if (cellSave.Count > 2)
+                                    {
+                                        break;
+                                    }
+                                    
+                                }
+                            }
+                            if (cellSave.Count == 1 && (cellSave[0].XLocation == i || cellSave[0].YLocation == j))
+                            {
+                                int index = cellSave[0].XLocation == i ? 0 : 1;//Search through column/row and remove 'candidate' from any of the candidate lists in that column/row
+                                for (int n = 0; n < 8; n++)
+                                {
+                                    if (grid.Rows[i][j].NeighbourCells[index][n] != cellSave[0] && grid.Rows[i][j].NeighbourCells[index][n].Candidates.Contains(candidate))
+                                    {
+                                        grid.Rows[i][j].NeighbourCells[index][n].Candidates.Remove(candidate);
+                                        changeMade = true;
+                                    }
+                                }
+                            }
+                            else if (cellSave.Count == 2)
+                            {
+                                if ((cellSave[0].XLocation == i && cellSave[1].XLocation == i) || (cellSave[0].YLocation == j && cellSave[1].YLocation == j))
+                                {
+                                    int index = cellSave[0].XLocation == i ? 0 : 1;//Search through column/row and remove 'candidate' from any of the candidate lists in that column/row
+                                    for (int n = 0; n < 8; n++)
+                                    {
+                                        if (grid.Rows[i][j].NeighbourCells[index][n] != cellSave[0] && grid.Rows[i][j].NeighbourCells[index][n] != cellSave[1] && grid.Rows[i][j].NeighbourCells[index][n].Candidates.Contains(candidate))
+                                        {
+                                            grid.Rows[i][j].NeighbourCells[index][n].Candidates.Remove(candidate);
+                                            changeMade = true;
+                                        }
+                                    }
                                 }
                             }
                         }
-                        if (grid.Rows[i][j].Candidates.Count == 1)
+                    }
+                }
+            }
+
+            return changeMade;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindBoxLineReduce(SudokuGrid grid)
+        {
+            bool changeMade = false;
+
+
+            return changeMade;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindSingleChains(SudokuGrid grid)
+        {
+            bool changeMade = false;
+
+
+            return changeMade;
+        }
+        /// <summary>
+        /// Find YWing:
+        /// Two types: Box-Column/Row and Row/Column
+        /// Box-Column/Row is where the hinge shares a block with another cell in y-wing and the 3rd cell is in the same column/row as the hinge
+        /// -Iterate over cells till an empty cell with two candidates is found, call that cell 'CellA'/'Hinge'
+        /// -Iterate over the t
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool FindYWing(SudokuGrid grid)
+        {
+            bool changeMade = false;
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count == 2)
+                    {
+                        Cell cellA = grid.Rows[i][j];
+                        char nxtCandi = 'u';//Represents the next candidate in cellA's candidate list that needs to be found in the next group(s) - 'u' represented unassigned
+                        char thirdCandi = 'u';
+                        for (int index = 0; index < 2; index++)//index < 2 because we only need to look at row/column - if index is ever 1 and a y-wing is found, the y-wing must be block-column/row, else it must be row/column
                         {
-                            changeMade = true;
-                            grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
-                            //mainWindow.PopulateGrid(grid);
-                        }
-                        //If two candidates remain, then it attempts to find a naked pair (aka a Conjugate Pair) by calling the FindNakedPair() method
-                        else if (grid.Rows[i][j].Candidates.Count == 2)
-                        {
-                            if (FindNakedPair(grid, grid.Rows[i][j]))
+                            foreach (Cell cellB in cellA.NeighbourCells[index])
                             {
-                                changeMade = true;
+                                if (cellB.Num == '0' && cellB.Candidates.Count == 2 && !cellB.Candidates.SequenceEqual(cellA.Candidates) && cellB.BlockLoc != cellA.BlockLoc)
+                                {
+                                    if (cellB.Candidates.Contains(cellA.Candidates[0]) || cellB.Candidates.Contains(cellA.Candidates[1]))
+                                    {
+                                        if (cellB.Candidates.Contains(cellA.Candidates[0]))
+                                        {
+                                            nxtCandi = cellA.Candidates[1];
+                                            thirdCandi = cellA.Candidates[0] == cellB.Candidates[0] ? cellB.Candidates[1] : cellB.Candidates[0];
+                                        }
+                                        else
+                                        {
+                                            nxtCandi = cellA.Candidates[0];
+                                            thirdCandi = cellA.Candidates[1] == cellB.Candidates[0] ? cellB.Candidates[1] : cellB.Candidates[0];
+                                        }
+                                        for (int index_n = index + 1; index_n < 3; index_n++)
+                                        {
+                                            foreach (Cell cellC in cellA.NeighbourCells[index_n])
+                                            {
+                                                if (cellC.Num == '0' && cellC.Candidates.Count == 2 && !cellC.Candidates.SequenceEqual(cellA.Candidates))
+                                                {
+                                                    if (cellC.Candidates.Contains(nxtCandi) && cellC.Candidates.Contains(thirdCandi))//Finding cellC to complete the chain of 3 different candidates in 3 different cells
+                                                    {
+                                                        if (index_n == 1)//row/column y-wing
+                                                        {
+                                                            int row = cellB.YLocation == cellA.YLocation ? cellB.XLocation : cellC.XLocation;
+                                                            int col = cellB.XLocation == cellA.XLocation ? cellB.YLocation : cellC.YLocation;
+                                                            if (grid.Rows[row][col].Candidates.Contains(thirdCandi))
+                                                            {
+                                                                grid.Rows[row][col].Candidates.Remove(thirdCandi);
+                                                                changeMade = true;
+                                                            }
+                                                        }
+                                                        else if (index_n == 2 && cellC.XLocation != cellA.XLocation && cellC.YLocation != cellA.YLocation )//block-column/row y-wing
+                                                        {
+                                                            for (int n = 0; n < 8; n++)
+                                                            {
+                                                                if (cellC.NeighbourCells[index][n].Candidates.Contains(thirdCandi) && cellC.NeighbourCells[index][n].BlockLoc == cellB.BlockLoc)
+                                                                {
+                                                                    cellC.NeighbourCells[index][n].Candidates.Remove(thirdCandi);
+                                                                    changeMade = true;
+                                                                }
+                                                                if (cellB.NeighbourCells[index][n].Candidates.Contains(thirdCandi) && cellB.NeighbourCells[index][n].BlockLoc == cellC.BlockLoc)
+                                                                {
+                                                                    cellB.NeighbourCells[index][n].Candidates.Remove(thirdCandi);
+                                                                    changeMade = true;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-
                 }
             }
 
@@ -656,40 +906,48 @@ namespace SudokuSolverSetter
                 {
                     if (grid.Rows[i][j].Candidates.Count == 2 && grid.Rows[i][j].Num == '0')
                     {
+                        Cell cellA = grid.Rows[i][j];
                         for (int bn = 0; bn < 8; bn++)//bn=block neighbour
-                        {
-                            if (grid.Rows[i][j].NeighbourCells[2][bn].Num == '0' && grid.Rows[i][j].NeighbourCells[2][bn].Candidates == grid.Rows[i][j].Candidates && grid.Rows[i][j].NeighbourCells[2][bn].YLocation == j)//if true, start searching for UR's across from the cells
+                        {//Find a pair in the block, identify if it shares an XLocation or YLocation
+                            if (cellA.NeighbourCells[2][bn].Num == '0' && cellA.NeighbourCells[2][bn].Candidates.SequenceEqual(cellA.Candidates) 
+                                && (cellA.NeighbourCells[2][bn].YLocation == j || cellA.NeighbourCells[2][bn].XLocation == i))//if true, CellA shares an YLocation with CellB. start searching for UR's across from the cells
                             {
-                                //grid.Rows[i][j] is cellA
-                                Cell cellB = grid.Rows[i][j].NeighbourCells[2][bn];
+                                int index = 0;
+                                if (cellA.NeighbourCells[2][bn].XLocation == i)
+                                {
+                                    index = 1;
+                                }
+                                Cell cellB = cellA.NeighbourCells[2][bn];
                                 for (int rn = 0; rn < 8; rn++)//rn = row neighbour
                                 {
-                                    if (grid.Rows[i][j].NeighbourCells[0][rn].Num == '0' && grid.Rows[i][j].NeighbourCells[0][rn].Candidates == grid.Rows[i][j].Candidates)
+                                    if (cellA.NeighbourCells[index][rn].Num == '0' && cellA.NeighbourCells[index][rn].Candidates.SequenceEqual(cellA.Candidates) 
+                                        && cellA.NeighbourCells[index][rn].BlockLoc != cellA.BlockLoc)//Finds if a cell C exists
                                     {
-                                        Cell cellC = grid.Rows[i][j].NeighbourCells[0][rn];
-                                        if (grid.Rows[i][cellC.YLocation].Candidates.Contains(cellC.Candidates[0]) && grid.Rows[i][cellC.YLocation].Candidates.Contains(cellC.Candidates[1]))
-                                        {
-                                            grid.Rows[i][cellC.YLocation].Candidates.Remove(cellC.Candidates[0]);
-                                            grid.Rows[i][cellC.YLocation].Candidates.Remove(cellC.Candidates[1]);
-                                            changeMade = true;
+                                        Cell cellC = cellA.NeighbourCells[index][rn];
+                                        int xAxis = 0;
+                                        int yAxis = 0;
+                                        if ((cellA.XLocation == cellB.XLocation || cellA.XLocation == cellC.XLocation) 
+                                            && (cellA.YLocation == cellB.YLocation || cellA.YLocation == cellC.YLocation))
+                                        {//opposite cell is A
+                                            if (index == 0)
+                                            { xAxis = cellB.XLocation; yAxis = cellC.YLocation; }
+                                            else
+                                            { xAxis = cellC.XLocation; yAxis = cellB.YLocation; }
                                         }
-                                    }
-                                }
-                            }
-                            else if (grid.Rows[i][j].NeighbourCells[2][bn].Candidates == grid.Rows[i][j].Candidates && grid.Rows[i][j].NeighbourCells[2][bn].XLocation == i)//if true, start searching for UR's in the Y axis
-                            {
-                                Cell neighbourB = grid.Rows[i][j].NeighbourCells[2][bn];
-                                //grid.Rows[i][j] is cellA
-                                Cell cellB = grid.Rows[i][j].NeighbourCells[2][bn];
-                                for (int cn = 0; cn < 8; cn++)//rn = row neighbour
-                                {
-                                    if (grid.Rows[i][j].NeighbourCells[1][cn].Num == '0' && grid.Rows[i][j].NeighbourCells[1][cn].Candidates == grid.Rows[i][j].Candidates)
-                                    {
-                                        Cell cellC = grid.Rows[i][j].NeighbourCells[1][cn];
-                                        if (grid.Rows[cellC.XLocation][j].Candidates.Contains(cellC.Candidates[0]) && grid.Rows[cellC.XLocation][j].Candidates.Contains(cellC.Candidates[1]))
+                                        else if ((cellB.XLocation == cellA.XLocation || cellB.XLocation == cellC.XLocation) 
+                                            && (cellB.YLocation == cellA.YLocation || cellB.YLocation == cellC.YLocation))
+                                        {//opposite cell is B
+                                            if (index == 0)
+                                            { xAxis = cellA.XLocation; yAxis = cellC.YLocation; }
+                                            else
+                                            { xAxis = cellC.XLocation; yAxis = cellA.YLocation; }
+                                        }
+                                        Cell cellD = grid.Rows[xAxis][yAxis];
+                                        if (cellD.Candidates.Contains(cellC.Candidates[0]) 
+                                            && cellD.Candidates.Contains(cellC.Candidates[1]))//Searches for if a Cell D exists
                                         {
-                                            grid.Rows[cellC.XLocation][j].Candidates.Remove(cellC.Candidates[0]);
-                                            grid.Rows[cellC.XLocation][j].Candidates.Remove(cellC.Candidates[1]);
+                                            cellD.Candidates.Remove(cellC.Candidates[0]);
+                                            cellD.Candidates.Remove(cellC.Candidates[1]);
                                             changeMade = true;
                                         }
                                     }
