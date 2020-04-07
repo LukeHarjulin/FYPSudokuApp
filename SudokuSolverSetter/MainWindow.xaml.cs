@@ -47,22 +47,22 @@ namespace SudokuSolverSetter
         {
             if (Difficulty_ComboBox.SelectedIndex == 0)//Beginner
             {
-                PlaySudoku playSudoku = new PlaySudoku("1", "");
+                PlaySudoku playSudoku = new PlaySudoku("Beginner", "");
                 playSudoku.Show();
             }
             else if (Difficulty_ComboBox.SelectedIndex == 1)//Moderate
             {
-                PlaySudoku playSudoku = new PlaySudoku("2", "");
+                PlaySudoku playSudoku = new PlaySudoku("Moderate", "");
                 playSudoku.Show();
             }
             else if (Difficulty_ComboBox.SelectedIndex == 2)//Advanced
             {
-                PlaySudoku playSudoku = new PlaySudoku("3", "");
+                PlaySudoku playSudoku = new PlaySudoku("Advanced", "");
                 playSudoku.Show();
             }
             else                                           //Extreme
             {
-                PlaySudoku playSudoku = new PlaySudoku("4", "");
+                PlaySudoku playSudoku = new PlaySudoku("Extreme", "");
                 playSudoku.Show();
             }
 
@@ -81,7 +81,9 @@ namespace SudokuSolverSetter
 
         private void Level_Selector_Click(object sender, RoutedEventArgs e)
         {
-
+            PuzzleSelector selector = new PuzzleSelector();
+            selector.Show();
+            this.Hide();
         }
     }
 }

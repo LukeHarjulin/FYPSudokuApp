@@ -37,7 +37,8 @@ namespace SudokuSolverSetter
         private SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
         private SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
-        private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, textColour, buttonColour;
+        private SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(255, 255, 224, 233));
+        private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, textColour, buttonColour, altDarkCellColour;
 
         public DispatcherTimer DT { get; set; }
         public Stopwatch Timer { get; set; }
@@ -61,6 +62,7 @@ namespace SudokuSolverSetter
                 bx80,bx81
             };
             string fileName = @"SudokuPuzzles.xml";
+            g_difficulty = difficulty;
             XmlDocument doc = new XmlDocument();
             try
             {
@@ -71,65 +73,70 @@ namespace SudokuSolverSetter
                     XmlNode notStartedPuzzles = sudokuPuzzles.FirstChild;
                     XmlNodeList puzzleDifficulties = notStartedPuzzles.ChildNodes;
 
-                    if (difficulty == "1")
+                    if (difficulty == "Beginner")//pull random beginner puzzle from xml file
                     {
                         Sudoku_Title.Content = "Beginner Sudoku Puzzle";
                         XmlNodeList beginnerPuzzles = puzzleDifficulties[0].ChildNodes;
                         Random rnd = new Random();
                         XmlNode puzzle = beginnerPuzzles[rnd.Next(0, beginnerPuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("/SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("/DifficultyRating").InnerText;
+                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
+                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
                         //pull random easy puzzle from xml file/database
                     }
-                    else if (difficulty == "2")
+                    else if (difficulty == "Moderate")//pull random moderate puzzle from xml file
                     {
                         Sudoku_Title.Content = "Moderate Sudoku Puzzle";
-                        XmlNodeList moderatePuzzles = puzzleDifficulties[0].ChildNodes;
+                        XmlNodeList moderatePuzzles = puzzleDifficulties[1].ChildNodes;
                         Random rnd = new Random();
                         XmlNode puzzle = moderatePuzzles[rnd.Next(0, moderatePuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("/SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("/DifficultyRating").InnerText;
-                        //pull random medium puzzle from xml file/database
+                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
+                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
                     }
-                    else if (difficulty == "3")
+                    else if (difficulty == "Advanced")//pull random advanced puzzle from xml file
                     {
                         Sudoku_Title.Content = "Advanced Sudoku Puzzle";
-                        XmlNodeList advancedPuzzles = puzzleDifficulties[0].ChildNodes;
+                        XmlNodeList advancedPuzzles = puzzleDifficulties[2].ChildNodes;
                         Random rnd = new Random();
                         XmlNode puzzle = advancedPuzzles[rnd.Next(0, advancedPuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("/SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("/DifficultyRating").InnerText;
-                        //pull random hard puzzle from xml file/database
+                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
+                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
+                        
                     }
-                    else if (difficulty == "4")
+                    else if (difficulty == "Extreme")//pull random extreme puzzle from xml file
                     {
                         Sudoku_Title.Content = "Extreme Sudoku Puzzle";
-                        XmlNodeList extremePuzzles = puzzleDifficulties[0].ChildNodes;
+                        XmlNodeList extremePuzzles = puzzleDifficulties[3].ChildNodes;
                         Random rnd = new Random();
                         XmlNode puzzle = extremePuzzles[rnd.Next(0, extremePuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("/SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("/DifficultyRating").InnerText;
-                        //pull random very hard puzzle from xml file/database
+                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
+                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception)//Generates puzzle of random difficulty
             {
                 MessageBox.Show("No puzzles exist... Generating Random Puzzle for you...");
                 g_grid = gen.Setter();
                 PopulateGrid(g_grid, g_txtBxList);
                 g_originalPuzzleString = gen.SudokuToString(g_grid);
+                CreatePuzzles createPuzzles = new CreatePuzzles();
+                g_rating = createPuzzles.GetDifficulty(g_grid, g_originalPuzzleString).ToString();
                 //Clipboard.SetText(gen.SudokuToString(grid));
+                g_difficulty = g_grid.Difficulty;
             }
             ///Populate grid with puzzle from xml doc
             for (int i = 0; i < 81; i++)
             {
                 if (puzzleString[i] != '0')
+                {
                     g_txtBxList[i].Text = puzzleString[i].ToString();
+                    g_txtBxList[i].IsReadOnly = true;
+                    g_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                }
             }
             StartTimer();
             g_originalPuzzleString = puzzleString;
-            g_difficulty = difficulty;//crash if puzzle generation has to occur
+            
         }
         #region Functions
         private void StartTimer()
@@ -147,11 +154,13 @@ namespace SudokuSolverSetter
             {
                 Timer.Stop();
                 DT.Stop();
+                PauseBlock.Visibility = Visibility.Visible;
             }
             else
             {
                 Timer.Start();
                 DT.Start();
+                PauseBlock.Visibility = Visibility.Hidden;
             }
         }
         private void PencilMarkONOFF(char source)//source is either button click or 'n' key down
@@ -231,11 +240,11 @@ namespace SudokuSolverSetter
                 }
             }
         }
-        private void SavePuzzle(string puzzle, bool completed)
+        private void SavePuzzle(bool completed)
         {
             ///Save Puzzle to Started/Completed
             XDocument doc;
-            string filename = @"SudokuPuzzles.xml", sudokuInString = "", candidatesInString = "";
+            string filename = @"SudokuPuzzles.xml", candidatesInString = "";
 
             doc = File.Exists(filename)
                 ? XDocument.Load(filename)
@@ -255,7 +264,7 @@ namespace SudokuSolverSetter
                             new XElement("Advanced"),
                             new XElement("Extreme")
                             ),
-                        new XElement("Complete",
+                        new XElement("Completed",
                             new XElement("Beginner"),
                             new XElement("Moderate"),
                             new XElement("Advanced"),
@@ -273,12 +282,10 @@ namespace SudokuSolverSetter
                     }
                     else if (g_txtBxList[i].Text == "")
                     {
-                        sudokuInString += "0";
                         candidatesInString += "0";
                     }
                     else
                     {
-                        sudokuInString += g_txtBxList[i].Text;
                         candidatesInString += g_txtBxList[i].Text;
                     }
                     if (i != 80)
@@ -286,25 +293,21 @@ namespace SudokuSolverSetter
                         candidatesInString += ",";
                     }
                 }
-                doc.Element("SudokuPuzzles").Element("Started").Element("Beginner"/*grab difficulty*/).Add(
+                doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty).Add(
                            new XElement("puzzle",
-                               new XElement("DifficultyRating", 100/*grab rating*/),
-                               new XElement("SudokuString", sudokuInString),
-                               new XElement("Time taken", g_currentTime)
+                               new XElement("DifficultyRating", g_rating),
+                               new XElement("SudokuString", candidatesInString),
+                               new XElement("TimeTaken", g_currentTime)
                                )
                            );
             }
             else
             {
-                for (int i = 0; i < 81; i++)
-                {
-                    sudokuInString += g_txtBxList[i].Text;
-                }
                 doc.Element("SudokuPuzzles").Element("Completed").Element(g_difficulty).Add(
                            new XElement("puzzle",
-                               new XElement("DifficultyRating", g_rating/*grab rating*/),
-                               new XElement("SudokuString", sudokuInString),
-                               new XElement("Time taken", g_currentTime)
+                               new XElement("DifficultyRating", g_rating),
+                               new XElement("SudokuString", g_originalPuzzleString),
+                               new XElement("TimeTaken", g_currentTime)
                                )
                            );
             }
@@ -329,7 +332,7 @@ namespace SudokuSolverSetter
                         g_txtBxList[i].IsReadOnly = true;
                         puzzle += g_txtBxList[i];
                     }
-                    SavePuzzle(puzzle, true);
+                    SavePuzzle(true);
                 }
                 TimeSpan ts = Timer.Elapsed;
                 if (ts.Seconds < 10)
@@ -384,13 +387,35 @@ namespace SudokuSolverSetter
         {
             if (g_selectedCell != null)//sets previously focused cell to default colour
             {
-                if (nightmode_chkbx.IsChecked == false)
+                for (int i = 0; i < g_txtBxList.Count; i++)
                 {
-                    g_selectedCell.Background = cellColour;
-                }
-                else
-                {
-                    g_selectedCell.Background = darkColour;
+                    if (g_selectedCell == g_txtBxList[i] && (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
+                        || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
+                        || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
+                        || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
+                        || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
+                        || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77))
+                    {
+                        if (nightmode_chkbx.IsChecked == false)
+                        {
+                            g_selectedCell.Background = altCellColour;
+                        }
+                        else
+                        {
+                            g_selectedCell.Background = altDarkCellColour;
+                        }
+                    }
+                    else if (g_selectedCell == g_txtBxList[i])
+                    {
+                        if (nightmode_chkbx.IsChecked == false)
+                        {
+                            g_selectedCell.Background = cellColour;
+                        }
+                        else
+                        {
+                            g_selectedCell.Background = darkColour;
+                        }
+                    }
                 }
             }
             
@@ -494,27 +519,29 @@ namespace SudokuSolverSetter
                             }
                         }
 
-                        List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                        for (int row = 0; row < 9; row++)
+                        for (int row = 0; row < 9 && solved == true; row++)
                         {
+                            List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                             for (int col = 0; col < 9; col++)
                             {
                                 if (basicGrid[row][col] == 0)
                                 {
                                     solved = false;
+                                    break;
                                 }
                                 else if (numberList.Contains(basicGrid[row][col]))
                                 {
-                                    numberList.Remove(basicGrid[row][col]);
+                                    if (!numberList.Remove(basicGrid[row][col]))
+                                    {
+                                        solved = false;
+                                        break;
+                                    }
                                 }
                             }
                             if (numberList.Count > 0)
                             {
                                 solved = false;
-                            }
-                            else
-                            {
-                                numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                break;
                             }
                         }
                         if (solved) { g_puzzledSolved = true; }
@@ -582,10 +609,15 @@ namespace SudokuSolverSetter
 
         private void SaveQuit_Button_Click(object sender, RoutedEventArgs e)
         {
-            ///Save puzzle
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to Save and Quit?", "Confirm", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                ///SavePuzzle
+                SavePuzzle(false);
+                Hide();
+                homePage.Show();
+            }
             
-            this.Hide();
-            homePage.Show();
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -610,9 +642,13 @@ namespace SudokuSolverSetter
 
         private void New_Btn_Click(object sender, RoutedEventArgs e)
         {
-            PlaySudoku playSudoku = new PlaySudoku(g_difficulty, "");
-            this.Hide();
-            playSudoku.Show();
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to play a new puzzle?", "Confirm", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                PlaySudoku playSudoku = new PlaySudoku(g_difficulty, "");
+                Hide();
+                playSudoku.Show();
+            }
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -622,6 +658,7 @@ namespace SudokuSolverSetter
             {
                 darkerColour = new SolidColorBrush(Color.FromArgb(255, 30, 30, 30));
                 darkColour = new SolidColorBrush(Color.FromArgb(255, 45, 45, 45));
+                altDarkCellColour = new SolidColorBrush(Color.FromArgb(255, 66, 66, 66));
                 darkButtonColour = new SolidColorBrush(Color.FromArgb(255, 60, 60, 60));
                 textColour = new SolidColorBrush(Color.FromArgb(150, 240, 240, 240));
                 darkFocusCell = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
@@ -645,13 +682,24 @@ namespace SudokuSolverSetter
             btn5.Foreground = textColour; btn6.Foreground = textColour; btn7.Foreground = textColour; btn8.Foreground = textColour; btn9.Foreground = textColour;
             btn1.Background = darkButtonColour; btn2.Background = darkButtonColour;btn3.Background = darkButtonColour; btn4.Background = darkButtonColour;
             btn5.Background = darkButtonColour; btn6.Background = darkButtonColour; btn7.Background = darkButtonColour; btn8.Background = darkButtonColour; btn9.Background = darkButtonColour;
-
             for (int i = 0; i < g_txtBxList.Count; i++)
             {
-                g_txtBxList[i].Background = darkColour;
                 g_txtBxList[i].Foreground = textColour;
                 g_txtBxList[i].BorderBrush = textColour;
                 g_txtBxList[i].SelectionBrush = textColour;
+                if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
+                    || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
+                    || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
+                    || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
+                    || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
+                    || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77)
+                {
+                    g_txtBxList[i].Background = altDarkCellColour;
+                }
+                else
+                {
+                    g_txtBxList[i].Background = darkColour;
+                }
             }
             if (g_selectedCell != null)
             {
@@ -685,13 +733,24 @@ namespace SudokuSolverSetter
             btn5.Foreground = Brushes.Black; btn6.Foreground = Brushes.Black; btn7.Foreground = Brushes.Black; btn8.Foreground = Brushes.Black; btn9.Foreground = Brushes.Black;
             btn1.Background = buttonColour; btn2.Background = buttonColour; btn3.Background = buttonColour; btn4.Background = buttonColour;
             btn5.Background = buttonColour; btn6.Background = buttonColour; btn7.Background = buttonColour; btn8.Background = buttonColour; btn9.Background = buttonColour;
-
             for (int i = 0; i < g_txtBxList.Count; i++)
-            {
-                g_txtBxList[i].Background = cellColour;
+            {                
                 g_txtBxList[i].Foreground = Brushes.Black;
                 g_txtBxList[i].BorderBrush = Brushes.Black;
                 g_txtBxList[i].SelectionBrush = Brushes.Black;
+                if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14 
+                    || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29 
+                    || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38 
+                    || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47 
+                    || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59 
+                    || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77)
+                {
+                    g_txtBxList[i].Background = altCellColour;
+                }
+                else
+                {
+                    g_txtBxList[i].Background = cellColour;
+                }
             }
             if (g_selectedCell != null)
             {
@@ -748,13 +807,35 @@ namespace SudokuSolverSetter
         {
             if (g_selectedCell != (TextBox)sender)
             {
-                if (nightmode_chkbx.IsChecked == false)
+                for (int i = 0; i < g_txtBxList.Count; i++)
                 {
-                    ((TextBox)sender).Background = cellColour;
-                }
-                else
-                {
-                    ((TextBox)sender).Background = darkColour;
+                    if ((TextBox)sender == g_txtBxList[i] && (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
+                        || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
+                        || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
+                        || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
+                        || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
+                        || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77))
+                    {
+                        if (nightmode_chkbx.IsChecked == false)
+                        {
+                            ((TextBox)sender).Background = altCellColour;
+                        }
+                        else
+                        {
+                            ((TextBox)sender).Background = altDarkCellColour;
+                        }
+                    }
+                    else if ((TextBox)sender == g_txtBxList[i])
+                    {
+                        if (nightmode_chkbx.IsChecked == false)
+                        {
+                            ((TextBox)sender).Background = cellColour;
+                        }
+                        else
+                        {
+                            ((TextBox)sender).Background = darkColour;
+                        }
+                    }
                 }
             }
             

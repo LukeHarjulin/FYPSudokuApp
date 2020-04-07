@@ -73,7 +73,13 @@
     <Compile Include="PlaySudoku.xaml.cs">
       <DependentUpon>PlaySudoku.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PuzzleSelector.xaml.cs">
+      <DependentUpon>PuzzleSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PuzzleSolverCharVer.cs" />
+    <Compile Include="SolvePath.xaml.cs">
+      <DependentUpon>SolvePath.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SudokuGrid.cs" />
     <Compile Include="PuzzleGenerator.cs" />
     <Compile Include="PuzzleSolver.cs" />
@@ -106,6 +112,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PlaySudoku.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PuzzleSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SolvePath.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

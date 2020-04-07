@@ -532,26 +532,94 @@ namespace SudokuSolverSetter
             }
             return m_txtBxList;
         }
+        private void TimeTestSolvers(PuzzleSolver puzzleSolver, SudokuGrid grid, int iterations, string puzzleString, int difficulty, bool solved)
+        {
+            string[] times = new string[4];
+            double averageTime = 0;
+            for (int m = 1; m < 4; m++)
+            {
+                averageTime = 0;
+                for (int i = 0; i < iterations; i++)
+                {
+                    
+                    int counter = 0;
+                    for (int x = 0; x < 9; x++)
+                    {
+                        for (int y = 0; y < 9; y++)
+                        {
+                            if (puzzleString[counter] == '0')
+                                grid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                            grid.Rows[x][y].Num = puzzleString[counter];
+                            counter++;
+                        }
+                    }
+                    System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
+                    if (m==1)
+                    {
+                        solved = puzzleSolver.Solver(grid, m);
+                        if (i == 0)
+                            difficulty = puzzleSolver.difficulty;
+                    }
+                    else
+                        puzzleSolver.Solver(grid, m);
+                    watch.Stop();
+                    averageTime += watch.ElapsedMilliseconds;
+                }
+                times[m - 1] = m + "," + (averageTime / iterations / 1000).ToString();
+            }
+            PuzzleSolverCharVer solver = new PuzzleSolverCharVer();
+            char[][] puzzleCharArr = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+            averageTime = 0;
+            for (int n = 0; n < iterations; n++)
+            {
+                int counter2 = 0;
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        puzzleCharArr[i][j] = puzzleString[counter2];
+                        counter2++;
+                    }
+                }
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                solved = solver.Solvers(puzzleCharArr, '2');
+                watch.Stop();
+                averageTime += watch.ElapsedMilliseconds;
+            }
+            times[3] = 4 + "," + (averageTime / iterations / 1000).ToString();
+            string outputStr = "Times taken to solve\r\nDifficulty: " + difficulty + "\r\n";
+            times[0] = times[0].Remove(0, 2);
+            outputStr += "Strategy Solver using Objects: " + times[0] + "\r\n";
+            times[1] = times[1].Remove(0, 2);
+            outputStr += "Brute-Force Solver using Objects and Naked Singles: " + times[1] + "\r\n";
+            times[2] = times[2].Remove(0, 2);
+            outputStr += "Brute-Force Solver using Objects: " + times[2] + "\r\n";
+            times[3] = times[3].Remove(0, 2);
+            outputStr += "Brute-Force Solver using char[][]: " + times[3] + "\r\n";
+
+            PopulateGrid(grid, txtBxList);
+            MessageBox.Show(outputStr);
+        }
         private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the grid that it is presented
         {
             //Initialising objects
-            PuzzleSolver solve = new PuzzleSolver();
+            PuzzleSolver puzzleSolver = new PuzzleSolver();
             PuzzleGenerator gen = new PuzzleGenerator();
-            SudokuGrid gridSolve = new SudokuGrid();
-            gridSolve.Rows = new Cell[9][];
+            SudokuGrid grid = new SudokuGrid();
+            grid.Rows = new Cell[9][];
             int cellNum = 0;
 
             //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
-            for (int r = 0; r < gridSolve.Rows.Length; r++)
+            for (int r = 0; r < grid.Rows.Length; r++)
             {
-                gridSolve.Rows[r] = new Cell[9];
-                for (int c = 0; c < gridSolve.Rows[r].Length; c++)
+                grid.Rows[r] = new Cell[9];
+                for (int c = 0; c < grid.Rows[r].Length; c++)
                 {
                     string blockLoc = txtBxList[cellNum].Name[5].ToString();
                     if (txtBxList[cellNum].Text.Length > 1)
                     {
                         txtBxList[cellNum].Text = "0";
-                        gridSolve.Rows[r][c] = new Cell()
+                        grid.Rows[r][c] = new Cell()
                         {
                             Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' },
                             Num = '0',
@@ -563,7 +631,7 @@ namespace SudokuSolverSetter
                     }
                     else
                     {
-                        gridSolve.Rows[r][c] = new Cell()
+                        grid.Rows[r][c] = new Cell()
                         {
                             Candidates = new List<char> { },
                             Num = txtBxList[cellNum].Text[0],
@@ -583,7 +651,7 @@ namespace SudokuSolverSetter
                 for (int j = 0; j < 9; j++)
                 {
                     int nbCounter = 0;//nbCounter is neighbourcounter
-                    gridSolve.Rows[i][j].NeighbourCells = new List<Cell[]>
+                    grid.Rows[i][j].NeighbourCells = new List<Cell[]>
                     {
                         new Cell[8],
                         new Cell[8],
@@ -593,7 +661,7 @@ namespace SudokuSolverSetter
                     {
                         if (j != k)
                         {
-                            gridSolve.Rows[i][j].NeighbourCells[0][nbCounter] = gridSolve.Rows[i][k];//add neighbour in i
+                            grid.Rows[i][j].NeighbourCells[0][nbCounter] = grid.Rows[i][k];//add neighbour in i
                             nbCounter++;
                         }
                     }
@@ -602,74 +670,88 @@ namespace SudokuSolverSetter
                     {
                         if (l != i)
                         {
-                            gridSolve.Rows[i][j].NeighbourCells[1][nbCounter] = gridSolve.Rows[l][j];//add neighbour in column
+                            grid.Rows[i][j].NeighbourCells[1][nbCounter] = grid.Rows[l][j];//add neighbour in column
                             nbCounter++;
                         }
                     }
                     nbCounter = 0;
-                    int[] blockIndexes = gen.BlockIndexGetter(gridSolve.Rows[i][j].BlockLoc);
+                    int[] blockIndexes = gen.BlockIndexGetter(grid.Rows[i][j].BlockLoc);
 
                     for (int x = blockIndexes[0]; x < blockIndexes[0] + 3; x++)
                     {
                         for (int y = blockIndexes[1]; y < blockIndexes[1] + 3; y++)
                         {
-                            if (gridSolve.Rows[x][y] != gridSolve.Rows[i][j])
+                            if (grid.Rows[x][y] != grid.Rows[i][j])
                             {
-                                gridSolve.Rows[i][j].NeighbourCells[2][nbCounter] = gridSolve.Rows[x][y];//add neighbour in block
+                                grid.Rows[i][j].NeighbourCells[2][nbCounter] = grid.Rows[x][y];//add neighbour in block
                                 nbCounter++;
                             }
                         }
                     }
                 }
             }
-            char method = '1';
-            if (((Button)sender) == Brute_Solve_Obj)
+            int method = 1;
+            if ((Button)sender == Brute_Solve_Obj)
             {
-                method = '2';
+                method = 2;
+            }
+            else if ((Button)sender == Brute_Solve_Obj_NoSingles)
+            {
+                method = 3;
             }
             int iterations = int.Parse(Number_List_combo.SelectedItem.ToString());
-            string puzzleString = gen.SudokuToString(gridSolve);
+            string puzzleString = gen.SudokuToString(grid);
             double averageTime = 0;
             bool solved = false;
             int difficulty = 0;
-            for (int i = 0; i < iterations; i++)
+            if ((Button)sender != TestAllFour)
             {
-                if (i != 0)
+                for (int i = 0; i < iterations; i++)
                 {
-                    int counter = 0;
-                    for (int x = 0; x < 9; x++)
+                    if (i != 0)
                     {
-                        for (int y = 0; y < 9; y++)
+                        int counter = 0;
+                        for (int x = 0; x < 9; x++)
                         {
-                            if (puzzleString[counter] == '0')
+                            for (int y = 0; y < 9; y++)
                             {
-                                gridSolve.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                if (puzzleString[counter] == '0')
+                                    grid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                grid.Rows[x][y].Num = puzzleString[counter];
+                                counter++;
                             }
-                            gridSolve.Rows[x][y].Num = puzzleString[counter];
-                            counter++;
                         }
                     }
-                }                
-                var watch = System.Diagnostics.Stopwatch.StartNew();
-                solved = solve.Solver(gridSolve, method);
-                if (i==0)
-                    difficulty = solve.difficulty;
-                watch.Stop();
-                averageTime += watch.ElapsedMilliseconds;
-            }
-            averageTime = averageTime / iterations;
-            currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
-            
-            PopulateGrid(gridSolve, txtBxList);
-            if (solved)
-            {
-                MessageBox.Show("SOLVED\r\n" + currentTime+"\r\nMeasured Difficulty(WIP):"+difficulty);
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    solved = puzzleSolver.Solver(grid, method);
+                    if (i == 0)
+                        difficulty = puzzleSolver.difficulty;
+                    watch.Stop();
+                    averageTime += watch.ElapsedMilliseconds;
+                }
+                averageTime = averageTime / iterations;
+                currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
+
+                PopulateGrid(grid, txtBxList);
+                if (solved)
+                {
+                    MessageBox.Show("SOLVED\r\n" + currentTime + "\r\nMeasured Difficulty(WIP): " + difficulty);
+                }
+                else if (puzzleSolver.bruteForced)
+                {
+                    MessageBox.Show("FAILED\r\n" + currentTime + "\r\nFinished with bruteforce, added +400 to difficulty.\r\nMeasured Difficulty(WIP): " + difficulty);
+                }
+                if (method == 1)
+                {
+                    SolvePath path = new SolvePath();
+                    path.PopulateTextBlock(difficulty, currentTime, puzzleSolver);
+                }
             }
             else
             {
-                MessageBox.Show("FAILED\r\n" + currentTime);
+                TimeTestSolvers(puzzleSolver, grid, iterations, puzzleString, difficulty, solved);
             }
-
+           
         }
         private void B_Solve1by1_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve in increments (e.g. once a value is placed into a cell, the solver stops)
         {
@@ -686,7 +768,7 @@ namespace SudokuSolverSetter
               x8y1g7, x8y2g7, x8y3g7, x8y4g8, x8y5g8, x8y6g8, x8y7g9, x8y8g9, x8y9g9,
               x9y1g7, x9y2g7, x9y3g7, x9y4g8, x9y5g8, x9y6g8, x9y7g9, x9y8g9, x9y9g9
             };
-            SudokuGrid gridSolve = new SudokuGrid() { PuzzleID = 0 };//Passes by reference, changed to deep copy
+            SudokuGrid gridSolve = new SudokuGrid();//Passes by reference, changed to deep copy
             gridSolve.Rows = new Cell[9][];
             int cellNum = 0;
 
@@ -825,7 +907,7 @@ namespace SudokuSolverSetter
                 }
             }
             char method = '1';
-            if (((Button)sender) == Brute_Solve_char)
+            if ((Button)sender == Brute_Solve_char)
             {
                 method = '2';
             }

@@ -53,7 +53,7 @@ namespace SudokuSolverSetter
             PuzzleGenerator gen = new PuzzleGenerator();
             PuzzleSolverCharVer solverChar = new PuzzleSolverCharVer();
             PuzzleSolver solver = new PuzzleSolver();
-            var watch = System.Diagnostics.Stopwatch.StartNew();
+            
             
             int numPuzzles = int.Parse(Number_List_combo.SelectedItem.ToString());
 
@@ -96,53 +96,11 @@ namespace SudokuSolverSetter
                 for (int i = 0; i < numPuzzles; i++)
                 {
                     sudokuPuzzles.Add(gen.Setter());
-                    char[][] puzzle = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+                   
+                    
                     string puzzleString = gen.SudokuToString(sudokuPuzzles[i]);
-                    long rating = 0;
-                    int difficulty = solver.difficulty = 0;
-                    for (int n = 0; n < 10; n++)
-                    {
-                        int counter = 0;
-                        for (int x = 0; x < 9; x++)
-                        {
-                            for (int y = 0; y < 9; y++)
-                            {
-                                if (puzzleString[counter] == '0')
-                                {
-                                    sudokuPuzzles[i].Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                                }
-                                sudokuPuzzles[i].Rows[x][y].Num = puzzleString[counter];
-                                counter++;
-                            }
-                        }
-                        //puzzle = SudokuGridToArray(sudokuPuzzles[i], puzzle);
-                        watch = Stopwatch.StartNew();
-                        //solverChar.BruteForceSolve(puzzle, 0, 0, 0);
-                        solver.Solver(sudokuPuzzles[i], '1');
-                        watch.Stop();
-                        if(n==0)
-                        {
-                            difficulty = solver.difficulty;
-                        }
-                        rating += watch.ElapsedMilliseconds;
-                    }
-                    rating += difficulty;
-                    if(rating < 100)
-                    {
-                        sudokuPuzzles[i].Difficulty = "Beginner";
-                    }
-                    else if (rating >= 100 && rating < 200)
-                    {
-                        sudokuPuzzles[i].Difficulty = "Moderate";
-                    }
-                    else if (rating >= 200 && rating < 500)
-                    {
-                        sudokuPuzzles[i].Difficulty = "Advanced";
-                    }
-                    else
-                    {
-                        sudokuPuzzles[i].Difficulty = "Extreme";
-                    }
+                    long rating = GetDifficulty(sudokuPuzzles[i], puzzleString);
+                    
 
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
                         new XElement("puzzle",
@@ -159,6 +117,55 @@ namespace SudokuSolverSetter
                 MessageBox.Show("Error with writing: " + ex);
                 throw;
             }
+        }
+        public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString)
+        {
+            var watch = Stopwatch.StartNew();
+            PuzzleSolver solver = new PuzzleSolver();
+            long rating = 0;
+            int difficulty = solver.difficulty = 0;
+            for (int n = 0; n < 10; n++)
+            {
+                int counter = 0;
+                for (int x = 0; x < 9; x++)
+                {
+                    for (int y = 0; y < 9; y++)
+                    {
+                        if (puzzleString[counter] == '0')
+                        {
+                            puzzleGrid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                        }
+                        puzzleGrid.Rows[x][y].Num = puzzleString[counter];
+                        counter++;
+                    }
+                }
+                watch = Stopwatch.StartNew();
+                solver.Solver(puzzleGrid, 1);
+                watch.Stop();
+                if (n == 0)
+                {
+                    difficulty = solver.difficulty;
+                }
+                rating += watch.ElapsedMilliseconds;
+            }
+            rating += difficulty;
+            if (rating < 100)
+            {
+                puzzleGrid.Difficulty = "Beginner";
+            }
+            else if (rating >= 100 && rating < 200)
+            {
+                puzzleGrid.Difficulty = "Moderate";
+            }
+            else if (rating >= 200 && rating < 500)
+            {
+                puzzleGrid.Difficulty = "Advanced";
+            }
+            else
+            {
+                puzzleGrid.Difficulty = "Extreme";
+            }
+            return rating;
         }
     }
 }
