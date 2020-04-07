@@ -51,7 +51,8 @@ namespace SudokuSolverSetter
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
             PuzzleGenerator gen = new PuzzleGenerator();
-            PuzzleSolverCharVer solver = new PuzzleSolverCharVer();
+            PuzzleSolverCharVer solverChar = new PuzzleSolverCharVer();
+            PuzzleSolver solver = new PuzzleSolver();
             var watch = System.Diagnostics.Stopwatch.StartNew();
             
             int numPuzzles = int.Parse(Number_List_combo.SelectedItem.ToString());
@@ -72,18 +73,21 @@ namespace SudokuSolverSetter
                         new XElement("SudokuPuzzles",
                             new XElement("NotStarted",
                                 new XElement("Beginner"),
-                                new XElement("Intermediate"),
-                                new XElement("Advanced")
+                                new XElement("Moderate"),
+                                new XElement("Advanced"),
+                                new XElement("Extreme")
                                 ),
                             new XElement("Started",
                                 new XElement("Beginner"),
-                                new XElement("Intermediate"),
-                                new XElement("Advanced")
+                                new XElement("Moderate"),
+                                new XElement("Advanced"),
+                                new XElement("Extreme")
                                 ),
                             new XElement("Complete",
                                 new XElement("Beginner"),
-                                new XElement("Intermediate"),
-                                new XElement("Advanced")
+                                new XElement("Moderate"),
+                                new XElement("Advanced"),
+                                new XElement("Extreme")
                                 )
                             )
                         );
@@ -93,36 +97,62 @@ namespace SudokuSolverSetter
                 {
                     sudokuPuzzles.Add(gen.Setter());
                     char[][] puzzle = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
-                    
-                    long averageTime = 0;
-                    for (int x = 0; x < 10; x++)
+                    string puzzleString = gen.SudokuToString(sudokuPuzzles[i]);
+                    long rating = 0;
+                    int difficulty = solver.difficulty = 0;
+                    for (int n = 0; n < 10; n++)
                     {
-                        puzzle = SudokuGridToArray(sudokuPuzzles[i], puzzle);
+                        int counter = 0;
+                        for (int x = 0; x < 9; x++)
+                        {
+                            for (int y = 0; y < 9; y++)
+                            {
+                                if (puzzleString[counter] == '0')
+                                {
+                                    sudokuPuzzles[i].Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                }
+                                sudokuPuzzles[i].Rows[x][y].Num = puzzleString[counter];
+                                counter++;
+                            }
+                        }
+                        //puzzle = SudokuGridToArray(sudokuPuzzles[i], puzzle);
                         watch = Stopwatch.StartNew();
-                        solver.BruteForceSolve(puzzle, 0, 0, 0);
+                        //solverChar.BruteForceSolve(puzzle, 0, 0, 0);
+                        solver.Solver(sudokuPuzzles[i], '1');
                         watch.Stop();
-                        averageTime += watch.ElapsedMilliseconds;
+                        if(n==0)
+                        {
+                            difficulty = solver.difficulty;
+                        }
+                        rating += watch.ElapsedMilliseconds;
                     }
-                    if(averageTime < 1000)
+                    rating += difficulty;
+                    if(rating < 100)
                     {
                         sudokuPuzzles[i].Difficulty = "Beginner";
                     }
-                    else if (averageTime >= 1000 && averageTime < 2500)
+                    else if (rating >= 100 && rating < 200)
                     {
-                        sudokuPuzzles[i].Difficulty = "Intermediate";
+                        sudokuPuzzles[i].Difficulty = "Moderate";
                     }
-                    else
+                    else if (rating >= 200 && rating < 500)
                     {
                         sudokuPuzzles[i].Difficulty = "Advanced";
                     }
+                    else
+                    {
+                        sudokuPuzzles[i].Difficulty = "Extreme";
+                    }
+
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
                         new XElement("puzzle",
-                            new XElement("ID", sudokuPuzzles[i].PuzzleID),
-                            new XElement("SudokuString", gen.SudokuToString(sudokuPuzzles[i]))
+                            new XElement("DifficultyRating", rating),
+                            new XElement("SudokuString", puzzleString)
                             )
                         );
                 }
                 doc.Save(filename);
+                MessageBox.Show("Successfully added " + numPuzzles + " puzzles.");
             }
             catch (Exception ex)
             {

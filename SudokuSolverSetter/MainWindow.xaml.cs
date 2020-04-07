@@ -45,19 +45,24 @@ namespace SudokuSolverSetter
 
         private void Play_Sudoku_Click(object sender, RoutedEventArgs e)
         {
-            if (Difficulty_ComboBox.SelectedIndex == 0)
+            if (Difficulty_ComboBox.SelectedIndex == 0)//Beginner
             {
-                PlaySudoku playSudoku = new PlaySudoku(1);
+                PlaySudoku playSudoku = new PlaySudoku("1", "");
                 playSudoku.Show();
             }
-            else if (Difficulty_ComboBox.SelectedIndex == 1)
+            else if (Difficulty_ComboBox.SelectedIndex == 1)//Moderate
             {
-                PlaySudoku playSudoku = new PlaySudoku(2);
+                PlaySudoku playSudoku = new PlaySudoku("2", "");
                 playSudoku.Show();
             }
-            else
+            else if (Difficulty_ComboBox.SelectedIndex == 2)//Advanced
             {
-                PlaySudoku playSudoku = new PlaySudoku(3);
+                PlaySudoku playSudoku = new PlaySudoku("3", "");
+                playSudoku.Show();
+            }
+            else                                           //Extreme
+            {
+                PlaySudoku playSudoku = new PlaySudoku("4", "");
                 playSudoku.Show();
             }
 

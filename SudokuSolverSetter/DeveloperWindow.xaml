@@ -11,7 +11,7 @@
         <Canvas>
             <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="90" Height="25" FontSize="16"/>
             <Button x:Name="b_Solve" Content="Solve using objects" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="160" Canvas.Left="10" Canvas.Top="98" Height="50" FontSize="14"/>
-            <Button x:Name="b_Solve1by1" Content="Solve cell by cell" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160" Canvas.Left="10" Canvas.Top="153" Height="50" FontSize="14"/>
+            <Button x:Name="b_Solve1by1" Content="Solve cell by cell (WIP)" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160" Canvas.Left="10" Canvas.Top="153" Height="50" FontSize="14"/>
             <Button x:Name="Generate_Puzzle" Content="Generate" Click="GeneratePuzzle_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="435" Canvas.Top="10" Height="45" FontSize="14"/>
             <Button x:Name="Import_Puzzle" Content="Import" Click="Import_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="315" Canvas.Top="10" Height="45" FontSize="14"/>
 

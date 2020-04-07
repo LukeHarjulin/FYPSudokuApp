@@ -537,18 +537,7 @@ namespace SudokuSolverSetter
             //Initialising objects
             PuzzleSolver solve = new PuzzleSolver();
             PuzzleGenerator gen = new PuzzleGenerator();
-            txtBxList = new List<TextBox>
-            { x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
-              x2y1g1, x2y2g1, x2y3g1, x2y4g2, x2y5g2, x2y6g2, x2y7g3, x2y8g3, x2y9g3,
-              x3y1g1, x3y2g1, x3y3g1, x3y4g2, x3y5g2, x3y6g2, x3y7g3, x3y8g3, x3y9g3,
-              x4y1g4, x4y2g4, x4y3g4, x4y4g5, x4y5g5, x4y6g5, x4y7g6, x4y8g6, x4y9g6,
-              x5y1g4, x5y2g4, x5y3g4, x5y4g5, x5y5g5, x5y6g5, x5y7g6, x5y8g6, x5y9g6,
-              x6y1g4, x6y2g4, x6y3g4, x6y4g5, x6y5g5, x6y6g5, x6y7g6, x6y8g6, x6y9g6,
-              x7y1g7, x7y2g7, x7y3g7, x7y4g8, x7y5g8, x7y6g8, x7y7g9, x7y8g9, x7y9g9,
-              x8y1g7, x8y2g7, x8y3g7, x8y4g8, x8y5g8, x8y6g8, x8y7g9, x8y8g9, x8y9g9,
-              x9y1g7, x9y2g7, x9y3g7, x9y4g8, x9y5g8, x9y6g8, x9y7g9, x9y8g9, x9y9g9
-            };
-            SudokuGrid gridSolve = new SudokuGrid() { PuzzleID = 0 };
+            SudokuGrid gridSolve = new SudokuGrid();
             gridSolve.Rows = new Cell[9][];
             int cellNum = 0;
 
@@ -642,6 +631,7 @@ namespace SudokuSolverSetter
             string puzzleString = gen.SudokuToString(gridSolve);
             double averageTime = 0;
             bool solved = false;
+            int difficulty = 0;
             for (int i = 0; i < iterations; i++)
             {
                 if (i != 0)
@@ -662,6 +652,8 @@ namespace SudokuSolverSetter
                 }                
                 var watch = System.Diagnostics.Stopwatch.StartNew();
                 solved = solve.Solver(gridSolve, method);
+                if (i==0)
+                    difficulty = solve.difficulty;
                 watch.Stop();
                 averageTime += watch.ElapsedMilliseconds;
             }
@@ -671,7 +663,7 @@ namespace SudokuSolverSetter
             PopulateGrid(gridSolve, txtBxList);
             if (solved)
             {
-                MessageBox.Show("SOLVED\r\n" + currentTime);
+                MessageBox.Show("SOLVED\r\n" + currentTime+"\r\nMeasured Difficulty(WIP):"+difficulty);
             }
             else
             {
@@ -798,7 +790,14 @@ namespace SudokuSolverSetter
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    grid.Rows[i][j].Candidates = grid.Rows[i][j].Num == 0 ? new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' } : grid.Rows[i][j].Candidates;
+                    if (grid.Rows[i][j].ReadOnly == true)
+                    {
+                        grid.Rows[i][j].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                    }
+                    else
+                    {
+                        grid.Rows[i][j].Candidates.Clear();
+                    }
                 }
             }
             txtBxList = PopulateGrid(grid, txtBxList);
