@@ -19,6 +19,7 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class PuzzleSelector : Window
     {
+        private MainWindow homePage = new MainWindow();
         public PuzzleSelector()
         {
             InitializeComponent();
@@ -26,10 +27,19 @@ namespace SudokuSolverSetter
 
         private void Back_Button_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow homePage = new MainWindow();
             this.Hide();
             homePage = new MainWindow();
             homePage.Show();
+        }
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            homePage = new MainWindow();
+            homePage.Show();
+        }
+
+        private void SelectPuzzle_Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

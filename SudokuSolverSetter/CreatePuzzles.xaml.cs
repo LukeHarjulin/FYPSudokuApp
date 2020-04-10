@@ -96,12 +96,8 @@ namespace SudokuSolverSetter
                 for (int i = 0; i < numPuzzles; i++)
                 {
                     sudokuPuzzles.Add(gen.Setter());
-                   
-                    
                     string puzzleString = gen.SudokuToString(sudokuPuzzles[i]);
                     long rating = GetDifficulty(sudokuPuzzles[i], puzzleString);
-                    
-
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
                         new XElement("puzzle",
                             new XElement("DifficultyRating", rating),
@@ -124,8 +120,9 @@ namespace SudokuSolverSetter
             PuzzleSolver solver = new PuzzleSolver();
             long rating = 0;
             int difficulty = solver.difficulty = 0;
-            for (int n = 0; n < 10; n++)
+            for (int n = 0; n < 5; n++)
             {
+                difficulty = 0;
                 int counter = 0;
                 for (int x = 0; x < 9; x++)
                 {
@@ -142,22 +139,20 @@ namespace SudokuSolverSetter
                 watch = Stopwatch.StartNew();
                 solver.Solver(puzzleGrid, 1);
                 watch.Stop();
-                if (n == 0)
-                {
-                    difficulty = solver.difficulty;
-                }
+                difficulty = solver.difficulty;
                 rating += watch.ElapsedMilliseconds;
             }
+            rating = rating / 10;
             rating += difficulty;
-            if (rating < 100)
+            if (rating < 800)
             {
                 puzzleGrid.Difficulty = "Beginner";
             }
-            else if (rating >= 100 && rating < 200)
+            else if (rating >= 800 && rating < 1400)
             {
                 puzzleGrid.Difficulty = "Moderate";
             }
-            else if (rating >= 200 && rating < 500)
+            else if (rating >= 1400 && rating < 2500)
             {
                 puzzleGrid.Difficulty = "Advanced";
             }

@@ -112,28 +112,31 @@ namespace SudokuSolverSetter
                         g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
                     }
                 }
+                ///Populate grid with puzzle from xml doc or random generation
+                for (int i = 0; i < 81; i++)
+                {
+                    if (puzzleString[i] != '0')
+                    {
+                        g_txtBxList[i].Text = puzzleString[i].ToString();
+                        g_txtBxList[i].IsReadOnly = true;
+                        g_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                    }
+                }
             }
             catch (Exception)//Generates puzzle of random difficulty
             {
-                MessageBox.Show("No puzzles exist... Generating Random Puzzle for you...");
+                MessageBox.Show("No puzzles exist... A puzzle of random difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
                 g_grid = gen.Setter();
                 PopulateGrid(g_grid, g_txtBxList);
                 g_originalPuzzleString = gen.SudokuToString(g_grid);
                 CreatePuzzles createPuzzles = new CreatePuzzles();
                 g_rating = createPuzzles.GetDifficulty(g_grid, g_originalPuzzleString).ToString();
                 //Clipboard.SetText(gen.SudokuToString(grid));
+                Sudoku_Title.Content = g_grid.Difficulty + " Sudoku Puzzle";
                 g_difficulty = g_grid.Difficulty;
+                
             }
-            ///Populate grid with puzzle from xml doc
-            for (int i = 0; i < 81; i++)
-            {
-                if (puzzleString[i] != '0')
-                {
-                    g_txtBxList[i].Text = puzzleString[i].ToString();
-                    g_txtBxList[i].IsReadOnly = true;
-                    g_txtBxList[i].FontWeight = FontWeights.SemiBold;
-                }
-            }
+            
             StartTimer();
             g_originalPuzzleString = puzzleString;
             

@@ -10,6 +10,7 @@ namespace SudokuSolverSetter
 /// </summary>
     public class PuzzleSolverCharVer
     {
+        private PuzzleGenerator gen = new PuzzleGenerator();
         /// <summary>
         /// 
         /// </summary>
@@ -18,7 +19,7 @@ namespace SudokuSolverSetter
         /// <returns></returns>
         public bool Solvers(char[][] grid, char method)
         {
-            PuzzleGenerator gen = new PuzzleGenerator();
+            
             bool changeMade = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
@@ -41,7 +42,6 @@ namespace SudokuSolverSetter
         }
         public bool RemoveCands(char[][] grid, int row, int col, List<char> candidates)
         {
-            PuzzleGenerator gen = new PuzzleGenerator();
             int blockNumber = 0;
             int[] indexes = new int[2];
             blockNumber = (row / 3) * 3 + (col / 3) + 1;
@@ -89,7 +89,6 @@ namespace SudokuSolverSetter
         /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
         public bool BruteForceSolve(char[][] grid, int row, int col, byte variator)
         {
-            PuzzleGenerator gen = new PuzzleGenerator();
 
             if (col == 9 && row == 9)//If somehow the method tries to look at this non-existent cell, this catches the exception
             {
