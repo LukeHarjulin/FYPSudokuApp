@@ -4,7 +4,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Text.RegularExpressions;
-
+using System.Xml.Linq;
+using System.IO;
+using System.Xml;
 namespace SudokuSolverSetter
 {
     /// <summary>
@@ -17,7 +19,9 @@ namespace SudokuSolverSetter
         private PuzzleGenerator gen = new PuzzleGenerator();
         private PuzzleSolver solve = new PuzzleSolver();
         private string currentTime = "";
-
+        
+        private List<int> ratingList = new List<int>();
+        private List<string> puzzleStrList = new List<string>();
         public DeveloperWindow()
         {
             InitializeComponent();
@@ -39,460 +43,70 @@ namespace SudokuSolverSetter
                                              x8y1g7, x8y2g7, x8y3g7, x8y4g8, x8y5g8, x8y6g8, x8y7g9, x8y8g9, x8y9g9,
                                              x9y1g7, x9y2g7, x9y3g7, x9y4g8, x9y5g8, x9y6g8, x9y7g9, x9y8g9, x9y9g9
             };
-            //SudokuGrid grid = gen.Setter();//Calling the automated puzzle generator method to create a puzzle - incomplete
-
-            //Currently using pre-made sudoku puzzles found on sudokuwiki.org to develop my puzzle solver
-            //Need to develop a method that takes a csv file/string of numbers and displays it as a puzzle
-            #region Manual Puzzle Generation
-            /*
-            Cell[][] cells = new Cell[9][];
-            for (int t = 0; t < cells.Length; t++)
-            { cells[t] = new Cell[9]; }
-            List<int> candiFiller = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-            #region Test Puzzle One
-            ///*cells[0][0] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][2] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][5] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][7] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][8] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][0] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][1] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][2] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][3] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][6] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][0] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][1] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][2] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][4] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][7] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][8] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[3][0] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][2] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][3] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][4] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][6] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][8] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][1] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][4] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][5] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][6] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][7] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[6][0] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][1] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][2] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][4] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][5] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][7] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][1] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][2] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][4] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][5] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][6] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            #endregion Test Puzzle One
-            #region Test Puzzle Two
-            cells[0][0] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[0][1] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[0][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[0][3] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[0][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[0][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[0][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[0][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[0][8] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[1][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[1][1] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[1][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[1][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[1][4] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[1][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[1][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[1][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[1][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[2][0] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[2][1] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[2][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            cells[2][3] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[2][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[2][5] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            cells[2][6] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[2][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[2][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            cells[3][0] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[3][1] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[3][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[3][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[3][4] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[3][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[3][6] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[3][7] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[3][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[4][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[4][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[4][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[4][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[4][4] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[4][5] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[4][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[4][7] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[4][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[5][0] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[5][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[5][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            cells[5][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[5][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[5][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            cells[5][6] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[5][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[5][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            cells[6][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[6][1] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[6][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[6][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[6][4] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[6][5] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[6][6] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[6][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[6][8] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[7][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[7][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[7][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[7][3] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[7][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[7][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[7][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[7][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[7][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[8][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[8][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[8][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            cells[8][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[8][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[8][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            cells[8][6] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[8][7] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            cells[8][8] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            #endregion Test Puzzle Two
-            #region Test Puzzle Three
-            //cells[0][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][3] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][5] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][0] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][1] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][6] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][7] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][1] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][5] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][6] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[3][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][1] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][2] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][4] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][7] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][0] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][8] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][1] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][4] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][6] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][7] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[6][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][2] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][3] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][7] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][1] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][2] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][7] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][8] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][3] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][5] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            #endregion
-            #region Test Puzzle Four
-            ///*cells[0][0] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][2] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][6] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][0] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][3] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][5] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][1] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][2] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[3][0] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][1] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][4] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][6] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][7] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][0] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][3] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][5] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][8] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][1] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][2] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][4] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][7] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][8] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[6][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][6] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][7] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][3] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][5] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][8] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][2] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][6] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][8] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            #endregion
-            #region Test Puzzle Five
-            //cells[0][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[0][3] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][5] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[0][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[0][8] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][1] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[1][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][4] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[1][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][7] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[1][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 1, XLocation = 0, YLocation = 0 };
-            //cells[2][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][4] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 2, XLocation = 0, YLocation = 0 };
-            //cells[2][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[2][8] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 3, XLocation = 0, YLocation = 0 };
-            //cells[3][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][1] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[3][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][5] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[3][6] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][7] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[3][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][0] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[4][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][4] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[4][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[4][8] = new Cell() { Num = 8, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][1] = new Cell() { Num = 5, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][2] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 4, XLocation = 0, YLocation = 0 };
-            //cells[5][3] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 5, XLocation = 0, YLocation = 0 };
-            //cells[5][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][7] = new Cell() { Num = 1, Candidates = { }, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[5][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 6, XLocation = 0, YLocation = 0 };
-            //cells[6][0] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[6][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][4] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[6][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[6][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][0] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][1] = new Cell() { Num = 3, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[7][3] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][4] = new Cell() { Num = 6, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][5] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[7][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][7] = new Cell() { Num = 9, Candidates = { }, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[7][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][0] = new Cell() { Num = 2, Candidates = { }, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][1] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][2] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 7, XLocation = 0, YLocation = 0 };
-            //cells[8][3] = new Cell() { Num = 4, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][4] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][5] = new Cell() { Num = 7, Candidates = { }, BlockLoc = 8, XLocation = 0, YLocation = 0 };
-            //cells[8][6] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][7] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            //cells[8][8] = new Cell() { Num = 0, Candidates = candiFiller, BlockLoc = 9, XLocation = 0, YLocation = 0 };
-            #endregion
-            for (int x = 0; x < cells.Length; x++)
+            AddPuzzlesToCombo();
+        }
+        public void AddPuzzlesToCombo()
+        {
+            if (PuzzlesByRating_combo.Items.Count > 0)
             {
-                for (int y = 0; y < cells[x].Length; y++)
+                PuzzlesByRating_combo.Items.Clear();
+                ratingList.Clear();
+                puzzleStrList.Clear();
+            }
+            string fileName = @"SudokuPuzzles.xml";
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.Load(fileName);
+                XmlNode sudokuPuzzles = doc.DocumentElement.SelectSingleNode("/SudokuPuzzles");
+                XmlNodeList puzzleLabels = sudokuPuzzles.ChildNodes;
+                foreach (XmlNode label in puzzleLabels)
                 {
-                    cells[x][y].XLocation = x;
-                    cells[x][y].YLocation = y;
-                    if (cells[x][y].Num != 0)
+                    XmlNodeList difficulties = label.ChildNodes;
+                    foreach (XmlNode difficulty in difficulties)
                     {
-                        cells[x][y].ReadOnly = true;
+                        foreach (XmlNode puzzle in difficulty)
+                        {
+                            int rating = int.Parse(puzzle["DifficultyRating"].InnerText), i = 0;
+                            bool added = false;
+                            if (ratingList.Count > 0)
+                            {
+                                for (i = 0; i < ratingList.Count; i++)
+                                {
+                                    if (rating < ratingList[i])
+                                    {
+                                        ratingList.Insert(i, rating);
+                                        added = true;
+                                        break;
+                                    }
+                                }
+                                if (!added)
+                                {
+                                    ratingList.Add(rating);
+                                }
+                            }
+                            else
+                                ratingList.Add(rating);
+                            if (label.Name == "Started")
+                            {
+                                puzzleStrList.Insert(i, puzzle["OriginalSudokuString"].InnerText);
+                            }
+                            else
+                            {
+                                puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
+                            }
+                        }
                     }
-
+                }
+                foreach (int s in ratingList)
+                {
+                    PuzzlesByRating_combo.Items.Add(s);
                 }
             }
-
-            SudokuGrid grid = new SudokuGrid()
+            catch (Exception)
             {
-                PuzzleID = 0,
-                Rows = cells
-            };
-            */
-            #endregion
-
-            //PopulateGrid(grid, txtBxList);
-            //Clipboard.SetText(gen.SudokuToString(grid));
-            //solve.Solver(grid);
-            /*Tip for removing numbers.
-            - Remove numbers till only one solution is possible. Then to make the puzzle more difficult, remove extra numbers and see if it is still solvable.
-             */
+                MessageBox.Show("Warning! No existing XML file found in folder.");
+            }
         }
         public List<TextBox> PopulateGrid(SudokuGrid grid, List<TextBox> m_txtBxList)
         {
@@ -561,7 +175,7 @@ namespace SudokuSolverSetter
                         solved = puzzleSolver.Solver(grid, m);
                         if (i == 0)
                         {
-                            difficulty = puzzleSolver.difficulty + Convert.ToInt32(watch.ElapsedMilliseconds);
+                            difficulty = puzzleSolver.difficulty;
                         }
                     }
                     else
@@ -729,6 +343,7 @@ namespace SudokuSolverSetter
                     averageTime += watch.ElapsedMilliseconds;
                 }
                 averageTime = averageTime / iterations;
+                
                 currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
 
                 PopulateGrid(grid, txtBxList);
@@ -738,7 +353,7 @@ namespace SudokuSolverSetter
                 }
                 else if (puzzleSolver.bruteForced)
                 {
-                    MessageBox.Show("FAILED\r\n" + currentTime + "\r\nFinished with bruteforce, added +400 to difficulty.\r\nMeasured Difficulty(WIP): " + difficulty);
+                    MessageBox.Show("FAILED\r\n" + currentTime + "\r\nFinished with bruteforce, added +1750 to difficulty.\r\nMeasured Difficulty(WIP): " + difficulty);
                 }
                 if (method == 1)
                 {
@@ -834,7 +449,8 @@ namespace SudokuSolverSetter
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
             CreatePuzzles createPuzzles = new CreatePuzzles();
-            createPuzzles.Show();
+            createPuzzles.ShowDialog();
+            AddPuzzlesToCombo();
         }
 
         private void Import_Click(object sender, RoutedEventArgs e)
@@ -954,6 +570,28 @@ namespace SudokuSolverSetter
             {
                 MessageBox.Show("FAILED\r\n" + currentTime);
             }
+        }
+
+        private void RatingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (PuzzlesByRating_combo.SelectedIndex >= 0)
+            {
+                for (int i = 0; i < 81; i++)
+                {
+                    if (puzzleStrList[PuzzlesByRating_combo.SelectedIndex][i] == '0')
+                    {
+                        txtBxList[i].FontSize = 12;
+                        txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
+                    }
+                    else
+                    {
+                        txtBxList[i].FontSize = 36;
+                        txtBxList[i].Text = puzzleStrList[PuzzlesByRating_combo.SelectedIndex][i].ToString();
+
+                    }
+                }
+            }
+                  
         }
     }
 }

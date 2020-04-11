@@ -122,6 +122,7 @@ namespace SudokuSolverSetter
                         g_txtBxList[i].FontWeight = FontWeights.SemiBold;
                     }
                 }
+                g_originalPuzzleString = puzzleString;
             }
             catch (Exception)//Generates puzzle of random difficulty
             {
@@ -134,11 +135,10 @@ namespace SudokuSolverSetter
                 //Clipboard.SetText(gen.SudokuToString(grid));
                 Sudoku_Title.Content = g_grid.Difficulty + " Sudoku Puzzle";
                 g_difficulty = g_grid.Difficulty;
-                
             }
-            
+            Rating_lbl.Content = "Rating: " + g_rating;
             StartTimer();
-            g_originalPuzzleString = puzzleString;
+            
             
         }
         #region Functions
@@ -300,6 +300,7 @@ namespace SudokuSolverSetter
                            new XElement("puzzle",
                                new XElement("DifficultyRating", g_rating),
                                new XElement("SudokuString", candidatesInString),
+                               new XElement("OriginalSudokuString", g_originalPuzzleString),
                                new XElement("TimeTaken", g_currentTime)
                                )
                            );
@@ -672,6 +673,7 @@ namespace SudokuSolverSetter
             cnvs.Background = darkerColour;
             Sudoku_Title.Foreground = textColour;
             time_lbl.Foreground = textColour;
+            Rating_lbl.Foreground = textColour;
             timer_txtbx.Foreground = textColour;
             TogglePencil.Foreground = textColour; TogglePencil.Background = darkButtonColour;
             Back_btn.Foreground = textColour; Back_btn.Background = darkButtonColour;
@@ -723,6 +725,7 @@ namespace SudokuSolverSetter
             cnvs.Background = Brushes.White;
             Sudoku_Title.Foreground = Brushes.Black;
             time_lbl.Foreground = Brushes.Black;
+            Rating_lbl.Foreground = Brushes.Black;
             timer_txtbx.Foreground = Brushes.Black;
             TogglePencil.Foreground = Brushes.Black; TogglePencil.Background = buttonColour;
             Back_btn.Foreground = Brushes.Black; Back_btn.Background = buttonColour;

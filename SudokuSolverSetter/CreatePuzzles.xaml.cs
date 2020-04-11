@@ -107,6 +107,7 @@ namespace SudokuSolverSetter
                 }
                 doc.Save(filename);
                 MessageBox.Show("Successfully added " + numPuzzles + " puzzles.");
+                
             }
             catch (Exception ex)
             {
@@ -116,34 +117,28 @@ namespace SudokuSolverSetter
         }
         public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString)
         {
-            var watch = Stopwatch.StartNew();
             PuzzleSolver solver = new PuzzleSolver();
             long rating = 0;
-            int difficulty = solver.difficulty = 0;
-            for (int n = 0; n < 5; n++)
+            int counter = 0;
+            
+            for (int x = 0; x < 9; x++)
             {
-                difficulty = 0;
-                int counter = 0;
-                for (int x = 0; x < 9; x++)
+                for (int y = 0; y < 9; y++)
                 {
-                    for (int y = 0; y < 9; y++)
+                    if (puzzleString[counter] == '0')
                     {
-                        if (puzzleString[counter] == '0')
-                        {
-                            puzzleGrid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                        }
-                        puzzleGrid.Rows[x][y].Num = puzzleString[counter];
-                        counter++;
+                        puzzleGrid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                     }
+                    else
+                    {
+                        puzzleGrid.Rows[x][y].Candidates = new List<char> { };
+                    }
+                    puzzleGrid.Rows[x][y].Num = puzzleString[counter];
+                    counter++;
                 }
-                watch = Stopwatch.StartNew();
-                solver.Solver(puzzleGrid, 1);
-                watch.Stop();
-                difficulty = solver.difficulty;
-                rating += watch.ElapsedMilliseconds;
             }
-            rating = rating / 10;
-            rating += difficulty;
+            solver.Solver(puzzleGrid, 1);
+            rating = solver.difficulty;
             if (rating < 800)
             {
                 puzzleGrid.Difficulty = "Beginner";
@@ -152,7 +147,7 @@ namespace SudokuSolverSetter
             {
                 puzzleGrid.Difficulty = "Moderate";
             }
-            else if (rating >= 1400 && rating < 2500)
+            else if (rating >= 1400 && rating < 2000)
             {
                 puzzleGrid.Difficulty = "Advanced";
             }

@@ -105,6 +105,8 @@
             <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="91" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16" Canvas.Left="169" Canvas.Top="68"/>
             <Label Content="Number of solves:" Canvas.Left="10" Canvas.Top="67" FontSize="18"/>
             <Button x:Name="TestAllThree" Content="Test All Three Solvers" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="308" Height="110" FontSize="18"/>
+            <Label Content="Select existing puzzle:" Canvas.Left="702" Canvas.Top="17" FontSize="16"/>
+            <ComboBox x:Name="PuzzlesByRating_combo" Canvas.Left="865" Canvas.Top="17" Width="80" Height="31" FontSize="16" SelectionChanged="RatingCombo_SelectionChanged"/>
         </Canvas>
     </Border>
 </Window>

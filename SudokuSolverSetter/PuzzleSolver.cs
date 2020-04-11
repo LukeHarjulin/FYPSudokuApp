@@ -33,74 +33,74 @@ namespace SudokuSolverSetter
             */
             if (method == 1)
             {
-                
+                string separator = "|>---------------------------------------------------------------------------------------------------------------------->|";
                 do
                 {
                     if (FindNakedSingles(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindHiddenSingles(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindNakedPair(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindHiddenPair(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindNakedTriple(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindHiddenTriple(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindPointingNumbers(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindBlockLineReduce(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindXWing(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
-                    }
-                    else if (FindSingleChains(grid))
-                    {
-                        changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     else if (FindYWing(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
+                    }
+                    else if (FindSingleChains(grid))
+                    {
+                        changeMade = true;
+                        solvePath.Add(separator);
                     }
                     else if (FindUniqueRectangleType1(grid))
                     {
                         changeMade = true;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                     //More methods to add
                     else
                     {
                         changeMade = false;
-                        solvePath.Add("|>---------------------------------------------------------------------------------------------------------------------->|");
+                        solvePath.Add(separator);
                     }
                 } while (changeMade);
             }
@@ -115,6 +115,10 @@ namespace SudokuSolverSetter
                 difficulty += 1750;
                 bruteForced = true;
                 solvePath.Add("BRUTE FORCE USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
+            }
+            if (bruteForced == true)
+            {
+                return false;
             }
             return gen.CheckIfSolved(grid);
         }
@@ -250,14 +254,14 @@ namespace SudokuSolverSetter
                                 {
                                     foreach (Cell cell in grid.Rows[i][j].NeighbourCells[index])
                                     {
-                                        if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[0]))
+                                        if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[0]) && cell.Num == '0')
                                         {
                                             cell.Candidates.Remove(neighbour.Candidates[0]);
                                             changeMade = true;
                                             difficulty += 30;
                                             solvePath.Add("Candidate number " + neighbour.Candidates[0] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR");
                                         }
-                                        if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[1]))
+                                        if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[1]) && cell.Num == '0')
                                         {
                                             cell.Candidates.Remove(neighbour.Candidates[1]);
                                             changeMade = true;

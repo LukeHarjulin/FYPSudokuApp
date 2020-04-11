@@ -94,7 +94,7 @@
             </UniformGrid>
 
             <ToggleButton x:Name="TogglePencil" Height="70" Width="250" Background="#FFF7E6" Canvas.Left="728" Canvas.Top="487" Content="Notes OFF (N)" FontSize="24" Checked="ToggleButton_Checked" Click="ToggleButton_Click" Unchecked="ToggleButton_Unchecked" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Toggles note/pencil marks" FontFamily="Verdana"/>
-            <Label x:Name="Sudoku_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="44" FontSize="24" Content="&lt;Difficulty&gt; Sudoku Puzzle" Canvas.Left="11" Canvas.Top="7" FontFamily="Verdana"/>
+            <Label x:Name="Sudoku_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Width="396" Height="44" FontSize="24" Content="&lt;Difficulty&gt; Sudoku Puzzle" Canvas.Left="11" Canvas.Top="7" FontFamily="Verdana"/>
             <UniformGrid Width="250" Height="250" Canvas.Left="720" Canvas.Top="127">
                 <Button x:Name="btn1" Content="1" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '1' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
                 <Button x:Name="btn2" Content="2" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '2' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
@@ -110,11 +110,12 @@
             <Button x:Name="del_btn" Content="Delete (Del)" FontSize="24" FontFamily="Verdana" Click="Delete_Button_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Height="65" Canvas.Left="750" Canvas.Top="397" Width="200" ToolTip="Deletes a number from the selected cell" Background="#FFF7E6"/>
             <Button x:Name="newPuzzle_btn" Content="New Puzzle" Canvas.Left="750" Canvas.Top="587" Width="200" Height="65" FontSize="22" Click="New_Btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Starts a new Sudoku game" Background="#FFF7E6" FontFamily="Verdana"/>
             <Button x:Name="Help_btn" Content="Help" Canvas.Left="885" Canvas.Top="7" Width="85" Height="65" Click="Help_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6" FontFamily="Verdana"/>
-            <Label x:Name="time_lbl" Content="Time: " Canvas.Left="452" Canvas.Top="7" Width="60" FontSize="20" FontFamily="Verdana"/>
-            <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" Canvas.Left="512" Canvas.Top="11" Width="90" FontSize="20" IsReadOnly="True" TextChanged="Timer_txtbx_TextChanged" BorderBrush="{x:Null}" FontFamily="Verdana"/>
+            <Label x:Name="time_lbl" Content="Time: " Canvas.Left="548" Canvas.Top="6" Width="72" FontSize="20" FontFamily="Verdana"/>
+            <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" Canvas.Left="620" Canvas.Top="10" Width="90" FontSize="20" IsReadOnly="True" TextChanged="Timer_txtbx_TextChanged" BorderBrush="{x:Null}" FontFamily="Verdana"/>
             <Button x:Name="Pause_btn" Content="Pause (P)" Canvas.Left="728" Canvas.Top="7" Width="135" Height="65" FontSize="22" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Pauses the stopwatch" Background="#FFF7E6" FontFamily="Verdana"/>
             <CheckBox x:Name="nightmode_chkbx" Content="Night mode" Canvas.Left="786" Canvas.Top="82" Checked="CheckBox_Checked" Height="30" Unchecked="CheckBox_Unchecked" FontSize="22" Width="146" FontFamily="Verdana"/>
             <Label x:Name="PauseBlock" Content="PAUSED" Background="#FFEEF1FF" Height="705" Canvas.Top="50" Width="700" Canvas.Left="10" FontSize="72" TextOptions.TextFormattingMode="Display" FontWeight="SemiBold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden"/>
+            <Label x:Name="Rating_lbl" Content="Rating: &lt;Rating&gt;" Canvas.Left="397" Width="141" FontSize="14" FontFamily="Verdana"/>
         </Canvas>
     </Border>
 </Window>
