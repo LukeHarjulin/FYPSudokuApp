@@ -7,18 +7,76 @@
         mc:Ignorable="d"
         Title="Sudoku Project" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
     <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}" Background="#FFEEF1FF">
-        <Button x:Name="Developer_Mode" Background="#FFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="54,706,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16"/>
-        <Button x:Name="Quit_btn" Background="#FFF7E6" Content="QUIT" Width="305" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,540,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3"/>
-        <Button x:Name="Play_Sudoku_Btn" Background="#FFF7E6" Content="PLAY SUDOKU" Width="400" Click="Play_Sudoku_Click" Height="60" Margin="0,360,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-        <Button x:Name="Level_Selector_Btn" Background="#FFF7E6" Content="PUZZLE SELECTOR (WIP)" Width="400" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,450,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3"/>
-        <Label Content="TITLE NAME" HorizontalAlignment="Center" VerticalAlignment="Top" Height="100" Width="450" Margin="272,90,272,0" FontWeight="Medium" FontSize="48" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" TextOptions.TextFormattingMode="Display" FontStyle="Oblique"/>
-        <ComboBox x:Name="Difficulty_ComboBox" Background="#FFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="846,370,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="30" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538">
+        <Image Height="Auto" Width="Auto" Source="StartPageBackground_Design.png" Margin="-20,-20,-31,-19"/>
+        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="418" Margin="0,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="486" StrokeThickness="3"/>
+        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="57" Margin="0,15,773,0" Stroke="Black" VerticalAlignment="Top" Width="183" StrokeThickness="3"/>
+        <Button x:Name="Developer_Mode" Background="#FFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="25,25,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
+        <Button x:Name="Quit_btn" Background="#FFF7E6" Content="QUIT" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,660,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <Button x:Name="Play_Sudoku_Btn" Background="#FFF7E6" Content="PLAY SUDOKU" Width="420" Click="Play_Sudoku_Click" Height="60" Margin="0,360,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Verdana"/>
+        <Button x:Name="Level_Selector_Btn" Background="#FFF7E6" Content="PUZZLE SELECTOR (WIP)" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,460,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <ComboBox x:Name="Difficulty_ComboBox" Background="#FFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="573,425,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="30" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538" FontFamily="Verdana">
             <ComboBoxItem IsSelected="True" Content="Beginner"/>
             <ComboBoxItem Content="Moderate"/>
             <ComboBoxItem Content="Advanced"/>
             <ComboBoxItem Content="Extreme"/>
         </ComboBox>
-        <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="702,365,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium"/>
+        <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="415,420,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium" FontFamily="Verdana"/>
+        <Button x:Name="Help_btn" Background="#FFF7E6" Content="OPEN HELP" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Help_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,560,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="180" Margin="-50,80,-50,0" Stroke="Black" VerticalAlignment="Top" Width="1120" StrokeThickness="3"/>
+        <Image HorizontalAlignment="Center" Height="140" Margin="0,100,0,0" VerticalAlignment="Top" Width="810" Source="/Title_designV2.png"/>
+
+        <RichTextBox x:Name="HelpBlock" Background="#FFEEF1FF" Canvas.Top="50" Canvas.Left="10" IsReadOnly="True" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" Margin="10,0,0,216" VerticalScrollBarVisibility="Auto">
+            <FlowDocument>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="50" LineHeight="20">
+                    <Underline>HELP</Underline>
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
+                    <Underline>Playing Sudoku</Underline>
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="18" LineHeight="20">
+                    <Underline>Objective:</Underline>
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    Fill in all the empty cells with a single number from 1-9 till the entire grid is full.
+                    However, a number cannot lie in a group – row, column, or block (the 3x3 mini grids) – more than once.
+                    Therefore, each group must contain every number from 1 - 9.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    A pop up will occur to notify you if you have completed the puzzle.
+                    _________________________________________________________________________
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="18" LineHeight="20">
+                    <Underline>Tips on How to Play:</Underline>
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The most basic strategy is to look at any empty cell within the puzzle and then look at all the groups that it belongs to. 
+                    Then, make a note of all the numbers that can go into that cell.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    To make note of what numbers can exist within a cell, toggle the ‘Notes’ button by either clicking it or by pressing ‘N’ on your keyboard.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    Another basic strategy is to look at a group and identify which numbers are left to be placed in that group.
+                    Then, for each number that doesn't exist in that group, 
+                    look at each cell within that group and check whether that possible number can be placed in that cell by looking at the other groups that the cell belongs to.
+                    _________________________________________________________________________
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
+                    <Underline>Additional Information</Underline>
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    Dark Mode is available whilst playing sudoku for those who prefer a darker colour scheme. It is located below the 'Help' button.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    If it happens that there are no puzzles in storage or that you have completed all of the existing puzzles, click the 'Generate Puzzles' button in the bottom right and select how many puzzles you wish to generate.
+                    Keep in mind that creating several puzzles at once can take a while, please be patient.
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="57" Margin="796,700,0,0" Stroke="Black" VerticalAlignment="Top" Width="180" StrokeThickness="3"/>
+        <Button x:Name="Generate_Puzzles_btn" Background="#FFF7E6" Content="Generate Puzzles" HorizontalAlignment="Left" Margin="810,710,0,0" VerticalAlignment="Top" Width="160" Click="Create_Store_Puzzles_btn_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
+
+
 
 
     </Grid>

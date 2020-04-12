@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.IO;
 using System.Xml;
+using System.Windows.Threading;
+using System.Diagnostics;
+
 namespace SudokuSolverSetter
 {
     /// <summary>
@@ -14,14 +17,17 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class DeveloperWindow : Window
     {
-        private List<TextBox> txtBxList = new List<TextBox>();
-        private MainWindow homePage = new MainWindow();
-        private PuzzleGenerator gen = new PuzzleGenerator();
-        private PuzzleSolver solve = new PuzzleSolver();
-        private string currentTime = "";
-        
-        private List<int> ratingList = new List<int>();
-        private List<string> puzzleStrList = new List<string>();
+        private List<TextBox> g_txtBxList = new List<TextBox>();
+        private MainWindow g_homePage = new MainWindow();
+        private PuzzleGenerator g_gen = new PuzzleGenerator();
+        private PuzzleSolver g_solve = new PuzzleSolver();
+        private string g_currentTime = "";
+        private DispatcherTimer g_DT { get; set; }
+        private Stopwatch g_Timer { get; set; }
+        private List<string> g_BruteSolvePath = new List<string>();
+        private int g_PathCounter = 0;
+        private List<int> g_ratingList = new List<int>();
+        private List<string> g_puzzleStrList = new List<string>();
         public DeveloperWindow()
         {
             InitializeComponent();
@@ -33,7 +39,7 @@ namespace SudokuSolverSetter
             Number_List_combo.Items.Add(500);
             Number_List_combo.Items.Add(1000);
             //Create list of all the cells so that they can be transformed
-            txtBxList = new List<TextBox> {  x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
+            g_txtBxList = new List<TextBox> {  x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
                                              x2y1g1, x2y2g1, x2y3g1, x2y4g2, x2y5g2, x2y6g2, x2y7g3, x2y8g3, x2y9g3,
                                              x3y1g1, x3y2g1, x3y3g1, x3y4g2, x3y5g2, x3y6g2, x3y7g3, x3y8g3, x3y9g3,
                                              x4y1g4, x4y2g4, x4y3g4, x4y4g5, x4y5g5, x4y6g5, x4y7g6, x4y8g6, x4y9g6,
@@ -50,8 +56,8 @@ namespace SudokuSolverSetter
             if (PuzzlesByRating_combo.Items.Count > 0)
             {
                 PuzzlesByRating_combo.Items.Clear();
-                ratingList.Clear();
-                puzzleStrList.Clear();
+                g_ratingList.Clear();
+                g_puzzleStrList.Clear();
             }
             string fileName = @"SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
@@ -69,36 +75,36 @@ namespace SudokuSolverSetter
                         {
                             int rating = int.Parse(puzzle["DifficultyRating"].InnerText), i = 0;
                             bool added = false;
-                            if (ratingList.Count > 0)
+                            if (g_ratingList.Count > 0)
                             {
-                                for (i = 0; i < ratingList.Count; i++)
+                                for (i = 0; i < g_ratingList.Count; i++)
                                 {
-                                    if (rating < ratingList[i])
+                                    if (rating < g_ratingList[i])
                                     {
-                                        ratingList.Insert(i, rating);
+                                        g_ratingList.Insert(i, rating);
                                         added = true;
                                         break;
                                     }
                                 }
                                 if (!added)
                                 {
-                                    ratingList.Add(rating);
+                                    g_ratingList.Add(rating);
                                 }
                             }
                             else
-                                ratingList.Add(rating);
+                                g_ratingList.Add(rating);
                             if (label.Name == "Started")
                             {
-                                puzzleStrList.Insert(i, puzzle["OriginalSudokuString"].InnerText);
+                                g_puzzleStrList.Insert(i, puzzle["OriginalSudokuString"].InnerText);
                             }
                             else
                             {
-                                puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
+                                g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
                             }
                         }
                     }
                 }
-                foreach (int s in ratingList)
+                foreach (int s in g_ratingList)
                 {
                     PuzzlesByRating_combo.Items.Add(s);
                 }
@@ -175,7 +181,7 @@ namespace SudokuSolverSetter
                         solved = puzzleSolver.Solver(grid, m);
                         if (i == 0)
                         {
-                            difficulty = puzzleSolver.difficulty;
+                            difficulty = puzzleSolver.g_Difficulty;
                         }
                     }
                     else
@@ -214,8 +220,77 @@ namespace SudokuSolverSetter
             times[2] = times[2].Remove(0, 2);
             outputStr += "Brute-Force Solver using char[][]: " + times[2] + "\r\n";
 
-            PopulateGrid(grid, txtBxList);
+            PopulateGrid(grid, g_txtBxList);
             MessageBox.Show(outputStr);
+        }
+        private void StartTimer()
+        {
+            g_Timer = new Stopwatch();
+            g_DT = new DispatcherTimer();
+            g_DT.Tick += new EventHandler(DT_Tick);
+            g_DT.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            g_Timer.Start();
+            g_DT.Start();
+            Brute_Solve_char.IsEnabled = false;
+            Brute_Solve_Obj.IsEnabled = false;
+            b_Solve.IsEnabled = false;
+            TestAllThree.IsEnabled = false;
+            b_Solve1by1.IsEnabled = false;
+            Import_Puzzle.IsEnabled = false;
+            Create_Store_Puzzles_btn.IsEnabled = false;
+        }
+        private void StopTimer()
+        {
+            g_Timer.Stop();
+            g_DT.Stop();
+            Brute_Solve_char.IsEnabled = true;
+            Brute_Solve_Obj.IsEnabled = true;
+            b_Solve.IsEnabled = true;
+            TestAllThree.IsEnabled = true;
+            b_Solve1by1.IsEnabled = true;
+            Import_Puzzle.IsEnabled = true;
+            Create_Store_Puzzles_btn.IsEnabled = true;
+        }
+        private void DT_Tick(object sender, EventArgs e)
+        {
+            if (g_Timer.IsRunning)
+            {
+                try
+                {
+                    if (g_PathCounter >= g_BruteSolvePath.Count)
+                    {
+                        StopTimer();
+                    }
+                    else
+                    {
+                        //Add number to cell
+                        int i1 = Convert.ToInt32(g_BruteSolvePath[g_PathCounter][0]) + 1;
+                        int j1 = Convert.ToInt32(g_BruteSolvePath[g_PathCounter][1]) + 1;
+                        for (int i = 0; i < g_txtBxList.Count; i++)
+                        {
+                            if (g_txtBxList[i].Name[1] == (char)i1 && g_txtBxList[i].Name[3] == (char)j1)
+                            {
+                                g_txtBxList[i].FontSize = 36;
+                                if (g_BruteSolvePath[g_PathCounter][2] == '0')
+                                {
+                                    g_txtBxList[i].Text = "";
+                                }
+                                else
+                                {
+                                    g_txtBxList[i].Text = g_BruteSolvePath[g_PathCounter][2].ToString();
+                                }
+                            }
+                        }
+                        g_PathCounter++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Something went wrong with the timer. \r\nError: " + ex);
+                    throw;
+                }
+                
+            }
         }
         private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the grid that it is presented
         {
@@ -232,10 +307,10 @@ namespace SudokuSolverSetter
                 grid.Rows[r] = new Cell[9];
                 for (int c = 0; c < grid.Rows[r].Length; c++)
                 {
-                    string blockLoc = txtBxList[cellNum].Name[5].ToString();
-                    if (txtBxList[cellNum].Text.Length > 1)
+                    string blockLoc = g_txtBxList[cellNum].Name[5].ToString();
+                    if (g_txtBxList[cellNum].Text.Length > 1)
                     {
-                        txtBxList[cellNum].Text = "0";
+                        g_txtBxList[cellNum].Text = "0";
                         grid.Rows[r][c] = new Cell()
                         {
                             Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' },
@@ -251,7 +326,7 @@ namespace SudokuSolverSetter
                         grid.Rows[r][c] = new Cell()
                         {
                             Candidates = new List<char> { },
-                            Num = txtBxList[cellNum].Text[0],
+                            Num = g_txtBxList[cellNum].Text[0],
                             BlockLoc = Convert.ToInt32(blockLoc),
                             XLocation = r,
                             YLocation = c,
@@ -338,27 +413,42 @@ namespace SudokuSolverSetter
                     var watch = System.Diagnostics.Stopwatch.StartNew();
                     solved = puzzleSolver.Solver(grid, method);
                     if (i == 0)
-                        difficulty = puzzleSolver.difficulty;
+                        difficulty = puzzleSolver.g_Difficulty;
                     watch.Stop();
                     averageTime += watch.ElapsedMilliseconds;
                 }
                 averageTime = averageTime / iterations;
                 
-                currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
+                g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
 
-                PopulateGrid(grid, txtBxList);
-                if (solved && !puzzleSolver.bruteForced)
-                {
-                    MessageBox.Show("SOLVED\r\n" + currentTime + "\r\nMeasured Difficulty(WIP): " + difficulty);
-                }
-                else if (puzzleSolver.bruteForced)
-                {
-                    MessageBox.Show("FAILED\r\n" + currentTime + "\r\nFinished with bruteforce, added +1750 to difficulty.\r\nMeasured Difficulty(WIP): " + difficulty);
-                }
+                
                 if (method == 1)
                 {
+                    PopulateGrid(grid, g_txtBxList);
+                    if (solved && !puzzleSolver.g_BruteForced)
+                    {
+                        MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Difficulty(WIP): " + difficulty);
+                    }
+                    else if (puzzleSolver.g_BruteForced)
+                    {
+                        MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with bruteforce, added +2000 to difficulty to compensate for unimplemented strategies.\r\nMeasured Difficulty(experimental): " + difficulty);
+                    }
                     SolvePath path = new SolvePath();
-                    path.PopulateTextBlock(difficulty, currentTime, puzzleSolver);
+                    path.PopulateTextBlock(difficulty, g_currentTime, puzzleSolver);
+                    
+                }
+                else if (method == 2)
+                {
+                    MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime+"\r\n\r\nDo you want to see the Brute-Force solver solve the puzzle?\r\n(Warning: The visual solving can take a very long time to finish)", "Brute-Force Visual Confirmation", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        g_BruteSolvePath.AddRange(puzzleSolver.g_BruteSolvePath);
+                        StartTimer();
+                    }
+                    else
+                    {
+                        PopulateGrid(grid, g_txtBxList);
+                    }
                 }
             }
             else
@@ -428,22 +518,31 @@ namespace SudokuSolverSetter
             PopulateGrid(gridSolve, txtBxList);
         }
 
-        private void BruteForceChckBx_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Back_Button_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
-            homePage = new MainWindow();
-            homePage.Show();
+            if (g_Timer != null)
+            {
+                if (g_Timer.IsRunning)
+                {
+                    StopTimer();
+                }
+            }
+            g_homePage = new MainWindow();
+            g_homePage.Show();
         }
 
         private void Window_Close(object sender, EventArgs e)
         {
-            homePage = new MainWindow();
-            homePage.Show();
+            if (g_Timer != null)
+            {
+                if (g_Timer.IsRunning)
+                {
+                    StopTimer();
+                }
+            }
+            g_homePage = new MainWindow();
+            g_homePage.Show();
         }
 
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
@@ -459,44 +558,53 @@ namespace SudokuSolverSetter
             
             if (importPuzzle.ShowDialog() == true)
             {
+                int givensCounter = 0;
                 string importStr = importPuzzle.puzzleStr;
                 Regex rgx = new Regex(@"[1-9]");
                 for (int i = 0; i < 81; i++)
                 {
                     if (!rgx.IsMatch(importStr[i].ToString()))
                     {
-                        txtBxList[i].FontSize = 12;
-                        txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
+                        g_txtBxList[i].FontSize = 12;
+                        g_txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
                     }
                     else
                     {
-                        txtBxList[i].FontSize = 36;
-                        txtBxList[i].Text = importStr[i].ToString();
+                        g_txtBxList[i].FontSize = 36;
+                        g_txtBxList[i].Text = importStr[i].ToString();
+                        givensCounter++;
                     }
                 }
+                givenNums_lbl.Content = "Given Numbers: " + givensCounter;
             }
             
         }
 
         private void GeneratePuzzle_Click(object sender, RoutedEventArgs e)
         {
-            SudokuGrid grid = gen.Setter();//Calling the automated puzzle generator method to create a puzzle
+            if (g_Timer != null)
+            {
+                if (g_Timer.IsRunning)
+                {
+                    StopTimer();
+                }
+            }
+            SudokuGrid grid = g_gen.Setter();//Calling the automated puzzle generator method to create a puzzle
+            int givensCounter = 0;
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    if (grid.Rows[i][j].ReadOnly == true)
+                    if (grid.Rows[i][j].Num != '0')
                     {
-                        grid.Rows[i][j].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                        givensCounter++;
                     }
-                    else
-                    {
-                        grid.Rows[i][j].Candidates.Clear();
-                    }
+                    grid.Rows[i][j].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                 }
             }
-            txtBxList = PopulateGrid(grid, txtBxList);
-            Clipboard.SetText(gen.SudokuToString(grid));
+            givenNums_lbl.Content = "Given Numbers: " + givensCounter;
+            g_txtBxList = PopulateGrid(grid, g_txtBxList);
+            Clipboard.SetText(g_gen.SudokuToString(grid));
         }
 
         private void BruteSolve_char_Click(object sender, RoutedEventArgs e)
@@ -508,13 +616,13 @@ namespace SudokuSolverSetter
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    if (txtBxList[counter].Text.Length > 1 || txtBxList[counter].Text == "0" || txtBxList[counter].Text.Length == 0)
+                    if (g_txtBxList[counter].Text.Length > 1 || g_txtBxList[counter].Text == "0" || g_txtBxList[counter].Text.Length == 0)
                     {
                         puzzle[i][j] = '0';
                     }
                     else
                     {
-                        puzzle[i][j] = txtBxList[counter].Text[0];
+                        puzzle[i][j] = g_txtBxList[counter].Text[0];
                     }
                     counter++;
                 }
@@ -544,54 +652,71 @@ namespace SudokuSolverSetter
                 averageTime += watch.ElapsedMilliseconds;
             }
             averageTime = averageTime / iterations;
-            currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
+            g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
             counter = 0;
-            for (int x = 0; x < 9; x++)
-            {
-                for (int y = 0; y < 9; y++)
-                {
-                    if (puzzleTemp[x][y] != '0')
-                    {
-                        txtBxList[counter].FontSize = 36;
-                        txtBxList[counter].Text = puzzleTemp[x][y].ToString();
-                    }
-                    else//should never really happpen
-                    {
-                        txtBxList[counter].Text = "0";
-                    }
-                    counter++;
-                }
-            }
+            
             if (solved)
             {
-                MessageBox.Show("SOLVED\r\n" + currentTime);
+                MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\n\r\nDo you want to see the Brute-Force solver solve the puzzle?\r\n(Warning: The visual solving can take a very long time to finish)", "Brute-Force Visual Confirmation", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    g_BruteSolvePath.AddRange(solver.solvePath);
+                    StartTimer();
+                }
+                else
+                {
+                    for (int x = 0; x < 9; x++)
+                    {
+                        for (int y = 0; y < 9; y++)
+                        {
+                            if (puzzleTemp[x][y] != '0')
+                            {
+                                g_txtBxList[counter].FontSize = 36;
+                                g_txtBxList[counter].Text = puzzleTemp[x][y].ToString();
+                            }
+                            else//should never really happpen
+                            {
+                                g_txtBxList[counter].Text = "0";
+                            }
+                            counter++;
+                        }
+                    }
+                }
             }
             else
             {
-                MessageBox.Show("FAILED\r\n" + currentTime);
+                MessageBox.Show("FAILED\r\n" + g_currentTime);
             }
         }
 
         private void RatingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (g_Timer != null)
+            {
+                if (g_Timer.IsRunning)
+                {
+                    StopTimer();
+                }
+            }
             if (PuzzlesByRating_combo.SelectedIndex >= 0)
             {
+                int givensCounter = 0;
                 for (int i = 0; i < 81; i++)
                 {
-                    if (puzzleStrList[PuzzlesByRating_combo.SelectedIndex][i] == '0')
+                    if (g_puzzleStrList[PuzzlesByRating_combo.SelectedIndex][i] == '0')
                     {
-                        txtBxList[i].FontSize = 12;
-                        txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
+                        g_txtBxList[i].FontSize = 12;
+                        g_txtBxList[i].Text = "1 2 3 4 5 6 7 8 9";
                     }
                     else
                     {
-                        txtBxList[i].FontSize = 36;
-                        txtBxList[i].Text = puzzleStrList[PuzzlesByRating_combo.SelectedIndex][i].ToString();
-
+                        g_txtBxList[i].FontSize = 36;
+                        g_txtBxList[i].Text = g_puzzleStrList[PuzzlesByRating_combo.SelectedIndex][i].ToString();
+                        givensCounter++;
                     }
                 }
+                givenNums_lbl.Content = "Given Numbers: " + givensCounter;
             }
-                  
         }
     }
 }

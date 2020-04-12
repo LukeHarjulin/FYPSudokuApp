@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
         Title="CreatePuzzles" Height="275" Width="350" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
-    <Grid Margin="0,0,0,1">
+    <Grid Margin="0,0,0,1" Background="#FFEEF1FF">
         <Button Content="Create and Store" HorizontalAlignment="Center" Margin="0,0,0,50" VerticalAlignment="Bottom" Width="150" Height="30" FontSize="16" Click="Button_Click"/>
-        <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" Margin="229,89,0,0" VerticalAlignment="Top" Width="50" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16"/>
+        <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" Margin="224,86,0,0" VerticalAlignment="Top" Width="50" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16"/>
         <Label Content="Number of puzzles:" HorizontalAlignment="Left" Margin="55,80,0,0" VerticalAlignment="Top" Width="169" FontSize="18"/>
         <Label Content="Create &amp; Store More Puzzles" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" FontSize="22" Height="40" Width="290" AutomationProperties.IsOffscreenBehavior="FromClip"/>
-
+        <Label Content="(Generating puzzles can take a long time, please be patient)" HorizontalAlignment="Center" Margin="0,200,0,0" VerticalAlignment="Top" FontSize="10"/>
     </Grid>
 </Window>

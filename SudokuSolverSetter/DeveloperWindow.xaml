@@ -8,14 +8,14 @@
         mc:Ignorable="d"
         Title="Devloper Window" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
     <Border Padding="10">
-        <Canvas>
+        <Canvas Background="#FFEEF1FF">
             <Button x:Name="Back_btn" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="100" Height="45" FontSize="16" Canvas.Left="10" Canvas.Top="10"/>
             <Button x:Name="b_Solve" Content="Strategy Solver &#xD;&#xA;using Objects" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="98" Height="65" FontSize="18"/>
             <Button x:Name="b_Solve1by1" Content="Solve Cell By Cell (WIP)" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="520" Height="75" FontSize="18"/>
             <Button x:Name="Generate_Puzzle" Content="Generate" Click="GeneratePuzzle_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="435" Canvas.Top="10" Height="45" FontSize="14"/>
             <Button x:Name="Import_Puzzle" Content="Import" Click="Import_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="315" Canvas.Top="10" Height="45" FontSize="14"/>
 
-            <UniformGrid x:Name="SudokuGrid" Background="White" Height="630" Width="630" Canvas.Left="315" Canvas.Top="60" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <UniformGrid x:Name="SudokuGrid" Background="White" Height="630" Width="630" Canvas.Left="315" Canvas.Top="111" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBox x:Name="x1y1g1"  IsReadOnly="True" FontWeight="SemiBold" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" Text="0"/>
                 <TextBox x:Name="x1y2g1"  IsReadOnly="True" FontWeight="SemiBold" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <TextBox x:Name="x1y3g1"  IsReadOnly="True" FontWeight="SemiBold" BorderBrush="Black" TextWrapping="Wrap" BorderThickness="0.75,0.75,2,0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
@@ -105,8 +105,9 @@
             <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="91" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16" Canvas.Left="169" Canvas.Top="68"/>
             <Label Content="Number of solves:" Canvas.Left="10" Canvas.Top="67" FontSize="18"/>
             <Button x:Name="TestAllThree" Content="Test All Three Solvers" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="308" Height="110" FontSize="18"/>
-            <Label Content="Select existing puzzle:" Canvas.Left="702" Canvas.Top="17" FontSize="16"/>
+            <Label Content="Select existing puzzle:" Canvas.Left="702" Canvas.Top="17" FontSize="16" HorizontalContentAlignment="Right"/>
             <ComboBox x:Name="PuzzlesByRating_combo" Canvas.Left="865" Canvas.Top="17" Width="80" Height="31" FontSize="16" SelectionChanged="RatingCombo_SelectionChanged"/>
+            <Label x:Name="givenNums_lbl" Content="Given Numbers:" Canvas.Left="745" Canvas.Top="62" FontSize="16" Width="200"/>
         </Canvas>
     </Border>
 </Window>

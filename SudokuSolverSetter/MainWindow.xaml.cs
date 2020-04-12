@@ -23,9 +23,7 @@ namespace SudokuSolverSetter
         public MainWindow()
         {
             InitializeComponent();
-            
         }
-
         private void DeveloperMode_Button_Click(object sender, RoutedEventArgs e)
         {
 
@@ -84,6 +82,26 @@ namespace SudokuSolverSetter
             PuzzleSelector selector = new PuzzleSelector();
             selector.Show();
             this.Hide();
+        }
+
+        private void Help_btn_Click(object sender, RoutedEventArgs e)
+        {
+            if (HelpBlock.IsVisible == false)
+            {
+                HelpBlock.Visibility = Visibility.Visible;
+                Help_btn.Content = "CLOSE HELP";
+            }
+            else
+            {
+                HelpBlock.Visibility = Visibility.Hidden;
+                Help_btn.Content = "OPEN HELP";
+            }
+        }
+
+        private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
+        {
+            CreatePuzzles createPuzzles = new CreatePuzzles();
+            createPuzzles.ShowDialog();
         }
     }
 }

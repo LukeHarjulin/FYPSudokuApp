@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Threading;
 using System.Diagnostics;
 using System.Windows.Threading;
 using System.Xml.Linq;
@@ -38,7 +31,7 @@ namespace SudokuSolverSetter
         private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
         private SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
         private SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(255, 255, 224, 233));
-        private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, textColour, buttonColour, altDarkCellColour;
+        private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, darkTextColour, buttonColour, altDarkCellColour;
 
         public DispatcherTimer DT { get; set; }
         public Stopwatch Timer { get; set; }
@@ -124,15 +117,15 @@ namespace SudokuSolverSetter
                 }
                 g_originalPuzzleString = puzzleString;
             }
-            catch (Exception)//Generates puzzle of random difficulty
+            catch (Exception)//Generates puzzle of random g_difficulty
             {
-                MessageBox.Show("No puzzles exist... A puzzle of random difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
+                MessageBox.Show("No puzzles exist... A puzzle of random g_difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
                 g_grid = gen.Setter();
                 PopulateGrid(g_grid, g_txtBxList);
                 g_originalPuzzleString = gen.SudokuToString(g_grid);
                 CreatePuzzles createPuzzles = new CreatePuzzles();
                 g_rating = createPuzzles.GetDifficulty(g_grid, g_originalPuzzleString).ToString();
-                //Clipboard.SetText(gen.SudokuToString(grid));
+                //Clipboard.SetText(g_gen.SudokuToString(grid));
                 Sudoku_Title.Content = g_grid.Difficulty + " Sudoku Puzzle";
                 g_difficulty = g_grid.Difficulty;
             }
@@ -151,13 +144,45 @@ namespace SudokuSolverSetter
             Timer.Start();
             DT.Start();
         }
-        private void PauseTimer()
+        private void PauseTimer(int type)
         {
             if (Timer.IsRunning)
             {
+                
                 Timer.Stop();
                 DT.Stop();
-                PauseBlock.Visibility = Visibility.Visible;
+                
+                if (type == 1)
+                {
+                    RTB_LargeText.Inlines.Clear();
+                    RTB_HelpText.Inlines.Clear();
+                    PauseBlock.Visibility = Visibility.Visible;
+                    RTB_LargeText.Inlines.Add("PAUSED");
+                    RTB_LargeText.FontSize = 72;
+                    RTB_LargeText.Padding = new Thickness(210);
+                }
+                else
+                {
+                    RTB_LargeText.Inlines.Clear();
+                    RTB_HelpText.Inlines.Clear();
+                    PauseBlock.Visibility = Visibility.Visible;
+                    RTB_LargeText.Padding = new Thickness(0);
+                    RTB_LargeText.Inlines.Add("HELP");
+                    RTB_HelpText.Inlines.Add("Objective:\r\n\r\nFill in all the empty cells with a single number from 1-9 till the entire grid is full.\r\n" +
+                        "However, a number cannot lie in a group – row, column, or block (the 3x3 mini grids) – more than once.\r\n" +
+                        "Therefore, each group must contain every number from 1 - 9.\r\n" +
+                        "A pop up will occur to notify you if you have completed the puzzle.\r\n\r\n\r\n" +
+                        "Tips on How to Play:\r\n\r\n" +
+                         "The most basic strategy is to look at any empty cell within the puzzle and then look at all the groups that it belongs to. Then, make a note of all the numbers that can go into that cell.\r\n" +
+                        "To make note of what numbers can exist within a cell, toggle the ‘Notes’ button by either clicking it or by pressing ‘N’ on your keyboard.\r\n\r\n" +
+                        "Another basic strategy is to look at a group and identify which numbers are left to be placed in that group.\r\n" +
+                        "Then, for each number that doesn't exist in that group, look at each cell within that group and check whether that possible number can be placed in that cell by looking at the other groups that the cell belongs to.\r\n\r\n\r\n" + 
+                        "\"What does the rating mean?\"\r\n\r\n" +
+                        "The rating of the puzzle is based off the weighting and frequency of simplest strategies required to solve the puzzle.\r\n\r\n" +
+                        "Dark Mode is available below the 'Help' button, for those who prefer a darker colour scheme.\r\n\r\n");
+                    RTB_LargeText.FontSize = 42;
+                    RTB_HelpText.FontSize = 18;
+                }
             }
             else
             {
@@ -342,6 +367,7 @@ namespace SudokuSolverSetter
                 if (ts.Seconds < 10)
                 {
                     g_currentTime = ts.Minutes + ":0" + ts.Seconds.ToString();
+                    
                 }
                 else
                 {
@@ -352,7 +378,14 @@ namespace SudokuSolverSetter
         }
         private void Pause_btn_Click(object sender, RoutedEventArgs e)
         {
-            PauseTimer();
+            if (((Button)sender).Name == "Pause_btn")
+            {
+                PauseTimer(1);
+            }
+            else//Help button click
+            {
+                PauseTimer(2);
+            }
         }
                 
         private void Num_Button_Click(object sender, RoutedEventArgs e)
@@ -604,7 +637,7 @@ namespace SudokuSolverSetter
                     PencilMarkONOFF('k');
                     break;
                 case Key.P:
-                    PauseTimer();
+                    PauseTimer(1);
                     break;
                 default:
                     break;
@@ -664,34 +697,35 @@ namespace SudokuSolverSetter
                 darkColour = new SolidColorBrush(Color.FromArgb(255, 45, 45, 45));
                 altDarkCellColour = new SolidColorBrush(Color.FromArgb(255, 66, 66, 66));
                 darkButtonColour = new SolidColorBrush(Color.FromArgb(255, 60, 60, 60));
-                textColour = new SolidColorBrush(Color.FromArgb(150, 240, 240, 240));
+                darkTextColour = new SolidColorBrush(Color.FromArgb(150, 240, 240, 240));
                 darkFocusCell = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
                 darkHoverCell = new SolidColorBrush(Color.FromArgb(255, 95, 95, 95));
             }
                 
             this.Background = darkColour;
             cnvs.Background = darkerColour;
-            Sudoku_Title.Foreground = textColour;
-            time_lbl.Foreground = textColour;
-            Rating_lbl.Foreground = textColour;
-            timer_txtbx.Foreground = textColour;
-            TogglePencil.Foreground = textColour; TogglePencil.Background = darkButtonColour;
-            Back_btn.Foreground = textColour; Back_btn.Background = darkButtonColour;
-            del_btn.Foreground = textColour; del_btn.Background = darkButtonColour;
-            newPuzzle_btn.Foreground = textColour; newPuzzle_btn.Background = darkButtonColour;
-            Help_btn.Foreground = textColour; Help_btn.Background = darkButtonColour;
-            Pause_btn.Foreground = textColour; Pause_btn.Background = darkButtonColour;
-            nightmode_chkbx.Foreground = textColour;
-
-            btn1.Foreground = textColour; btn2.Foreground = textColour; btn3.Foreground = textColour; btn4.Foreground = textColour;
-            btn5.Foreground = textColour; btn6.Foreground = textColour; btn7.Foreground = textColour; btn8.Foreground = textColour; btn9.Foreground = textColour;
+            Sudoku_Title.Foreground = darkTextColour;
+            time_lbl.Foreground = darkTextColour;
+            Rating_lbl.Foreground = darkTextColour;
+            timer_txtbx.Foreground = darkTextColour;
+            TogglePencil.Foreground = darkTextColour; TogglePencil.Background = darkButtonColour;
+            Back_btn.Foreground = darkTextColour; Back_btn.Background = darkButtonColour;
+            del_btn.Foreground = darkTextColour; del_btn.Background = darkButtonColour;
+            newPuzzle_btn.Foreground = darkTextColour; newPuzzle_btn.Background = darkButtonColour;
+            Help_btn.Foreground = darkTextColour; Help_btn.Background = darkButtonColour;
+            Pause_btn.Foreground = darkTextColour; Pause_btn.Background = darkButtonColour;
+            nightmode_chkbx.Foreground = darkTextColour;
+            PauseBlock.Background = darkerColour;
+            PauseBlock.Foreground = darkTextColour;
+            btn1.Foreground = darkTextColour; btn2.Foreground = darkTextColour; btn3.Foreground = darkTextColour; btn4.Foreground = darkTextColour;
+            btn5.Foreground = darkTextColour; btn6.Foreground = darkTextColour; btn7.Foreground = darkTextColour; btn8.Foreground = darkTextColour; btn9.Foreground = darkTextColour;
             btn1.Background = darkButtonColour; btn2.Background = darkButtonColour;btn3.Background = darkButtonColour; btn4.Background = darkButtonColour;
             btn5.Background = darkButtonColour; btn6.Background = darkButtonColour; btn7.Background = darkButtonColour; btn8.Background = darkButtonColour; btn9.Background = darkButtonColour;
             for (int i = 0; i < g_txtBxList.Count; i++)
             {
-                g_txtBxList[i].Foreground = textColour;
-                g_txtBxList[i].BorderBrush = textColour;
-                g_txtBxList[i].SelectionBrush = textColour;
+                g_txtBxList[i].Foreground = darkTextColour;
+                g_txtBxList[i].BorderBrush = darkTextColour;
+                g_txtBxList[i].SelectionBrush = darkTextColour;
                 if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
                     || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
                     || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
@@ -721,8 +755,8 @@ namespace SudokuSolverSetter
                 backgroundCol = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
             }
 
-            this.Background = Brushes.White;
-            cnvs.Background = Brushes.White;
+            this.Background = backgroundCol;
+            cnvs.Background = backgroundCol;
             Sudoku_Title.Foreground = Brushes.Black;
             time_lbl.Foreground = Brushes.Black;
             Rating_lbl.Foreground = Brushes.Black;
@@ -734,7 +768,8 @@ namespace SudokuSolverSetter
             Help_btn.Foreground = Brushes.Black; Help_btn.Background = buttonColour;
             Pause_btn.Foreground = Brushes.Black; Pause_btn.Background = buttonColour;
             nightmode_chkbx.Foreground = Brushes.Black;
-
+            PauseBlock.Background = backgroundCol;
+            PauseBlock.Foreground = Brushes.Black;
             btn1.Foreground = Brushes.Black; btn2.Foreground = Brushes.Black; btn3.Foreground = Brushes.Black; btn4.Foreground = Brushes.Black;
             btn5.Foreground = Brushes.Black; btn6.Foreground = Brushes.Black; btn7.Foreground = Brushes.Black; btn8.Foreground = Brushes.Black; btn9.Foreground = Brushes.Black;
             btn1.Background = buttonColour; btn2.Background = buttonColour; btn3.Background = buttonColour; btn4.Background = buttonColour;
@@ -785,11 +820,11 @@ namespace SudokuSolverSetter
             {
                 if (sender.GetType().Name == "Button")
                 {
-                    ((Button)sender).Foreground = textColour;
+                    ((Button)sender).Foreground = darkTextColour;
                 }
                 else
                 {
-                    ((ToggleButton)sender).Foreground = textColour;
+                    ((ToggleButton)sender).Foreground = darkTextColour;
                 }
             }
         }
@@ -845,11 +880,6 @@ namespace SudokuSolverSetter
                 }
             }
             
-        }
-
-        private void Help_btn_Click(object sender, RoutedEventArgs e)
-        {
-            //Produce help window
         }
 
         private void Timer_txtbx_TextChanged(object sender, TextChangedEventArgs e)

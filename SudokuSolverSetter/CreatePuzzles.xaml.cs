@@ -138,7 +138,7 @@ namespace SudokuSolverSetter
                 }
             }
             solver.Solver(puzzleGrid, 1);
-            rating = solver.difficulty;
+            rating = solver.g_Difficulty;
             if (rating < 800)
             {
                 puzzleGrid.Difficulty = "Beginner";
@@ -147,7 +147,7 @@ namespace SudokuSolverSetter
             {
                 puzzleGrid.Difficulty = "Moderate";
             }
-            else if (rating >= 1400 && rating < 2000)
+            else if (rating >= 1400 && rating < 2200)
             {
                 puzzleGrid.Difficulty = "Advanced";
             }

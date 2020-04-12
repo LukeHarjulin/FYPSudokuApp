@@ -159,7 +159,7 @@ namespace SudokuSolverSetter
                                         }
                                     }
                                 }
-                                else//Invalid puzzle
+                                else//Invalid puzzle, should never occur
                                 {
                                     grid = RestartPuzzle(grid, sudokuArray);
                                 }

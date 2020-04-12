@@ -11,6 +11,7 @@ namespace SudokuSolverSetter
     public class PuzzleSolverCharVer
     {
         private PuzzleGenerator gen = new PuzzleGenerator();
+        public List<string> solvePath = new List<string>();
         /// <summary>
         /// 
         /// </summary>
@@ -19,7 +20,7 @@ namespace SudokuSolverSetter
         /// <returns></returns>
         public bool Solvers(char[][] grid, char method)
         {
-            
+            solvePath.Clear();
             bool changeMade = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
@@ -72,6 +73,7 @@ namespace SudokuSolverSetter
             if (candidates.Count == 1)
             {
                 grid[row][col] = candidates[0];
+                solvePath.Add(row.ToString() + col.ToString() + candidates[0].ToString());//Add to solve path
             }
             return true;
         }
@@ -99,6 +101,7 @@ namespace SudokuSolverSetter
                 else
                 {
                     grid[--row][--col] = '0';
+                    solvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                     return false;
                 }
             }
@@ -119,6 +122,7 @@ namespace SudokuSolverSetter
                             else
                             {
                                 grid[--row][--col] = '0';
+                                solvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                                 return false;
                             }
                         }
@@ -141,6 +145,7 @@ namespace SudokuSolverSetter
             if (!RemoveCands(grid, row, col, candidates))//if it returns false, candidates count must be 0 so a contradiction is found
             {
                 grid[row][col] = '0';
+                solvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                 return false;
             }
 
@@ -150,6 +155,7 @@ namespace SudokuSolverSetter
                 if (++nextRow == 9)//Currently looking at cell 81 in grid
                 {
                     grid[row][col] = candidates[0];//Sets the last cell to be the only value possible, then the solution is checked.
+                    solvePath.Add(row.ToString() + col.ToString() + candidates[0].ToString());//Add to solve path
                     if (gen.CheckIfSolved_array(grid))
                     {
                         return true;
@@ -157,6 +163,7 @@ namespace SudokuSolverSetter
                     else
                     {
                         grid[row][col] = '0';//cell value must be set to 0 to backtrack
+                        solvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                         return false;
                     }
                 }
@@ -167,6 +174,7 @@ namespace SudokuSolverSetter
                 foreach (char candidate in candidates)//iterates through each candidate value, assigning it to the current cell number.  
                 {
                     grid[row][col] = candidate;
+                    solvePath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
                     //A new instance of BruteForceSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
                     if (BruteForceSolve(grid, nextRow, nextCol, variator))
                         return true;
@@ -181,10 +189,12 @@ namespace SudokuSolverSetter
                 else
                 {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
                     grid[row][col] = '0';
+                    solvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                     return false;
                 }
             }
             grid[row][col] = '0';//cell value must be set to 0 to backtrack
+            solvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
             return false;//gets hit if each brute force attempt with each 'candidate' returns false in the foreach
         }
     }

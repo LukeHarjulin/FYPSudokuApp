@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Closed">
 
-    <Grid>
+    <Grid Background="#FFEEF1FF">
         <Grid Width="330" Canvas.Left="10" Height="656" Canvas.Top="115" ScrollViewer.VerticalScrollBarVisibility="Visible" Background="#C5E1C7" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -60,7 +60,7 @@
                     </StackPanel>
                 </ScrollViewer>
             </Expander>
-            <Expander Header="Moderate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="2" Margin="10,0,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+            <Expander Header="Moderate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="3" Margin="10,0,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="Moderate_STKPNL" Background="#FFE5E5E5" Height="Auto" >
                         <Border BorderThickness="2" BorderBrush="DarkGray">
@@ -69,7 +69,7 @@
                     </StackPanel>
                 </ScrollViewer>
             </Expander>
-            <Expander Header="Advanced" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="3" Margin="10,0,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+            <Expander Header="Advanced" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="4" Margin="10,0,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="Advanced_STKPNL" Background="#FFE5E5E5" Height="Auto" >
                         <Border BorderThickness="2" BorderBrush="DarkGray">
@@ -78,7 +78,7 @@
                     </StackPanel>
                 </ScrollViewer>
             </Expander>
-            <Expander Header="Extreme" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="4" Margin="10,0,0,0" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Expander Header="Extreme" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="5" Margin="10,0,0,0" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="Extreme_STKPNL" Background="#FFE5E5E5" Height="Auto" >
                         <Border BorderThickness="2" BorderBrush="DarkGray">
@@ -87,7 +87,7 @@
                     </StackPanel>
                 </ScrollViewer>
             </Expander>
-            <Expander Header="Completed" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="5" Margin="10,0,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+            <Expander Header="Completed" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" Grid.Row="6" Margin="10,0,0,0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="Completed_STKPNL" Background="#FFE5E5E5" Height="Auto" >
                         <Border BorderThickness="2" BorderBrush="DarkGray">

@@ -153,5 +153,11 @@
   <ItemGroup>
     <Resource Include="Icon_v3.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Title_designV2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="StartPageBackground_Design.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

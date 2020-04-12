@@ -29,15 +29,15 @@ namespace SudokuSolverSetter
             Show();
             AdditionalInfo.Text = "Difficulty Rating (WIP): " + difficultyRating + "\r\n" + timeString;
             string solvePath = "";
-            for (int i = 0; i < puzzleSolver.solvePath.Count; i++)
+            for (int i = 0; i < puzzleSolver.g_SolvePath.Count; i++)
             {
-                if (puzzleSolver.solvePath[i][0] != '-')
+                if (puzzleSolver.g_SolvePath[i][0] != '-')
                 {
-                    solvePath += "\r\n" + puzzleSolver.solvePath[i] + "\r\n\r\n";
+                    solvePath += "\r\n" + puzzleSolver.g_SolvePath[i] + "\r\n\r\n";
                 }
                 else
                 {
-                    solvePath += puzzleSolver.solvePath[i] + "\r\n";
+                    solvePath += puzzleSolver.g_SolvePath[i] + "\r\n";
                 }
             }
             solvePathBlock.Text = solvePath;
