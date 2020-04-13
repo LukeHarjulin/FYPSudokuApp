@@ -41,6 +41,16 @@ namespace SudokuSolverSetter
             }
             return gen.CheckIfSolved_array(grid);
         }
+        /// <summary>
+        /// Removes all values from the current cell's candidate list that are also found within neighbouring cells
+        /// I.e. Cells that are in the same groups as the cell in question.
+        /// A group is a block/row/column
+        /// </summary>
+        /// <param name="grid">Sudoku grid of char[][] type that is passed into and mutated in the method</param>
+        /// <param name="row">Current row number being examined in this instance of the method</param>
+        /// <param name="col">Current column number being examined in this instance of the method</param>
+        /// <param name="candidates">list of candidates that the current cell can contain</param>
+        /// <returns>false if an error occurs and a candidate list contains 0 values | true if it is ok</returns>
         public bool RemoveCands(char[][] grid, int row, int col, List<char> candidates)
         {
             int blockNumber = 0;
@@ -70,6 +80,10 @@ namespace SudokuSolverSetter
 
                 }
             }
+            if (candidates.Count == 0)
+            {
+                return false;
+            }
             if (candidates.Count == 1)
             {
                 grid[row][col] = candidates[0];
@@ -83,7 +97,7 @@ namespace SudokuSolverSetter
         /// Once the last cell in the row is reached, the column counter is incremented and the row counter is set back to 0. 
         /// For example, if [i,j] is a cell, when looking at cell [0,8], the next cell to be looked at is [1,0].
         /// </summary>
-        /// <param name="grid">Sudoku grid that is passed into and mutated in the method</param>
+        /// <param name="grid">Sudoku grid, of char[][] type, that is passed into and mutated in the method</param>
         /// <param name="row">Current row number being examined in this instance of the method</param>
         /// <param name="col">Current column number being examined in this instance of the method</param>
         /// <param name="variator">The value of this changes whether the candidate list is reversed ('1') or not ('0')</param>

@@ -35,12 +35,20 @@ namespace SudokuSolverSetter
                 this.Hide();
             }
         }
-
+        /// <summary>
+        /// Exits application
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Quit_btn_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(0);
         }
-
+        /// <summary>
+        /// Calls the PlaySudoku class, sending the difficulty setting selected so that a puzzle with that difficulty can be selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Play_Sudoku_Click(object sender, RoutedEventArgs e)
         {
             if (Difficulty_ComboBox.SelectedIndex == 0)//Beginner
@@ -66,24 +74,25 @@ namespace SudokuSolverSetter
 
             this.Hide();
         }
-
         private void Window_Close(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            Environment.Exit(0);//Closes the application properly if the red 'X' is clicked
         }
-
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
-
         private void Level_Selector_Click(object sender, RoutedEventArgs e)
         {
             PuzzleSelector selector = new PuzzleSelector();
             selector.Show();
             this.Hide();
         }
-
+        /// <summary>
+        /// Produces a help menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Help_btn_Click(object sender, RoutedEventArgs e)
         {
             if (HelpBlock.IsVisible == false)
@@ -97,7 +106,6 @@ namespace SudokuSolverSetter
                 Help_btn.Content = "OPEN HELP";
             }
         }
-
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
             CreatePuzzles createPuzzles = new CreatePuzzles();

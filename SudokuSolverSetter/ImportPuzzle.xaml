@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
         Title="ImportPuzzle" Height="275" Width="350" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
-    <Grid>
+    <Grid Background="#FFEEF1FF">
         <Button x:Name="Import_btn" Content="Import" HorizontalAlignment="Center" Margin="0,0,0,25" VerticalAlignment="Bottom" Width="150" Height="30" FontSize="16" Click="Button_Click"/>
         <TextBlock HorizontalAlignment="Center" Margin="20,10,14,0" VerticalAlignment="Top" FontSize="14" Height="75" Width="310" TextWrapping="WrapWithOverflow" Text="Enter the sequence of values in the textbox below - empty cells represented as any character but [1-9], e.g. '0','.','*','-'." FontStretch="SemiCondensed" TextAlignment="Center" Padding="10,0,0,0"/>
         <TextBox x:Name="import_txtbx" HorizontalAlignment="Left" Height="80" Margin="30,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="290" FontFamily="Consolas"/>

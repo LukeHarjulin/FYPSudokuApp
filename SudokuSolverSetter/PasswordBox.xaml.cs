@@ -16,6 +16,8 @@ namespace SudokuSolverSetter
 {
     /// <summary>
     /// Interaction logic for PasswordBox.xaml
+    /// 
+    /// Used for accessing the Developer Window
     /// </summary>
     public partial class PasswordBox : Window
     {

@@ -85,7 +85,7 @@ namespace SudokuSolverSetter
             }
             #endregion
 
-            //Using BruteForceSolver to fill in a blank grid to get a starting solution
+            //Using BruteForceSolver to fill in a blank grid to get a starting solution - possibly the part of the generator that causes performance issues
             try
             {
                 if(!solve.BruteForceSolve(grid, 0, 0, 2))
@@ -99,7 +99,7 @@ namespace SudokuSolverSetter
                 return grid;
             }
             
-
+            ///This section consists of constantly removing parallel numbers, e.g. [0,0] and [8,8] or [2,5] and [5,2], and checking if the puzzle is still valid (i.e. still has only one solution)
             char[][] sudokuArray = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
             bool changeMade = false;
             int removed = 0;
@@ -168,6 +168,7 @@ namespace SudokuSolverSetter
                         
                     }
                 }
+                ///Tries to remove more numbers to toughen the puzzle
                 #region Toughen the puzzle
                 if (!changeMade)
                 {
@@ -229,10 +230,15 @@ namespace SudokuSolverSetter
             } while (removed <= 45 && changeMade);
             return grid;
         }
-
+        /// <summary>
+        /// Reassigns the values in the puzzle to what they were prior to being solved
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="sudokuArray">contains the original puzzle prior to solve</param>
+        /// <returns></returns>
         private SudokuGrid RestartPuzzle(SudokuGrid grid, char[][] sudokuArray)
         {
-            for (int x = 0; x < 9; x++)
+            for (int x = 0; x < 9; x++)//O(n^2)
             {
                 for (int y = 0; y < 9; y++)
                 {
@@ -241,6 +247,11 @@ namespace SudokuSolverSetter
             }
             return grid;
         }
+        /// <summary>
+        /// Shuffles the candidate values, used in brute-force solvers
+        /// </summary>
+        /// <param name="rowNumbers"></param>
+        /// <returns></returns>
         public List<char> Shuffler(List<char> rowNumbers)
         {
             rand = new Random();
@@ -255,6 +266,11 @@ namespace SudokuSolverSetter
             }
             return rowNumbers;
         }
+        /// <summary>
+        /// Used for shuffling row/column numbers in the puzzle generator so that random numbers are removed from the puzzle
+        /// </summary>
+        /// <param name="rowNumbers"></param>
+        /// <returns></returns>
         public List<int> Shuffler_intList(List<int> rowNumbers)
         {
             rand = new Random();
@@ -269,7 +285,11 @@ namespace SudokuSolverSetter
             }
             return rowNumbers;
         }
-        
+        /// <summary>
+        /// Used to check if the puzzle is solved
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
         public bool CheckIfSolved(SudokuGrid grid)
         {
             for (int row = 0; row < 9; row++)
@@ -304,6 +324,11 @@ namespace SudokuSolverSetter
 
             return true;
         }
+        /// <summary>
+        /// Used to check if the puzzle is solved, but only used for the alternate data structure, char[][]
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
         public bool CheckIfSolved_array(char[][] grid)
         {
             List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
@@ -357,7 +382,12 @@ namespace SudokuSolverSetter
 
             return true;
         }
-        public int NumberSwitch(int origNum)//method to get the number of the cell that is rotationally symmetrical to the current cell
+        /// <summary>
+        /// Method to get the number of the cell that is rotationally symmetrical to the current cell
+        /// </summary>
+        /// <param name="origNum"></param>
+        /// <returns></returns>
+        public int NumberSwitch(int origNum)
         {
             int newNum = 0;
             switch (origNum)
@@ -392,6 +422,11 @@ namespace SudokuSolverSetter
             }
             return newNum;
         }
+        /// <summary>
+        /// This function Gets the x and y starting coordinates of a cell's block. I.e. Cell [2,6] will have the starting coordinates of 0 and 6 as it is in the third block
+        /// </summary>
+        /// <param name="blockNum"></param>
+        /// <returns></returns>
         public int[] BlockIndexGetter(int blockNum)
         {
             int[] blockIndexes = new int[2];
@@ -438,7 +473,12 @@ namespace SudokuSolverSetter
             }
             return blockIndexes;
         }
-        public string SudokuToString(SudokuGrid grid)//used for copying the generated puzzle to clipboard - can be imported to www.sudokuwiki.org/sudoku.htm
+        /// <summary>
+        /// This converts a SudokuGrid into a string of numbers from 0-9, where 0 is an empty cell
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        public string SudokuToString(SudokuGrid grid)
         {
             string sudokuExport = "";
 
@@ -449,7 +489,6 @@ namespace SudokuSolverSetter
                     sudokuExport += grid.Rows[i][j].Num;
                 }
             }
-
             return sudokuExport;
         }
     }

@@ -14,7 +14,7 @@ namespace SudokuSolverSetter
         private PuzzleGenerator g_Gen = new PuzzleGenerator();
         public List<string> g_SolvePath = new List<string>();
         public List<string> g_BruteSolvePath = new List<string>();
-        #region Full Solver method
+        
         /// <summary>
         /// 
         /// </summary>
@@ -130,10 +130,13 @@ namespace SudokuSolverSetter
             return g_Gen.CheckIfSolved(grid);
         }
         /// <summary>
-        /// 
+        /// Looks at all cells and removes numbers from candidate lists that can't exist in that cell. 
+        /// If a single candidate number is left in a cell's candidate list, the cell's value becomes that last number.
+        /// All encased in a do while loop to till no more changes are made to the puzzle.
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
+        #region Strategy-Usage Solver method
         private bool FindNakedSingles(SudokuGrid grid)
         {
             bool changeMade = false, escapeLoop = true;
@@ -189,7 +192,11 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         /// <summary>
-        /// 
+        /// Searches through all cells, if a cell is empty  - call it cellA, 
+        /// for each group related to cellA,
+        /// iterate from 1-9 and check each cell (call the cell cellB) in the group if it contains the current number.
+        /// If cellB contains the number, remove it from the 1-9 list.
+        /// If the loop reaches the end of a group and the list contains only 1 candidate number, cellA's value must be that last candidate number
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
@@ -384,10 +391,15 @@ namespace SudokuSolverSetter
         /// [x,y,z] [x,y,z] [x,y] 
         /// [x,y,z] [x,y]   [x,z] 
         /// [x,y]   [x,z]   [y,z]
-        /// Find Naked Triple:
+        /// Find Naked Triple in 3,3,3 | 3,3,2 | 3,2,2 format:
         /// -Iterate over cells till an empty cell is found containing two/three candidates, call that cell 'CellA'
-        /// -Iterate over each cell in each group associated with CellA
-        /// -
+        /// -Iterate over each cell in each group associated with CellA, call it cellB
+        /// -If cellB contains only 2 or 3 candidates and those candidates are also located in cellA, add the cell to a list.
+        /// -Now continue iterating over the group, but if another cell that matches the above description is found, call it cellC, add it to the list... you have found a triple
+        /// -Start removing any that are values located in the candidates lists of cellA/B/C from any cells, that contain those candidate values, within the current group.
+        /// Find Naked Triple in 2,2,2 format:
+        /// -For this format, you only need to look for 3 cells, each with 2 candidates and each with 1 candidate in common with one another. They also have to lie within the same group.
+        /// -If that is found, remove any of that values that are located in the candidate lists of the triple from any of the cells, that contain those candidate values, within the current group.
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
@@ -406,7 +418,7 @@ namespace SudokuSolverSetter
                             {
                                 grid.Rows[i][j]
                             };
-                            foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])//Foreach neighbour to first cell, find out how many candidates they have in common
+                            foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])//Foreach neighbour to cellA, find out how many candidates they have in common
                             {
                                 int candiCount = 0;
                                 foreach (char candidate in grid.Rows[i][j].Candidates)
@@ -529,7 +541,20 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         /// <summary>
+        /// This is ridiculous and complicated. So no code will be explained :(
+        /// A hidden triple is where the format below is found hidden in a group amongst other candidate numbers
+        /// [x,y,z] [x,y,z] [x,y,z]
+        /// [x,y,z] [x,y,z] [x,y] 
+        /// [x,y,z] [x,y]   [x,z] 
+        /// [x,y]   [x,z]   [y,z]
         /// 
+        /// For example: If the follow are three cell's candidate lists... 
+        /// [2,3,4,5] [3,4,8,9] [1,4,5,7] 
+        /// ...and these cells are all in a group together where '3', '4', and'5' do not exist anywhere else in the group other than in those three cells,
+        /// then these cells contain a hidden triple. This means that '3', '4', and '5' must go into go into these three cells, in whatever order.
+        /// This means that we can remove any other candidates from within these three cells. This leaves the cells looking like...
+        /// [3,4,5] [3,4] [4,5]
+        /// This strategy is very beneficial if found due to the number of candidates in total that are usually removed when finding a hidden triple.
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true of a change to a cell candidate list or value is made</returns>
@@ -604,7 +629,7 @@ namespace SudokuSolverSetter
                                                                         if (removeList.Count != 0)
                                                                         {
                                                                             g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellA.XLocation + "," + cellA.YLocation + "] - HIDDEN TRIPLE");
-                                                                            g_Difficulty += 35 * removeList.Count;
+                                                                            g_Difficulty += 45 * removeList.Count;
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -616,7 +641,7 @@ namespace SudokuSolverSetter
                                                                         if (removeList.Count != 0)
                                                                         {
                                                                             g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellB.XLocation + "," + cellB.YLocation + "] - HIDDEN TRIPLE");
-                                                                            g_Difficulty += 35 * removeList.Count;
+                                                                            g_Difficulty += 45 * removeList.Count;
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -628,7 +653,7 @@ namespace SudokuSolverSetter
                                                                         if (removeList.Count != 0)
                                                                         {
                                                                             g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellC.XLocation + "," + cellC.YLocation + "] - HIDDEN TRIPLE");
-                                                                            g_Difficulty += 35 * removeList.Count;
+                                                                            g_Difficulty += 45 * removeList.Count;
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -654,12 +679,18 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         /// <summary>
-        /// Find Hidden Triple:
+        /// Find Pointing Numbers:
         /// -Iterate over cells till an empty cell is found, call that cell 'CellA'
-        /// -Iterate over each candidate from CellA's candidate list
-        /// -Iterate over each cell in the block associated with CellA, counting how many empty cells within the block have 'candidate' in their candidate list.
-        /// -If the counter is equal to one (or two for triples), check if CellA shares a row or column with the cell that contains the common candidate (or both cells).
-        /// -If they share a row/column, you can remove the candidate from any cells in that row/column.
+        /// -For each 'candidate' in CellA's candidate list, check the block and identify all cells in that block that contain 'candidate'.
+        /// -If only 2 or 3 cells contain 'candidate' and they all reside in the same row or all in the same column, we can remove 'candidate' from every other cell in the row/column.
+        /// i.e.
+        ///     1  2  3     4    5    6     7   8   9
+        ///   __________________________________________
+        /// A |245 24 6 | 245  2459  7   | 82   29  3  |
+        /// B |453 9 35 | 8    3456 3456 | 1247 27 2157|
+        /// C |8   7 35 | 345  3459 1    | 24   26 259 |
+        ///   |---------|----------------|-------------|
+        /// '2' can be eliminated from A1, A2, A7, and A8 as a '2' has to exist in either A4 or A5 because there are no other 2's in that block 
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
@@ -736,11 +767,11 @@ namespace SudokuSolverSetter
         /// -If none of the cells found in that row/column are are outside of the block, we can remove all 'candidate' from every other cell in the block.
         /// i.e.
         ///     1  2  3      4    5    6      7   8   9
-        /// ------------------------------------------
-        /// A |45  1 6   | 245  2459  7    | 8    49 3
-        /// B |453 9 235 | 8    23456 3456 | 1247 47 1457
-        /// C |8   7 235 | 2345 23459 1    | 24   6  459
-        /// ------------------------------------------
+        ///   ____________________________________________
+        /// A |45  1 6   | 245  2459  7    | 8    49 3   |
+        /// B |453 9 235 | 8    23456 3456 | 1247 47 1457|
+        /// C |8   7 235 | 2345 23459 1    | 24   6  459 |
+        ///   |----------|-----------------|-------------|
         /// '2' can be eliminated from B5, C4, C5 as a '2' has to exist in either A4 and A5 because there are no other 2's in that row 
         /// </summary>
         /// <param name="grid"></param>
@@ -1035,6 +1066,27 @@ namespace SudokuSolverSetter
             }
             return saveCell ?? null;
         }
+        /// <summary>
+        /// Finding an XYZ-Wing
+        /// -Very similar to a Y-Wing in the regards of a hinge and two cells named the wings.
+        /// -The difference between the two is that a Y-Wing can only contain cells with 2 candidates, and each cell only has one candidate in common.
+        /// -The hinge and wing system is still the same in the sense that the hinge can see the other two cells where as the other two cells can't see each other.
+        /// The diagrams below show two different formats of XWings, the astericks(*) show where 'X' cannot exist. 
+        ///     1   2   3   4   5   6   7   8   9      -|-        1   2   3   4   5   6   7   8   9 
+        ///   _____________________________________    -|-     _____________________________________
+        /// A |   ¦   ¦   |   ¦ * ¦   |   ¦   ¦   |    -|-   A |XZ ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// B |   ¦   ¦   |   ¦ * ¦XZ |   ¦   ¦   |    -|-   B |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// C |   ¦   ¦   |   ¦XYZ¦   |   ¦   ¦   |    -|-   C |XYZ¦ * ¦ * |   ¦   ¦XY |   ¦   ¦   |
+        ///   |___________|___________|___________|    -|-     |___________|___________|___________|
+        /// D |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   D |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// E |   ¦   ¦   |   ¦XY ¦   |   ¦   ¦   |    -|-   E |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// F |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   F |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// G |___________________________________|    -|-   G |___________________________________|
+        /// -This is because no matter how you place XYZ in those cells, X will always be ruled out of those cells
+        /// -Another way of looking at XYZ-Wings are as naked triples that span multiple groups. Any location where each cell in the triple can see, cannot contain 'X'.
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
         private bool FindXYZWing(SudokuGrid grid)
         {
             bool changeMade = false;
@@ -1130,7 +1182,6 @@ namespace SudokuSolverSetter
         /// it would cause a CHAIN reaction of preventing and forcing certain cells to be the candidate number.
         /// Within the code below, if two cells are linked, one cell is labelled as true and the other as false.
         /// This method replicates the colouring technique, true representing one colour, false representing another.
-        /// 
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
@@ -1352,7 +1403,173 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         #endregion
-        //Non-functional
+        #region Brute Force Solver
+        /// <summary>
+        /// Removes all values from the current cell's candidate list that are also found within neighbouring cells
+        /// I.e. Cells that are in the same groups as the cell in question.
+        /// A group is a block/row/column
+        /// </summary>
+        /// <param name="grid">Sudoku grid that is passed into and mutated in the method</param>
+        /// <param name="row">Current row number being examined in this instance of the method</param>
+        /// <param name="col">Current column number being examined in this instance of the method</param>
+        /// <returns>false if an error occurs and a candidate list contains 0 values | true if it is ok</returns>        
+        public bool RemoveCands(SudokuGrid grid, int row, int col)
+        {
+            for (int n = 0; n < 8; n++)
+            {
+                if (grid.Rows[row][col].Candidates.Contains(grid.Rows[row][col].NeighbourCells[0][n].Num))
+                {
+                    grid.Rows[row][col].Candidates.Remove(grid.Rows[row][col].NeighbourCells[0][n].Num);
+                }
+                if (grid.Rows[row][col].Candidates.Contains(grid.Rows[row][col].NeighbourCells[1][n].Num))
+                {
+                    grid.Rows[row][col].Candidates.Remove(grid.Rows[row][col].NeighbourCells[1][n].Num);
+                }
+                if (grid.Rows[row][col].Candidates.Contains(grid.Rows[row][col].NeighbourCells[2][n].Num))
+                {
+                    grid.Rows[row][col].Candidates.Remove(grid.Rows[row][col].NeighbourCells[2][n].Num);
+                }
+                if (grid.Rows[row][col].Candidates.Count == 0)
+                {
+                    return false;
+                }
+            }
+
+            if (grid.Rows[row][col].Candidates.Count == 1)
+            {
+                grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];
+                g_BruteSolvePath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
+            }
+            return true;
+        }
+        /// <summary>
+        /// This brute force solver uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
+        /// It initially starts from the top left cell and, with each recursive instance, looks at the next cell over in the current row.
+        /// Once the last cell in the row is reached, the column counter is incremented and the row counter is set back to 0. 
+        /// For example, if [i,j] is a cell, when looking at cell [0,8], the next cell to be looked at is [1,0].
+        /// </summary>
+        /// <param name="grid">Sudoku grid that is passed into and mutated in the method</param>
+        /// <param name="row">Current row number being examined in this instance of the method</param>
+        /// <param name="col">Current column number being examined in this instance of the method</param>
+        /// <param name="variator">Variator changes how the solver functions. 
+        /// '0' = normal ordered candidate list, '1' = reversed candidate list, '2' = shuffled candidate list, '3' = no use of naked single strategy
+        /// </param>
+        /// <returns>Returns true if solver completes puzzle with all values in the correct place. 
+        /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
+        public bool BruteForceSolve(SudokuGrid grid, int row, int col, byte variator)
+        {
+
+
+            if (col == 9 && row == 9)//If somehow the method tries to look at this non-existent cell, this catches the exception
+            {
+                if (g_Gen.CheckIfSolved(grid))
+                {
+                    return true;
+                }
+                else
+                {
+                    grid.Rows[--row][--col].Num = '0';
+                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                    return false;
+                }
+            }
+
+            if (grid.Rows[row][col].Num != '0')
+            {
+                bool emptyCell = false;
+                do//Searches for next empty cell
+                {
+                    if (++col == 9)
+                    {
+                        if (++row == 9)
+                        {
+                            if (g_Gen.CheckIfSolved(grid))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                grid.Rows[--row][--col].Num = '0';
+                                g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                                return false;
+                            }
+                        }
+                        else
+                            col = 0;
+
+                    }
+                    if (grid.Rows[row][col].Num == '0')
+                        emptyCell = true;
+                } while (!emptyCell);
+            }
+            if (variator == 0)
+                grid.Rows[row][col].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            else if (variator == 1)
+                grid.Rows[row][col].Candidates = new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' };
+            else if (variator == 2)
+                grid.Rows[row][col].Candidates = g_Gen.Shuffler(new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' });
+            //Reversed list is for checking for multiple solutions or shuffle if given the generating
+
+            if (!RemoveCands(grid, row, col))//if it returns false, candidates count must be 0 so a contradiction is found
+            {
+                grid.Rows[row][col].Num = '0';
+                g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                return false;
+            }
+
+
+            int nextRow = row, nextCol = col;
+            if (++nextCol == 9)//increments the nextCol value which is used in conjunction with nextRow to look at the next cell in the sequence. If it is 9, it must be reset to 0
+            {
+                if (++nextRow == 9)//Currently looking at cell 81 in grid
+                {
+                    grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];//Sets the last cell to be the only value possible, then the solution is checked.
+                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
+                    if (g_Gen.CheckIfSolved(grid))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
+                        g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                        return false;
+                    }
+                }
+                else nextCol = 0;
+            }
+            if (grid.Rows[row][col].Num == '0')
+            {
+                foreach (char candidate in grid.Rows[row][col].Candidates)//iterates through each candidate value, assigning it to the current cell number.  
+                {
+                    grid.Rows[row][col].Num = candidate;
+                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
+                    //A new instance of BruteForceSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
+                    if (BruteForceSolve(grid, nextRow, nextCol, variator))
+                        return true;
+                }
+            }
+            else
+            {
+                //If the current cell contains a number found from a naked single strategy,
+                //then it is dismissed and a new instance of BruteForceSolver is called and is provided with the next cell coordinates
+                if (BruteForceSolve(grid, nextRow, nextCol, variator))
+                    return true;
+                else
+                {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
+                    grid.Rows[row][col].Num = '0';
+                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                    return false;
+                }
+            }
+            grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
+            g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+            return false;//gets hit if each brute force attempt with each 'candidate' returns false in the foreach
+        }
+        #endregion
+
+
+        //Non-functional/Incomplete - IGNORE REGION "SOLVER FOR SOLVING CELL BY CELL BUTTON"
         #region Solver for Solving Cell by Cell button
         public SudokuGrid SolveCellByCell(SudokuGrid grid)
         {
@@ -1700,170 +1917,5 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         #endregion
-        #region Brute Force Solver
-        /// <summary>
-        /// Removes all values from the current cell's candidate list that are also found within neighbouring cells
-        /// I.e. Cells that are in the same groups as the cell in question.
-        /// A group is a block/row/column
-        /// </summary>
-        /// <param name="grid">Sudoku grid that is passed into and mutated in the method</param>
-        /// <param name="row">Current row number being examined in this instance of the method</param>
-        /// <param name="col">Current column number being examined in this instance of the method</param>
-        /// <returns>false if an error occurs and a candidate list contains 0 values | true if it is ok</returns>        
-        public bool RemoveCands(SudokuGrid grid, int row, int col)
-        {
-            for (int n = 0; n < 8; n++)
-            {
-                if (grid.Rows[row][col].Candidates.Contains(grid.Rows[row][col].NeighbourCells[0][n].Num))
-                {
-                    grid.Rows[row][col].Candidates.Remove(grid.Rows[row][col].NeighbourCells[0][n].Num);
-                }
-                if (grid.Rows[row][col].Candidates.Contains(grid.Rows[row][col].NeighbourCells[1][n].Num))
-                {
-                    grid.Rows[row][col].Candidates.Remove(grid.Rows[row][col].NeighbourCells[1][n].Num);
-                }
-                if (grid.Rows[row][col].Candidates.Contains(grid.Rows[row][col].NeighbourCells[2][n].Num))
-                {
-                    grid.Rows[row][col].Candidates.Remove(grid.Rows[row][col].NeighbourCells[2][n].Num);
-                }
-                if (grid.Rows[row][col].Candidates.Count == 0)
-                {
-                    return false;
-                }
-            }
-            
-            if (grid.Rows[row][col].Candidates.Count == 1)
-            {
-                grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];
-                g_BruteSolvePath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
-            }
-            return true;
-        }
-        /// <summary>
-        /// This brute force solver uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
-        /// It initially starts from the top left cell and, with each recursive instance, looks at the next cell over in the current row.
-        /// Once the last cell in the row is reached, the column counter is incremented and the row counter is set back to 0. 
-        /// For example, if [i,j] is a cell, when looking at cell [0,8], the next cell to be looked at is [1,0].
-        /// </summary>
-        /// <param name="grid">Sudoku grid that is passed into and mutated in the method</param>
-        /// <param name="row">Current row number being examined in this instance of the method</param>
-        /// <param name="col">Current column number being examined in this instance of the method</param>
-        /// <param name="variator">Variator changes how the solver functions. 
-        /// '0' = normal ordered candidate list, '1' = reversed candidate list, '2' = shuffled candidate list, '3' = no use of naked single strategy
-        /// </param>
-        /// <returns>Returns true if solver completes puzzle with all values in the correct place. 
-        /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
-        public bool BruteForceSolve(SudokuGrid grid, int row, int col, byte variator)
-        {
-            
-
-            if (col == 9 && row == 9)//If somehow the method tries to look at this non-existent cell, this catches the exception
-            {
-                if (g_Gen.CheckIfSolved(grid))
-                {
-                    return true;
-                }
-                else
-                {
-                    grid.Rows[--row][--col].Num = '0';
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                    return false;
-                }
-            }
-            
-            if (grid.Rows[row][col].Num != '0')
-            {
-                bool emptyCell = false;
-                do//Searches for next empty cell
-                {
-                    if (++col == 9)
-                    {
-                        if (++row == 9)
-                        {
-                            if (g_Gen.CheckIfSolved(grid))
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                grid.Rows[--row][--col].Num = '0';
-                                g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                                return false;
-                            }
-                        }
-                        else
-                            col = 0;
-
-                    }
-                    if (grid.Rows[row][col].Num == '0')
-                        emptyCell = true;
-                } while (!emptyCell);
-            }
-            if (variator == 0)
-                grid.Rows[row][col].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-            else if (variator == 1)
-                grid.Rows[row][col].Candidates = new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' };
-            else if (variator == 2)
-                grid.Rows[row][col].Candidates = g_Gen.Shuffler(new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' });
-            //Reversed list is for checking for multiple solutions or shuffle if given the generating
-
-            if (!RemoveCands(grid, row, col))//if it returns false, candidates count must be 0 so a contradiction is found
-            {
-                grid.Rows[row][col].Num = '0';
-                g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                return false;
-            }
-            
-           
-            int nextRow = row, nextCol = col;
-            if (++nextCol == 9)//increments the nextCol value which is used in conjunction with nextRow to look at the next cell in the sequence. If it is 9, it must be reset to 0
-            {
-                if (++nextRow == 9)//Currently looking at cell 81 in grid
-                {
-                    grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];//Sets the last cell to be the only value possible, then the solution is checked.
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
-                    if (g_Gen.CheckIfSolved(grid))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
-                        g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                        return false;
-                    }
-                }
-                else nextCol = 0;
-            }
-            if (grid.Rows[row][col].Num == '0')
-            {
-                foreach (char candidate in grid.Rows[row][col].Candidates)//iterates through each candidate value, assigning it to the current cell number.  
-                {
-                    grid.Rows[row][col].Num = candidate;
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
-                    //A new instance of BruteForceSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
-                    if (BruteForceSolve(grid, nextRow, nextCol, variator))
-                        return true;
-                }
-            }
-            else
-            {
-                //If the current cell contains a number found from a naked single strategy,
-                //then it is dismissed and a new instance of BruteForceSolver is called and is provided with the next cell coordinates
-                if (BruteForceSolve(grid, nextRow, nextCol, variator))
-                    return true;
-                else
-                {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
-                    grid.Rows[row][col].Num = '0';
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                    return false;
-                }
-            }
-            grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
-            g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-            return false;//gets hit if each brute force attempt with each 'candidate' returns false in the foreach
-        }
-        #endregion
-
     }
 }

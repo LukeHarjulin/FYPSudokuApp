@@ -22,8 +22,8 @@ namespace SudokuSolverSetter
         private PuzzleGenerator g_gen = new PuzzleGenerator();
         private PuzzleSolver g_solve = new PuzzleSolver();
         private string g_currentTime = "";
-        private DispatcherTimer g_DT { get; set; }
-        private Stopwatch g_Timer { get; set; }
+        private DispatcherTimer G_DT { get; set; }
+        private Stopwatch G_Timer { get; set; }
         private List<string> g_BruteSolvePath = new List<string>();
         private int g_PathCounter = 0;
         private List<int> g_ratingList = new List<int>();
@@ -51,6 +51,9 @@ namespace SudokuSolverSetter
             };
             AddPuzzlesToCombo();
         }
+        /// <summary>
+        /// Updates the combo box with all the puzzles from the XML file, displayed and ordered by their rating
+        /// </summary>
         public void AddPuzzlesToCombo()
         {
             if (PuzzlesByRating_combo.Items.Count > 0)
@@ -114,10 +117,14 @@ namespace SudokuSolverSetter
                 MessageBox.Show("Warning! No existing XML file found in folder.");
             }
         }
+        /// <summary>
+        /// This method populates the Uniform grid and it's textboxes with all the given values from 'grid'.
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="m_txtBxList"></param>
+        /// <returns></returns>
         public List<TextBox> PopulateGrid(SudokuGrid grid, List<TextBox> m_txtBxList)
         {
-            /*This method populates the Uniform grid and its textboxes with all the given values from 'grid'.
-            */
             int x = 0;//row number
             int y = 0;//column number
             for (int i = 0; i < m_txtBxList.Count; i++)
@@ -223,14 +230,17 @@ namespace SudokuSolverSetter
             PopulateGrid(grid, g_txtBxList);
             MessageBox.Show(outputStr);
         }
+        /// <summary>
+        /// Timer starts when the display of the brute-force solver is requested
+        /// </summary>
         private void StartTimer()
         {
-            g_Timer = new Stopwatch();
-            g_DT = new DispatcherTimer();
-            g_DT.Tick += new EventHandler(DT_Tick);
-            g_DT.Interval = new TimeSpan(0, 0, 0, 0, 1);
-            g_Timer.Start();
-            g_DT.Start();
+            G_Timer = new Stopwatch();
+            G_DT = new DispatcherTimer();
+            G_DT.Tick += new EventHandler(DT_Tick);
+            G_DT.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            G_Timer.Start();
+            G_DT.Start();
             Brute_Solve_char.IsEnabled = false;
             Brute_Solve_Obj.IsEnabled = false;
             b_Solve.IsEnabled = false;
@@ -239,10 +249,13 @@ namespace SudokuSolverSetter
             Import_Puzzle.IsEnabled = false;
             Create_Store_Puzzles_btn.IsEnabled = false;
         }
+        /// <summary>
+        /// Stops the timer when the brute-force solver display is finished or a certain button is click
+        /// </summary>
         private void StopTimer()
         {
-            g_Timer.Stop();
-            g_DT.Stop();
+            G_Timer.Stop();
+            G_DT.Stop();
             Brute_Solve_char.IsEnabled = true;
             Brute_Solve_Obj.IsEnabled = true;
             b_Solve.IsEnabled = true;
@@ -251,9 +264,15 @@ namespace SudokuSolverSetter
             Import_Puzzle.IsEnabled = true;
             Create_Store_Puzzles_btn.IsEnabled = true;
         }
+        /// <summary>
+        /// Used to display Brute-Force solver algorithm.
+        /// Every millisecond, a tick occurs and a number is placed/removed within/from the grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DT_Tick(object sender, EventArgs e)
         {
-            if (g_Timer.IsRunning)
+            if (G_Timer.IsRunning)
             {
                 try
                 {
@@ -292,13 +311,22 @@ namespace SudokuSolverSetter
                 
             }
         }
+        /// <summary>
+        /// In response to any of the Puzzle Solver buttons being click, 
+        /// this event handler is called and handles the event slightly differently depending on which button was pressed.
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the grid that it is presented
         {
             //Initialising objects
             PuzzleSolver puzzleSolver = new PuzzleSolver();
             PuzzleGenerator gen = new PuzzleGenerator();
-            SudokuGrid grid = new SudokuGrid();
-            grid.Rows = new Cell[9][];
+            SudokuGrid grid = new SudokuGrid
+            {
+                Rows = new Cell[9][]
+            };
             int cellNum = 0;
 
             //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
@@ -457,6 +485,12 @@ namespace SudokuSolverSetter
             }
 
         }
+        /// <summary>
+        /// Completely unfinished!!! 
+        /// Was going to be used to step through the solver for development, unnecessary - just use debug and use breakpoints and test methods etc
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void B_Solve1by1_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve in increments (e.g. once a value is placed into a cell, the solver stops)
         {
             //Initialising objects
@@ -472,8 +506,10 @@ namespace SudokuSolverSetter
               x8y1g7, x8y2g7, x8y3g7, x8y4g8, x8y5g8, x8y6g8, x8y7g9, x8y8g9, x8y9g9,
               x9y1g7, x9y2g7, x9y3g7, x9y4g8, x9y5g8, x9y6g8, x9y7g9, x9y8g9, x9y9g9
             };
-            SudokuGrid gridSolve = new SudokuGrid();//Passes by reference, changed to deep copy
-            gridSolve.Rows = new Cell[9][];
+            SudokuGrid gridSolve = new SudokuGrid
+            {
+                Rows = new Cell[9][]
+            };
             int cellNum = 0;
 
             //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
@@ -517,13 +553,17 @@ namespace SudokuSolverSetter
             gridSolve = solve.SolveCellByCell(gridSolve);
             PopulateGrid(gridSolve, txtBxList);
         }
-
+        /// <summary>
+        /// Button click event to cause the user to go back to the main menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Back_Button_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
-            if (g_Timer != null)
+            if (G_Timer != null)
             {
-                if (g_Timer.IsRunning)
+                if (G_Timer.IsRunning)
                 {
                     StopTimer();
                 }
@@ -531,12 +571,16 @@ namespace SudokuSolverSetter
             g_homePage = new MainWindow();
             g_homePage.Show();
         }
-
+        /// <summary>
+        /// Closes the window properly
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Close(object sender, EventArgs e)
         {
-            if (g_Timer != null)
+            if (G_Timer != null)
             {
-                if (g_Timer.IsRunning)
+                if (G_Timer.IsRunning)
                 {
                     StopTimer();
                 }
@@ -544,14 +588,22 @@ namespace SudokuSolverSetter
             g_homePage = new MainWindow();
             g_homePage.Show();
         }
-
+        /// <summary>
+        /// Brings up a window to generate and store puzzles
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
             CreatePuzzles createPuzzles = new CreatePuzzles();
             createPuzzles.ShowDialog();
             AddPuzzlesToCombo();
         }
-
+        /// <summary>
+        /// Brings up a window to import a puzzle
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Import_Click(object sender, RoutedEventArgs e)
         {
             ImportPuzzle importPuzzle = new ImportPuzzle();
@@ -579,19 +631,23 @@ namespace SudokuSolverSetter
             }
             
         }
-
+        /// <summary>
+        /// Generates a puzzle
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GeneratePuzzle_Click(object sender, RoutedEventArgs e)
         {
-            if (g_Timer != null)
+            if (G_Timer != null)
             {
-                if (g_Timer.IsRunning)
+                if (G_Timer.IsRunning)
                 {
                     StopTimer();
                 }
             }
             SudokuGrid grid = g_gen.Setter();//Calling the automated puzzle generator method to create a puzzle
             int givensCounter = 0;
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 9; i++)//fill in candidate values for each cell with a full candidate list
             {
                 for (int j = 0; j < 9; j++)
                 {
@@ -606,7 +662,11 @@ namespace SudokuSolverSetter
             g_txtBxList = PopulateGrid(grid, g_txtBxList);
             Clipboard.SetText(g_gen.SudokuToString(grid));
         }
-
+        /// <summary>
+        /// Brute-Force Solve button click event using a different data structure
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BruteSolve_char_Click(object sender, RoutedEventArgs e)
         {
             PuzzleSolverCharVer solver = new PuzzleSolverCharVer();
@@ -688,12 +748,16 @@ namespace SudokuSolverSetter
                 MessageBox.Show("FAILED\r\n" + g_currentTime);
             }
         }
-
+        /// <summary>
+        /// Updates the puzzle grid with the selected puzzle from the combo box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RatingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (g_Timer != null)
+            if (G_Timer != null)
             {
-                if (g_Timer.IsRunning)
+                if (G_Timer.IsRunning)
                 {
                     StopTimer();
                 }

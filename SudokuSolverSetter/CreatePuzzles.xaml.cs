@@ -33,7 +33,12 @@ namespace SudokuSolverSetter
             }
             
         }
-
+        /// <summary>
+        /// Takes a SudokuGrid object and converts into a char[][] type 
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="puzzle"></param>
+        /// <returns></returns>
         private char[][] SudokuGridToArray(SudokuGrid grid, char[][] puzzle)
         {
             
@@ -46,7 +51,11 @@ namespace SudokuSolverSetter
             }
             return puzzle;
         }
-
+        /// <summary>
+        /// Event handler that loads/creates an XML file for the puzzles, adding the number of puzzles specified to the XML file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
@@ -115,6 +124,12 @@ namespace SudokuSolverSetter
                 throw;
             }
         }
+        /// <summary>
+        /// Function that recieves a puzzle and the string version of the puzzle and tests the difficulty of the puzzle by solving it using the Human-Strategy solver
+        /// </summary>
+        /// <param name="puzzleGrid"></param>
+        /// <param name="puzzleString"></param>
+        /// <returns>returns the difficulty rating of the puzzle</returns>
         public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString)
         {
             PuzzleSolver solver = new PuzzleSolver();
@@ -143,11 +158,11 @@ namespace SudokuSolverSetter
             {
                 puzzleGrid.Difficulty = "Beginner";
             }
-            else if (rating >= 800 && rating < 1400)
+            else if (rating >= 800 && rating < 1300)
             {
                 puzzleGrid.Difficulty = "Moderate";
             }
-            else if (rating >= 1400 && rating < 2200)
+            else if (rating >= 1300 && rating < 2000)
             {
                 puzzleGrid.Difficulty = "Advanced";
             }
