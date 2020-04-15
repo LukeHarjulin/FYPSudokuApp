@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Xml;
 
 namespace SudokuSolverSetter
@@ -20,6 +14,7 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class PuzzleSelector : Window
     {
+        #region Initialisation
         private MainWindow homePage = new MainWindow();
         private List<TextBox> g_txtBxList = new List<TextBox>();
         private List<string> g_puzzles = new List<string>();
@@ -41,6 +36,8 @@ namespace SudokuSolverSetter
             };
             AddPuzzlesExpanders();
         }
+        #endregion
+        #region Functions/Methods
         /// <summary>
         /// Updates the combo box with all the puzzles from the XML file, displayed and ordered by their rating
         /// </summary>
@@ -108,7 +105,6 @@ namespace SudokuSolverSetter
                                         break;
                                 }
                             }
-                            
                             int givens = 0;
                             textBlock.Name = "n"+difficulty_Num+"_" + g_puzzles.Count.ToString();
                             g_puzzles.Add(sudokuString);
@@ -137,51 +133,7 @@ namespace SudokuSolverSetter
                 //MessageBox.Show("Warning! No existing XML file found in folder.");
             }
         }
-        private void Back_Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.Hide();
-            homePage = new MainWindow();
-            homePage.Show();
-        }
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            homePage = new MainWindow();
-            homePage.Show();
-        }
-
-        private void SelectPuzzle_Button_Click(object sender, RoutedEventArgs e)
-        {
-            string difficulty = "";
-            switch (g_selectedTxBx.Name[1])
-            {
-                case '0':
-                    difficulty = "Beginner";
-                    break;
-                case '1':
-                    difficulty = "Moderate";
-                    break;
-                case '2':
-                    difficulty = "Advanced";
-                    break;
-                case '3':
-                    difficulty = "Beginner";
-                    break;
-                default:
-                    break;
-            }
-            string index = g_selectedTxBx.Name[3].ToString();
-            if (g_selectedTxBx.Name.Length > 4)
-            {
-                for (int k = 4; k < g_selectedTxBx.Name.Length; k++)
-                {
-                    index += g_selectedTxBx.Name[k].ToString();
-                }
-            }
-            PlaySudoku play = new PlaySudoku(difficulty, g_puzzles[int.Parse(index)]);
-            Hide();
-            play.Show();
-        }
-        private void Selected_Puzzle(object sender, RoutedEventArgs e)
+        public void ReactToSelectedPuzzle(TextBox sender)
         {
             //Previous selected puzzle set to normal
             if (g_selectedTxBx.Text != ".")
@@ -189,7 +141,7 @@ namespace SudokuSolverSetter
                 g_selectedTxBx.Background = Brushes.Transparent;
             }
 
-            g_selectedTxBx = (TextBox)sender;
+            g_selectedTxBx = sender;
             g_selectedTxBx.Background = selectColour;
 
             string index = g_selectedTxBx.Name[3].ToString();
@@ -200,14 +152,18 @@ namespace SudokuSolverSetter
                     index += g_selectedTxBx.Name[k].ToString();
                 }
             }
-            
+
             string sudokuString = g_puzzles[int.Parse(index)];
             g_txtBxList[0].Text = "";
             for (int i = 0, counter = 0; counter < sudokuString.Length; counter++)
             {
+                if (sudokuString.Contains('.'))
+                {
+                    counter++;
+                }
                 if (sudokuString.Contains('_'))
                 {
-                    
+
                     if (sudokuString[counter] == '_')
                     {
                         i++;
@@ -245,5 +201,60 @@ namespace SudokuSolverSetter
                 }
             }
         }
+        public void OpenSelectedPuzzle()
+        {
+            string difficulty = "";
+            switch (g_selectedTxBx.Name[1])
+            {
+                case '0':
+                    difficulty = "Beginner";
+                    break;
+                case '1':
+                    difficulty = "Moderate";
+                    break;
+                case '2':
+                    difficulty = "Advanced";
+                    break;
+                case '3':
+                    difficulty = "Extreme";
+                    break;
+                default:
+                    break;
+            }
+            string index = g_selectedTxBx.Name[3].ToString();
+            if (g_selectedTxBx.Name.Length > 4)
+            {
+                for (int k = 4; k < g_selectedTxBx.Name.Length; k++)
+                {
+                    index += g_selectedTxBx.Name[k].ToString();
+                }
+            }
+            PlaySudoku play = new PlaySudoku(difficulty, g_puzzles[int.Parse(index)]);
+            Hide();
+            play.Owner = this;
+            play.Show();
+        }
+        #endregion
+        #region Event Handlers
+        private void Back_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Hide();
+            homePage.Owner = this;
+            homePage.Show();
+        }
+        private void Window_Closing(object sender, EventArgs e)
+        {
+            homePage.Show();
+        }
+
+        private void SelectPuzzle_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenSelectedPuzzle();
+        }
+        private void Selected_Puzzle(object sender, RoutedEventArgs e)
+        {
+            ReactToSelectedPuzzle((TextBox)sender);
+        }
+        #endregion
     }
 }

@@ -23,16 +23,36 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class CreatePuzzles : Window
     {
-        public CreatePuzzles()
+        #region Initialisation
+        private bool g_Symmetry = false;
+        public CreatePuzzles() => InitializeComponent(); 
+        public CreatePuzzles(int addLimit, bool symmetry)
         {
             InitializeComponent();
+            g_Symmetry = symmetry;
             Number_List_combo.Items.Add(1);
-            for (int i = 2; i <= 50; i++)
+            if (addLimit > 10)
             {
-                Number_List_combo.Items.Add(i);
+                Number_List_combo.Items.Add(10);
+                Number_List_combo.Items.Add(25);
+                Number_List_combo.Items.Add(50);
+                Number_List_combo.Items.Add(100);
+                Number_List_combo.Items.Add(250);
+                Number_List_combo.Items.Add(500);
+                Number_List_combo.Items.Add(750);
+                Number_List_combo.Items.Add(1000);
+                Number_List_combo.Items.Add(2000);
             }
-            
+            else
+            {
+                for (int i = 2; i <= addLimit; i++)
+                {
+                    Number_List_combo.Items.Add(i);
+                }
+            }
         }
+        #endregion
+        #region Functions/Methods
         /// <summary>
         /// Takes a SudokuGrid object and converts into a char[][] type 
         /// </summary>
@@ -52,26 +72,21 @@ namespace SudokuSolverSetter
             return puzzle;
         }
         /// <summary>
-        /// Event handler that loads/creates an XML file for the puzzles, adding the number of puzzles specified to the XML file.
+        /// Function that reacts to the button click and generates the given number of puzzles
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
+        /// <param name="numPuzzles"></param>
+        public void GeneratePuzzles(int numPuzzles, bool symmetry)
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
             PuzzleGenerator gen = new PuzzleGenerator();
             PuzzleSolverCharVer solverChar = new PuzzleSolverCharVer();
             PuzzleSolver solver = new PuzzleSolver();
-            
-            
-            int numPuzzles = int.Parse(Number_List_combo.SelectedItem.ToString());
-
             try
             {
                 XDocument doc;
                 string filename = @"SudokuPuzzles.xml";
                 if (File.Exists(filename))
-                {                    
+                {
                     doc = XDocument.Load(filename);
                 }
                 else
@@ -101,10 +116,14 @@ namespace SudokuSolverSetter
                             )
                         );
                 }
-                
+                StreamWriter txtFile = new StreamWriter(@"ratings.txt");
+                StreamWriter txtFile2 = new StreamWriter(@"difficulties.txt");
+                StreamWriter txtFile3 = new StreamWriter(@"givens.txt");
+                Stopwatch Timer = new Stopwatch();
+                Timer.Start();
                 for (int i = 0; i < numPuzzles; i++)
                 {
-                    sudokuPuzzles.Add(gen.Setter());
+                    sudokuPuzzles.Add(gen.Setter(symmetry));
                     string puzzleString = gen.SudokuToString(sudokuPuzzles[i]);
                     long rating = GetDifficulty(sudokuPuzzles[i], puzzleString);
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
@@ -113,10 +132,25 @@ namespace SudokuSolverSetter
                             new XElement("SudokuString", puzzleString)
                             )
                         );
+                    txtFile.WriteLine(rating);
+                    txtFile2.WriteLine(sudokuPuzzles[i].Difficulty);
+                    int givens = 0;
+                    for (int x = 0; x < puzzleString.Length; x++)
+                    {
+                        if (puzzleString[x] != '0')
+                        {
+                            givens++;
+                        }
+                    }
+                    txtFile3.WriteLine(givens);
                 }
+                Timer.Stop();
+                txtFile.Close();
+                txtFile2.Close();
+                txtFile3.Close();
                 doc.Save(filename);
-                MessageBox.Show("Successfully added " + numPuzzles + " puzzles.");
-                
+                MessageBox.Show("Successfully added " + numPuzzles + " puzzles.\r\nThe generator took " + Timer.Elapsed + " to generate and store all of those puzzles.", "Success!");
+
             }
             catch (Exception ex)
             {
@@ -135,7 +169,7 @@ namespace SudokuSolverSetter
             PuzzleSolver solver = new PuzzleSolver();
             long rating = 0;
             int counter = 0;
-            
+
             for (int x = 0; x < 9; x++)
             {
                 for (int y = 0; y < 9; y++)
@@ -153,24 +187,21 @@ namespace SudokuSolverSetter
                 }
             }
             solver.Solver(puzzleGrid, 1);
-            rating = solver.g_Difficulty;
-            if (rating < 800)
-            {
-                puzzleGrid.Difficulty = "Beginner";
-            }
-            else if (rating >= 800 && rating < 1300)
-            {
-                puzzleGrid.Difficulty = "Moderate";
-            }
-            else if (rating >= 1300 && rating < 2000)
-            {
-                puzzleGrid.Difficulty = "Advanced";
-            }
-            else
-            {
-                puzzleGrid.Difficulty = "Extreme";
-            }
+            rating = solver.g_Rating;
+            puzzleGrid.Difficulty = solver.g_Difficulty;
             return rating;
         }
+        #endregion
+        #region Event Handlers
+        /// <summary>
+        /// Event handler that loads/creates an XML file for the puzzles, adding the number of puzzles specified to the XML file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            GeneratePuzzles(int.Parse(Number_List_combo.SelectedItem.ToString()), g_Symmetry);
+        }
+        #endregion
     }
 }

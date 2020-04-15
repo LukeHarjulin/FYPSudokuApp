@@ -80,28 +80,24 @@
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     <Bold>Beginner</Bold> puzzles can almost always be solved by using just the Naked/Hidden Singles strategies. 
-                    They rarely will require a moderate strategy, but it is possible for a Beginner puzzle to require one.
-                    Beginner puzzles are puzzles rated below 800.
+                    They rarely will never require any strategies more complicated than Naked/Hidden singles.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     <Bold>Moderate</Bold> puzzles will require strategies such as Naked/Hidden Pairs, Naked/Hidden Triples, Pointing Pairs/Triples, and Block/Line Reduction 
                     - they will also require the Beginner strategies.
-                    Moderate puzzles can occasionally require Advanced strategies.
-                    Moderate puzzles are puzzles rated between 800 and 1300.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     <Bold>Advanced</Bold> puzzles will require strategies such as X-Wings, Y-Wings, XYZ-Wings, and Single Chaining (aka Simple Colouring)
                     - they will also require the lower tier strategies.
-                    Advanced puzzles should very rarely require Extreme strategies because the difficulty rating system is yet to detect any Extreme strategies (other than Unique Rectangles).
+                    Advanced puzzles should never require Extreme strategies because the difficulty rating system is yet to detect any Extreme strategies.
                     Therefore, when a puzzle's difficulty is measured, if the implemented Strategic Solver cannot solve the puzzle using the strategies at hand, 
                     then it is evaluated as an Extreme puzzle.
-                    Advanced puzzles are puzzles rated between 1300 and 2000.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    <Bold>Extreme</Bold> puzzles will require strategies such as Unique Rectangles, Swordfish, X-Cycles, XY-Chains, and possibly several other strategies.
+                    <Bold>Extreme</Bold> puzzles will require strategies such as Unique Rectangles (Type >=2), Swordfish, X-Cycles, XY-Chains, and possibly several other strategies.
                     - they will also require the lower tier strategies.
-                    If a puzzle cannot be solved using the Strategic Solver then 2000 rating is added to the rating after it cannot find a solution using the implemented strategies.
-                    Extreme puzzles are puzzles rated beyond 2000.
+                    If a puzzle cannot be solved using the Strategic Solver then the rating is based off of the strategies that were used up until the point where the Strategic Solver couldn't find a solution.
+                    Each puzzle is validated with a brute-force (trial and error) solver, so there is only one solution to every Sudoku puzzle.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     _________________________________________________________________________

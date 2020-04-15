@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace SudokuSolverSetter
 {
-    public class PuzzleGenerator//INCOMPLETE!!!!!!!!!
+    public class PuzzleGenerator
     {
         //Initialising global objects/variables
         private Random rand = new Random();
-        public SudokuGrid Setter()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="symmetry">true=apply symmetry, false = symmetry not applied, but can exist</param>
+        /// <returns>the puzzle in form of SudokuGrid</returns>
+        public SudokuGrid Setter(bool symmetry)
         {
             PuzzleSolver solve = new PuzzleSolver();
 
@@ -98,6 +100,7 @@ namespace SudokuSolverSetter
                 MessageBox.Show("Something has gone terribly wrong...");
                 return grid;
             }
+
             
             ///This section consists of constantly removing parallel numbers, e.g. [0,0] and [8,8] or [2,5] and [5,2], and checking if the puzzle is still valid (i.e. still has only one solution)
             char[][] sudokuArray = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
@@ -111,6 +114,10 @@ namespace SudokuSolverSetter
                 changeMade = false;
                 rowList = Shuffler_intList(rowList);
                 colList = Shuffler_intList(colList);
+                if (true)
+                {
+
+                }
                 foreach (int row in rowList)
                 {
                     if (removed > 63)

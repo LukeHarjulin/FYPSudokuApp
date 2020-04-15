@@ -19,6 +19,7 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class PlaySudoku : Window
     {
+        #region Initialisation
         #region Global variables
         private MainWindow homePage = new MainWindow();
         private List<TextBox> g_txtBxList = new List<TextBox>();
@@ -138,9 +139,14 @@ namespace SudokuSolverSetter
                         }
                     }
                 }
-                else
+                else 
                 {
-                    XmlNode startedPuzzles = sudokuPuzzles.SelectSingleNode("Completed");
+                    Sudoku_Title.Content = difficulty + " Sudoku Puzzle";
+                    XmlNode startedPuzzles;
+                    if (puzzleString.Contains('.'))
+                        startedPuzzles = sudokuPuzzles.SelectSingleNode("Completed");
+                    else
+                        startedPuzzles = sudokuPuzzles.SelectSingleNode("NotStarted");
                     XmlNodeList difficultyNode = startedPuzzles.SelectSingleNode(difficulty).ChildNodes;
                     foreach (XmlNode puzzle in difficultyNode)
                     {
@@ -185,6 +191,10 @@ namespace SudokuSolverSetter
                 }
                 else
                 {
+                    if (puzzleString.Contains('.'))
+                    {
+                        puzzleString = puzzleString.Remove(0, 1);
+                    }
                     for (int i = 0; i < 81; i++)
                     {
                         if (puzzleString[i] != '0')
@@ -200,8 +210,8 @@ namespace SudokuSolverSetter
             }
             catch (Exception)//Generates puzzle of random g_difficulty
             {
-                MessageBox.Show("No puzzles exist... A puzzle of random g_difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
-                g_grid = gen.Setter();
+                MessageBox.Show(Owner = this, "No puzzles exist... A puzzle of random difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
+                g_grid = gen.Setter(true);
                 PopulateGrid(g_grid, g_txtBxList);
                 g_originalPuzzleString = gen.SudokuToString(g_grid);
                 CreatePuzzles createPuzzles = new CreatePuzzles();
@@ -212,8 +222,10 @@ namespace SudokuSolverSetter
             }
             Rating_lbl.Content = "Rating: " + g_rating;
             StartTimer();
+            
         }
-        #region Functions
+        #endregion
+        #region Functions/Methods
         /// <summary>
         /// Starts timing the user on solving the puzzle when the window opens or a pause is resumed
         /// </summary>
@@ -224,7 +236,6 @@ namespace SudokuSolverSetter
             DT.Tick += new EventHandler(DT_Tick);
             DT.Interval = new TimeSpan(0,0,1);
             Timer.Start();
-            
             DT.Start();
         }
         /// <summary>
@@ -475,7 +486,7 @@ namespace SudokuSolverSetter
                 doc.Element("SudokuPuzzles").Element("Completed").Element(g_difficulty).Add(
                            new XElement("puzzle",
                                new XElement("DifficultyRating", g_rating),
-                               new XElement("SudokuString", g_originalPuzzleString),
+                               new XElement("SudokuString", "."+g_originalPuzzleString),
                                new XElement("TimeTaken", g_currentTime),
                                new XElement("Date", DateTime.Today.Date.ToShortDateString())
                                )
@@ -486,7 +497,7 @@ namespace SudokuSolverSetter
             MessageBox.Show("Successfully saved puzzle.");
         }
         #endregion
-        #region All Event Actions
+        #region Event Handlers
         /// <summary>
         /// Event handler that updates the timer at the top of the window and display a congratulations message box if the puzzle is checked and is complete
         /// </summary>
@@ -617,7 +628,7 @@ namespace SudokuSolverSetter
                 }
             }
             
-            g_selectedCell = ((TextBox)sender);
+            g_selectedCell = (TextBox)sender;
             if (nightmode_chkbx.IsChecked == false)//sets the current focused cell to a more prominent colour
             {
                 ((TextBox)sender).Background = focusCell;
@@ -633,21 +644,17 @@ namespace SudokuSolverSetter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Window_Close(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            
             MessageBoxResult result = MessageBox.Show("Do you want to save your progress on this puzzle before you quit?", "Confirm", MessageBoxButton.YesNoCancel);
             if (result == MessageBoxResult.Yes)
             {
                 ///SavePuzzle
                 SavePuzzle(false);
-                Hide();
                 homePage.Show();
             }
             else if (result == MessageBoxResult.No)
             {
-                Hide();
-                homePage = new MainWindow();
                 homePage.Show();
             }
             else
@@ -857,6 +864,7 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void SaveQuit_Button_Click(object sender, RoutedEventArgs e)
         {
+            homePage.Owner = this;
             MessageBoxResult result = MessageBox.Show("Do you want to save your progress on this puzzle before you quit?", "Confirm", MessageBoxButton.YesNoCancel);
             if (result == MessageBoxResult.Yes)
             {
@@ -868,7 +876,6 @@ namespace SudokuSolverSetter
             else if (result == MessageBoxResult.No)
             {
                 Hide();
-                homePage = new MainWindow();
                 homePage.Show();
             }
         }
@@ -896,7 +903,10 @@ namespace SudokuSolverSetter
             MessageBoxResult result = MessageBox.Show("Are you sure you want to play a new puzzle?", "Confirm", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                PlaySudoku playSudoku = new PlaySudoku(g_difficulty, "");
+                PlaySudoku playSudoku = new PlaySudoku(g_difficulty, "")
+                {
+                    Owner = this
+                };
                 Hide();
                 playSudoku.Show();
             }
@@ -965,13 +975,14 @@ namespace SudokuSolverSetter
         }
         /// <summary>
         /// Dark mode deactivated, changes all Controls back into light version
+        /// Needs improving by implementing a function to reduce repeated code.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             //LightMode
-                //reduces memory clutter by only ever assigning these colours once. Also, the object is only created if the user deactivates darkmode.
+            //reduces overhead by only ever assigning these colours once. Also, the object is only created if the user deactivates darkmode.
             if (buttonColour == null)
             {
                 buttonColour = new SolidColorBrush(Color.FromArgb(255, 255, 247, 230));

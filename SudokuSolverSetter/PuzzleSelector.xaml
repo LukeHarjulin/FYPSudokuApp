@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Closed">
+        Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" Closing="Window_Closing">
 
     <Grid Background="#FFEEF1FF">
         <Border BorderThickness="2" BorderBrush="Black">

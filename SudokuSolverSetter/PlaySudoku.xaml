@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="Play Sudoku" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Close" >
+        Title="Play Sudoku" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" Closing="Window_Closing" >
 
     <Border Padding="3">
         <Canvas x:Name="cnvs" Background="#FFEEF1FF">
@@ -114,7 +114,7 @@
             <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" Canvas.Left="620" Canvas.Top="10" Width="90" FontSize="20" IsReadOnly="True" BorderBrush="{x:Null}" FontFamily="Verdana"/>
             <Button x:Name="Pause_btn" Content="Pause (P)" Canvas.Left="728" Canvas.Top="7" Width="135" Height="65" FontSize="22" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Pauses the stopwatch" Background="#FFF7E6" FontFamily="Verdana"/>
             <CheckBox x:Name="nightmode_chkbx" Content="Dark mode" Canvas.Left="786" Canvas.Top="82" Checked="CheckBox_Checked" Height="30" Unchecked="CheckBox_Unchecked" FontSize="22" Width="146" FontFamily="Verdana"/>
-            <RichTextBox x:Name="PauseBlock" Background="#FFEEF1FF" Height="705" Canvas.Top="50" Width="700" Canvas.Left="10" IsReadOnly="True" FontSize="72" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden">
+            <RichTextBox x:Name="PauseBlock" Background="#FFEEF1FF" Height="705" Canvas.Top="50" Width="700" Canvas.Left="10" IsReadOnly="True" FontSize="72" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" VerticalScrollBarVisibility="Auto">
                 <FlowDocument>
                     <Paragraph x:Name="RTB_LargeText" TextAlignment="Center" Padding="0"></Paragraph>
                     <Paragraph x:Name="RTB_HelpText" TextAlignment="Center" ></Paragraph>

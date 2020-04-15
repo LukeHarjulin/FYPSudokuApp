@@ -23,16 +23,23 @@ namespace SudokuSolverSetter
         public MainWindow()
         {
             InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
         private void DeveloperMode_Button_Click(object sender, RoutedEventArgs e)
         {
 
-            PasswordBox passBox = new PasswordBox();
+            PasswordBox passBox = new PasswordBox
+            {
+                Owner = this
+            };
             if (passBox.ShowDialog() == true)
             {
-                DeveloperWindow developerWindow = new DeveloperWindow();
+                DeveloperWindow developerWindow = new DeveloperWindow
+                {
+                    Owner = this
+                };
                 developerWindow.Show();
-                this.Hide();
+                Hide();
             }
         }
         /// <summary>
@@ -51,28 +58,41 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Play_Sudoku_Click(object sender, RoutedEventArgs e)
         {
+            PlaySudoku playSudoku;
             if (Difficulty_ComboBox.SelectedIndex == 0)//Beginner
             {
-                PlaySudoku playSudoku = new PlaySudoku("Beginner", "");
+                playSudoku = new PlaySudoku("Beginner", "")
+                {
+                    Owner = this
+                };
                 playSudoku.Show();
             }
             else if (Difficulty_ComboBox.SelectedIndex == 1)//Moderate
             {
-                PlaySudoku playSudoku = new PlaySudoku("Moderate", "");
+                playSudoku = new PlaySudoku("Moderate", "")
+                {
+                    Owner = this
+                };
                 playSudoku.Show();
             }
             else if (Difficulty_ComboBox.SelectedIndex == 2)//Advanced
             {
-                PlaySudoku playSudoku = new PlaySudoku("Advanced", "");
+                playSudoku = new PlaySudoku("Advanced", "")
+                {
+                    Owner = this
+                };
                 playSudoku.Show();
             }
             else                                           //Extreme
             {
-                PlaySudoku playSudoku = new PlaySudoku("Extreme", "");
+                playSudoku = new PlaySudoku("Extreme", "")
+                {
+                    Owner = this
+                };
                 playSudoku.Show();
             }
-
-            this.Hide();
+            
+            Hide();
         }
         private void Window_Close(object sender, EventArgs e)
         {
@@ -84,9 +104,12 @@ namespace SudokuSolverSetter
         }
         private void Level_Selector_Click(object sender, RoutedEventArgs e)
         {
-            PuzzleSelector selector = new PuzzleSelector();
+            PuzzleSelector selector = new PuzzleSelector
+            {
+                Owner = this
+            };
             selector.Show();
-            this.Hide();
+            Hide();
         }
         /// <summary>
         /// Produces a help menu
@@ -108,7 +131,10 @@ namespace SudokuSolverSetter
         }
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
-            CreatePuzzles createPuzzles = new CreatePuzzles();
+            CreatePuzzles createPuzzles = new CreatePuzzles(10, true)//user is only allowed to create a max of 10 puzzles, all of which must be symmetrical
+            {
+                Owner = this
+            };
             createPuzzles.ShowDialog();
         }
     }
