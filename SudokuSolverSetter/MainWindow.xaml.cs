@@ -23,11 +23,10 @@ namespace SudokuSolverSetter
         public MainWindow()
         {
             InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
         private void DeveloperMode_Button_Click(object sender, RoutedEventArgs e)
         {
-
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             PasswordBox passBox = new PasswordBox
             {
                 Owner = this
@@ -49,7 +48,11 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Quit_btn_Click(object sender, RoutedEventArgs e)
         {
-            Environment.Exit(0);
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to quit?", "Quit Confirmation", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                Environment.Exit(0);//Closes the application properly if the red 'X' is clicked
+            }
         }
         /// <summary>
         /// Calls the PlaySudoku class, sending the difficulty setting selected so that a puzzle with that difficulty can be selected
@@ -58,6 +61,7 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Play_Sudoku_Click(object sender, RoutedEventArgs e)
         {
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             PlaySudoku playSudoku;
             if (Difficulty_ComboBox.SelectedIndex == 0)//Beginner
             {
@@ -94,9 +98,17 @@ namespace SudokuSolverSetter
             
             Hide();
         }
-        private void Window_Close(object sender, EventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Environment.Exit(0);//Closes the application properly if the red 'X' is clicked
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to quit?", "Quit Confirmation", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                Environment.Exit(0);//Closes the application properly if the red 'X' is clicked
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+            }
         }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -104,6 +116,7 @@ namespace SudokuSolverSetter
         }
         private void Level_Selector_Click(object sender, RoutedEventArgs e)
         {
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             PuzzleSelector selector = new PuzzleSelector
             {
                 Owner = this

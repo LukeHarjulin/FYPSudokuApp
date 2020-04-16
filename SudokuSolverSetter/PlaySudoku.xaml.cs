@@ -22,6 +22,7 @@ namespace SudokuSolverSetter
         #region Initialisation
         #region Global variables
         private MainWindow homePage = new MainWindow();
+        private PuzzleGenerator g_Gen = new PuzzleGenerator();
         private List<TextBox> g_txtBxList = new List<TextBox>();
         private TextBox g_selectedCell;
         private SudokuGrid g_grid = new SudokuGrid();
@@ -61,7 +62,7 @@ namespace SudokuSolverSetter
                 bx70,bx71,bx72,bx73,bx74,bx75,bx76,bx77,bx78,bx79,
                 bx80,bx81
             };
-            string fileName = @"SudokuPuzzles.xml";
+            string fileName = @"Symmetric/SudokuPuzzles.xml";
             g_difficulty = difficulty;
             XmlDocument doc = new XmlDocument();
             try
@@ -164,6 +165,21 @@ namespace SudokuSolverSetter
                 {
                     for (int i = 0, counter = 0; counter < puzzleString.Length; counter++)
                     {
+                        if (puzzleString[counter] == '|')
+                        {
+                            g_txtBxList[i].IsReadOnly = true;
+                            g_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                            counter++;
+                        }
+                        else if (puzzleString[counter] == '-')
+                        {
+                            g_txtBxList[i].FontSize = 16;
+                            counter++;
+                        }
+                        if (counter == puzzleString.Length)
+                        {
+                            break;
+                        }
                         if (puzzleString[counter] == '_')
                         {
                             i++;
@@ -175,7 +191,7 @@ namespace SudokuSolverSetter
                             g_txtBxList[i].Text += puzzleString[counter].ToString();
                             if (g_txtBxList[i].Text.Length > 1)
                             {
-                                g_txtBxList[i].FontSize = 12;
+                                g_txtBxList[i].FontSize = 16;
                             }
                             else
                             {
@@ -210,7 +226,7 @@ namespace SudokuSolverSetter
             }
             catch (Exception)//Generates puzzle of random g_difficulty
             {
-                MessageBox.Show(Owner = this, "No puzzles exist... A puzzle of random difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
+                MessageBox.Show("No puzzles exist... A puzzle of random difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
                 g_grid = gen.Setter(true);
                 PopulateGrid(g_grid, g_txtBxList);
                 g_originalPuzzleString = gen.SudokuToString(g_grid);
@@ -382,8 +398,8 @@ namespace SudokuSolverSetter
         {
             ///Save Puzzle to Started/Completed
             XDocument doc;
-            string filename = @"SudokuPuzzles.xml", candidatesInString = "";
-
+            string filename = @"Symmetric/SudokuPuzzles.xml", candidatesInString = "";
+            
             doc = File.Exists(filename)
                 ? XDocument.Load(filename)
                 : new XDocument(
@@ -410,13 +426,14 @@ namespace SudokuSolverSetter
                             )
                         )
                     );
+            doc.Save(filename);
             if (!completed)
             {
                 for (int i = 0; i < 81; i++)
                 {
-                    if (g_txtBxList[i].Text.Length > 1)
+                    if (g_txtBxList[i].Text.Length > 1 || g_txtBxList[i].FontSize == 16)
                     {
-                        candidatesInString += g_txtBxList[i].Text;
+                        candidatesInString += g_txtBxList[i].Text + "-";
                     }
                     else if (g_txtBxList[i].Text == "")
                     {
@@ -425,6 +442,10 @@ namespace SudokuSolverSetter
                     else
                     {
                         candidatesInString += g_txtBxList[i].Text;
+                        if (g_txtBxList[i].IsReadOnly)
+                        {
+                            candidatesInString += "|";
+                        }
                     }
                     if (i != 80)
                     {
@@ -507,20 +528,6 @@ namespace SudokuSolverSetter
         {
             if (Timer.IsRunning)
             {
-                if (g_puzzledSolved)
-                {
-                    Timer.Stop();
-                    DT.Stop();
-                    MessageBox.Show("Congratulations!\n\rSudoku Complete!");
-                    string puzzle = "";
-                    for (int i = 0; i < 81; i++)
-                    {
-                        g_txtBxList[i].IsReadOnly = true;
-                        puzzle += g_txtBxList[i];
-                    }
-                    SavePuzzle(true);
-                }
-                
                 TimeSpan ts = Timer.Elapsed.Add(g_StartingTS);
                 if (ts.Seconds < 10)
                 {
@@ -585,8 +592,7 @@ namespace SudokuSolverSetter
                 
             }
         }
-
-
+        
         /// <summary>
         /// Handles when a cell in the grid is selected, changing the background colour of the selected cell
         /// </summary>
@@ -737,10 +743,9 @@ namespace SudokuSolverSetter
                             g_selectedCell.Text = numbers;
                         }
                     }
-                    if (g_cellContents != g_selectedCell.Text && g_selectedCell.Text.Length < 2 && !g_pencilMarker)
+                    if (g_selectedCell.Text.Length < 2 && !g_pencilMarker)
                     {
                         //Check if solved
-                        bool solved = true;
                         char[][] basicGrid = new char[9][];
                         for (int i = 0; i < basicGrid.Length; i++)
                         {
@@ -755,7 +760,7 @@ namespace SudokuSolverSetter
                                 c = 0;
                                 r++;
                             }
-                            if (g_txtBxList[i].Text == "" || g_txtBxList[i].Text.Length > 1)
+                            if (g_txtBxList[i].Text == "" || g_txtBxList[i].Text.Length > 1 || g_txtBxList[i].FontSize == 16)
                             {
                                 basicGrid[r][c] = '0';
                             }
@@ -764,33 +769,17 @@ namespace SudokuSolverSetter
                                 basicGrid[r][c] = g_txtBxList[i].Text[0];
                             }
                         }
-
-                        for (int row = 0; row < 9 && solved == true; row++)
+                        if (g_Gen.CheckIfSolved_array(basicGrid))
                         {
-                            List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                            for (int col = 0; col < 9; col++)
+                            Timer.Stop();
+                            DT.Stop();
+                            MessageBox.Show("Congratulations!\n\rSudoku Complete!");
+                            for (int i = 0; i < 81; i++)
                             {
-                                if (basicGrid[row][col] == 0)
-                                {
-                                    solved = false;
-                                    break;
-                                }
-                                else if (numberList.Contains(basicGrid[row][col]))
-                                {
-                                    if (!numberList.Remove(basicGrid[row][col]))
-                                    {
-                                        solved = false;
-                                        break;
-                                    }
-                                }
+                                g_txtBxList[i].IsReadOnly = true;
                             }
-                            if (numberList.Count > 0)
-                            {
-                                solved = false;
-                                break;
-                            }
+                            SavePuzzle(true);
                         }
-                        if (solved) { g_puzzledSolved = true; }
                     }
                     g_cellContents = g_selectedCell.Text;
                     if (!g_pencilMarker)
@@ -926,8 +915,8 @@ namespace SudokuSolverSetter
                 altDarkCellColour = new SolidColorBrush(Color.FromArgb(255, 66, 66, 66));
                 darkButtonColour = new SolidColorBrush(Color.FromArgb(255, 60, 60, 60));
                 darkTextColour = new SolidColorBrush(Color.FromArgb(150, 240, 240, 240));
-                darkFocusCell = new SolidColorBrush(Color.FromArgb(255, 75, 75, 75));
-                darkHoverCell = new SolidColorBrush(Color.FromArgb(255, 95, 95, 95));
+                darkFocusCell = new SolidColorBrush(Color.FromArgb(255, 127, 127, 127));
+                darkHoverCell = new SolidColorBrush(Color.FromArgb(255, 100, 100, 100));
             }
                 
             this.Background = darkColour;

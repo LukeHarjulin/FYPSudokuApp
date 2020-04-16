@@ -16,7 +16,7 @@ namespace SudokuSolverSetter
             InitializeComponent();
 
         }
-        public void PopulateTextBlock(int difficultyRating, string timeString, PuzzleSolver puzzleSolver)
+        public void PopulateTextBlock(int difficultyRating, string timeString, PuzzleSolverObjDS puzzleSolver)
         {
             Show();
             AdditionalInfo.Text = "Difficulty Rating (WIP): " + difficultyRating + "\r\n" + timeString;

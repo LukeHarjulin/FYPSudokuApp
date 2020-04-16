@@ -17,11 +17,11 @@ namespace SudokuSolverSetter
         private List<TextBox> g_txtBxList = new List<TextBox>();
         private MainWindow g_homePage = new MainWindow();
         private PuzzleGenerator g_gen = new PuzzleGenerator();
-        private PuzzleSolver g_solve = new PuzzleSolver();
+        private PuzzleSolverObjDS g_solve = new PuzzleSolverObjDS();
         private string g_currentTime = "";
         private DispatcherTimer G_DT { get; set; }
         private Stopwatch G_Timer { get; set; }
-        private List<string> g_BruteSolvePath = new List<string>();
+        private List<string> g_BacktrackingSolvePath = new List<string>();
         private int g_PathCounter = 0;
         private List<int> g_ratingList = new List<int>();
         private List<string> g_puzzleStrList = new List<string>();
@@ -46,12 +46,11 @@ namespace SudokuSolverSetter
                                              x8y1g7, x8y2g7, x8y3g7, x8y4g8, x8y5g8, x8y6g8, x8y7g9, x8y8g9, x8y9g9,
                                              x9y1g7, x9y2g7, x9y3g7, x9y4g8, x9y5g8, x9y6g8, x9y7g9, x9y8g9, x9y9g9
             };
-            AddPuzzlesToCombo();
         }
         /// <summary>
         /// Updates the combo box with all the puzzles from the XML file, displayed and ordered by their rating
         /// </summary>
-        public void AddPuzzlesToCombo()
+        public void AddPuzzlesToCombo(bool symmetry)
         {
             if (PuzzlesByRating_combo.Items.Count > 0)
             {
@@ -59,7 +58,16 @@ namespace SudokuSolverSetter
                 g_ratingList.Clear();
                 g_puzzleStrList.Clear();
             }
-            string fileName = @"SudokuPuzzles.xml";
+            string symmetric = "";
+            if (symmetry)
+            {
+                symmetric = @"Symmetric";
+            }
+            else
+            {
+                symmetric = @"NonSymmetric";
+            }
+            string fileName = symmetric+"/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
             try
             {
@@ -117,7 +125,7 @@ namespace SudokuSolverSetter
             }
             catch (Exception)
             {
-                MessageBox.Show("Warning! No existing XML file found in folder.");
+                MessageBox.Show("Warning! No puzzles added to \"Select existing puzzle\" drop down menu");
             }
         }
         /// <summary>
@@ -156,13 +164,13 @@ namespace SudokuSolverSetter
             return m_txtBxList;
         }
         /// <summary>
-        /// Tests the three solvers: Strategy solver, brute force solver with object data structure, and brute force solver with char[][] data structure
+        /// Tests the three solvers: Strategy solver, backtracking solver with object data structure, and backtracking solver with char[][] data structure
         /// </summary>
         /// <param name="puzzleSolver">passing through so that it isn't redeclared</param>
         /// <param name="grid">grid used to pass to the solvers</param>
         /// <param name="iterations">number of times chosen to solve the puzzle by each solver</param>
         /// <param name="puzzleString">the puzzle grid in string form</param>
-        private void TimeTestSolvers(PuzzleSolver puzzleSolver, SudokuGrid grid, int iterations, string puzzleString)
+        private void TimeTestSolvers(PuzzleSolverObjDS puzzleSolver, SudokuGrid grid, int iterations, string puzzleString)
         {
             int difficulty = 0;
             bool solved = false;
@@ -192,6 +200,7 @@ namespace SudokuSolverSetter
                         if (i == 0)
                         {
                             difficulty = puzzleSolver.g_Rating;
+                            difficulty_lbl.Content = "Difficulty: " + puzzleSolver.g_Difficulty;
                         }
                     }
                     else
@@ -202,10 +211,10 @@ namespace SudokuSolverSetter
                 times[m - 1] = m + "," + (averageTime / iterations / 1000).ToString();
                 
             }
-            PuzzleSolverCharVer solver = new PuzzleSolverCharVer();
+            PuzzleSolverCharDS solver = new PuzzleSolverCharDS();
             char[][] puzzleCharArr = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
             averageTime = 0;
-            for (int n = 0; n < iterations; n++)//Test char[][] brute force solver
+            for (int n = 0; n < iterations; n++)//Test char[][] backtracking solver
             {
                 int counter2 = 0;
                 for (int i = 0; i < 9; i++)
@@ -224,17 +233,17 @@ namespace SudokuSolverSetter
             times[2] = 4 + "," + (averageTime / iterations / 1000).ToString();
             string outputStr = "After " + iterations + " iteration(s), average times taken to solve\r\nDifficulty (WIP): " + difficulty + "\r\n";
             times[0] = times[0].Remove(0, 2);
-            outputStr += solved ? "Strategy Solver using Objects: " + times[0] + "\r\n" : "Strategy Solver using Objects(Brute-Force required): " + times[0] + "\r\n";
+            outputStr += solved ? "Strategy Solver using Objects: " + times[0] + "\r\n" : "Strategy Solver using Objects(trial-and-error required): " + times[0] + "\r\n";
             times[1] = times[1].Remove(0, 2);
-            outputStr += "Brute-Force Solver using Objects: " + times[1] + "\r\n";
+            outputStr += "Backtracking Solver using Objects: " + times[1] + "\r\n";
             times[2] = times[2].Remove(0, 2);
-            outputStr += "Brute-Force Solver using char[][]: " + times[2] + "\r\n";
+            outputStr += "Backtracking Solver using char[][]: " + times[2] + "\r\n";
 
             PopulateGrid(grid, g_txtBxList);
             MessageBox.Show(outputStr);
         }
         /// <summary>
-        /// Timer starts when the display of the brute-force solver is requested
+        /// Timer starts when the display of the backtracking solver is requested
         /// </summary>
         private void StartTimer()
         {
@@ -244,32 +253,30 @@ namespace SudokuSolverSetter
             G_DT.Interval = new TimeSpan(0, 0, 0, 0, 1);
             G_Timer.Start();
             G_DT.Start();
-            Brute_Solve_char.IsEnabled = false;
-            Brute_Solve_Obj.IsEnabled = false;
+            Backtracking_Solve_char.IsEnabled = false;
+            Backtracking_Solve_Obj.IsEnabled = false;
             b_Solve.IsEnabled = false;
             TestAllThree.IsEnabled = false;
-            b_Solve1by1.IsEnabled = false;
             Import_Puzzle.IsEnabled = false;
             Create_Store_Puzzles_btn.IsEnabled = false;
         }
         /// <summary>
-        /// Stops the timer when the brute-force solver display is finished or a certain button is click
+        /// Stops the timer when the backtracking solver display is finished or a certain button is click
         /// </summary>
         private void StopTimer()
         {
             G_Timer.Stop();
             G_DT.Stop();
-            Brute_Solve_char.IsEnabled = true;
-            Brute_Solve_Obj.IsEnabled = true;
+            Backtracking_Solve_char.IsEnabled = true;
+            Backtracking_Solve_Obj.IsEnabled = true;
             b_Solve.IsEnabled = true;
             TestAllThree.IsEnabled = true;
-            b_Solve1by1.IsEnabled = true;
             Import_Puzzle.IsEnabled = true;
             Create_Store_Puzzles_btn.IsEnabled = true;
         }
         /// <summary>
-        /// Used to display Brute-Force solver algorithm.
-        /// Every millisecond, a tick occurs and a number is placed/removed within/from the grid.
+        /// Used to display Backtracking solver algorithm.
+        /// When a tick occurs and a number is placed/removed within/from the grid.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -279,27 +286,27 @@ namespace SudokuSolverSetter
             {
                 try
                 {
-                    if (g_PathCounter >= g_BruteSolvePath.Count)
+                    if (g_PathCounter >= g_BacktrackingSolvePath.Count)
                     {
                         StopTimer();
                     }
                     else
                     {
                         //Add number to cell
-                        int i1 = Convert.ToInt32(g_BruteSolvePath[g_PathCounter][0]) + 1;
-                        int j1 = Convert.ToInt32(g_BruteSolvePath[g_PathCounter][1]) + 1;
+                        int i1 = Convert.ToInt32(g_BacktrackingSolvePath[g_PathCounter][0]) + 1;
+                        int j1 = Convert.ToInt32(g_BacktrackingSolvePath[g_PathCounter][1]) + 1;
                         for (int i = 0; i < g_txtBxList.Count; i++)
                         {
                             if (g_txtBxList[i].Name[1] == (char)i1 && g_txtBxList[i].Name[3] == (char)j1)
                             {
                                 g_txtBxList[i].FontSize = 36;
-                                if (g_BruteSolvePath[g_PathCounter][2] == '0')
+                                if (g_BacktrackingSolvePath[g_PathCounter][2] == '0')
                                 {
                                     g_txtBxList[i].Text = "";
                                 }
                                 else
                                 {
-                                    g_txtBxList[i].Text = g_BruteSolvePath[g_PathCounter][2].ToString();
+                                    g_txtBxList[i].Text = g_BacktrackingSolvePath[g_PathCounter][2].ToString();
                                 }
                             }
                         }
@@ -324,7 +331,7 @@ namespace SudokuSolverSetter
         private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the grid that it is presented
         {
             //Initialising objects
-            PuzzleSolver puzzleSolver = new PuzzleSolver();
+            PuzzleSolverObjDS puzzleSolver = new PuzzleSolverObjDS();
             PuzzleGenerator gen = new PuzzleGenerator();
             SudokuGrid grid = new SudokuGrid
             {
@@ -374,7 +381,7 @@ namespace SudokuSolverSetter
                 for (int j = 0; j < 9; j++)
                 {
                     int nbCounter = 0;//nbCounter is neighbourcounter
-                    grid.Rows[i][j].NeighbourCells = new List<Cell[]>
+                    grid.Rows[i][j].NeighbourCells = new Cell[3][]
                     {
                         new Cell[8],
                         new Cell[8],
@@ -414,7 +421,7 @@ namespace SudokuSolverSetter
                 }
             }
             int method = 1;
-            if ((Button)sender == Brute_Solve_Obj)
+            if ((Button)sender == Backtracking_Solve_Obj)
             {
                 method = 2;
             }
@@ -444,9 +451,13 @@ namespace SudokuSolverSetter
                     var watch = System.Diagnostics.Stopwatch.StartNew();
                     solved = puzzleSolver.Solver(grid, method);
                     if (i == 0)
+                    {
                         difficulty = puzzleSolver.g_Rating;
+                        difficulty_lbl.Content = "Difficulty: " + puzzleSolver.g_Difficulty;
+                    }
                     watch.Stop();
                     averageTime += watch.ElapsedMilliseconds;
+                    
                 }
                 averageTime = averageTime / iterations;
                 
@@ -454,13 +465,13 @@ namespace SudokuSolverSetter
                 if (method == 1)
                 {
                     PopulateGrid(grid, g_txtBxList);
-                    if (solved && !puzzleSolver.g_BruteForced)
+                    if (solved && !puzzleSolver.g_BacktrackingReq)
                     {
-                        MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Difficulty(WIP): " + difficulty);
+                        MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Rating(experimental): " + difficulty);
                     }
-                    else if (puzzleSolver.g_BruteForced)
+                    else if (puzzleSolver.g_BacktrackingReq)
                     {
-                        MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with bruteforce, unable to finish using implemented strategies.\r\nMeasured Difficulty(experimental): " + difficulty);
+                        MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with trial and error, unable to finish using implemented strategies.\r\nMeasured Puzzle Rating(experimental): " + difficulty);
                     }
                     SolvePath path = new SolvePath();
                     path.PopulateTextBlock(difficulty, g_currentTime, puzzleSolver);
@@ -468,10 +479,11 @@ namespace SudokuSolverSetter
                 }
                 else if (method == 2)
                 {
-                    MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime+"\r\n\r\nDo you want to see the Brute-Force solver solve the puzzle?\r\n(Warning: The visual solving can take a very long time to finish)", "Brute-Force Visual Confirmation", MessageBoxButton.YesNo);
+                    int estimateSimulationTime = puzzleSolver.g_BacktrackingPath.Count * 16 / 1000;
+                    MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime+ "\r\n\r\nDo you want to see a simulation of the Backtracking algorithm solving the puzzle?\r\nTotal # of Digit Changes: " + puzzleSolver.g_BacktrackingPath.Count +"\r\nEstimated Duration of Simulation: "+estimateSimulationTime+" seconds\r\n(Warning: The simulation can take a very long time to finish, ~16ms per digit change)", "Backtracking Simulation Confirmation", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
-                        g_BruteSolvePath.AddRange(puzzleSolver.g_BruteSolvePath);
+                        g_BacktrackingSolvePath.AddRange(puzzleSolver.g_BacktrackingPath);
                         StartTimer();
                     }
                     else
@@ -495,7 +507,7 @@ namespace SudokuSolverSetter
         private void B_Solve1by1_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve in increments (e.g. once a value is placed into a cell, the solver stops)
         {
             //Initialising objects
-            PuzzleSolver solve = new PuzzleSolver();
+            PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
             List<TextBox> txtBxList = new List<TextBox>
             { x1y1g1, x1y2g1, x1y3g1, x1y4g2, x1y5g2, x1y6g2, x1y7g3, x1y8g3, x1y9g3,
               x2y1g1, x2y2g1, x2y3g1, x2y4g2, x2y5g2, x2y6g2, x2y7g3, x2y8g3, x2y9g3,
@@ -601,7 +613,7 @@ namespace SudokuSolverSetter
                 Owner = this
             };
             createPuzzles.ShowDialog();
-            AddPuzzlesToCombo();
+            AddPuzzlesToCombo(symmetry);
         }
         /// <summary>
         /// Brings up a window to import a puzzle
@@ -634,7 +646,7 @@ namespace SudokuSolverSetter
                     }
                 }
                 givenNums_lbl.Content = "Given Numbers: " + givensCounter;
-                difficulty_lbl.Content = "Unknown";
+                difficulty_lbl.Content = "Difficulty: Unknown";
             }
             
         }
@@ -667,18 +679,18 @@ namespace SudokuSolverSetter
                 }
             }
             givenNums_lbl.Content = "Given Numbers: " + givensCounter;
-            difficulty_lbl.Content = "Difficulty: " + grid.Difficulty;
+            difficulty_lbl.Content = "Difficulty: Unknown";
             g_txtBxList = PopulateGrid(grid, g_txtBxList);
             Clipboard.SetText(g_gen.SudokuToString(grid));
         }
         /// <summary>
-        /// Brute-Force Solve button click event using a different data structure
+        /// Backtracking Solve button click event using a different data structure
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BruteSolve_char_Click(object sender, RoutedEventArgs e)
+        private void BacktrackingSolve_char_Click(object sender, RoutedEventArgs e)
         {
-            PuzzleSolverCharVer solver = new PuzzleSolverCharVer();
+            PuzzleSolverCharDS solver = new PuzzleSolverCharDS();
             char[][] puzzle = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
             int counter = 0;
             for (int i = 0; i < 9; i++)
@@ -697,7 +709,7 @@ namespace SudokuSolverSetter
                 }
             }
             char method = '1';
-            if ((Button)sender == Brute_Solve_char)
+            if ((Button)sender == Backtracking_Solve_char)
             {
                 method = '2';
             }
@@ -726,10 +738,11 @@ namespace SudokuSolverSetter
             
             if (solved)
             {
-                MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\n\r\nDo you want to see the Brute-Force solver solve the puzzle?\r\n(Warning: The visual solving can take a very long time to finish)", "Brute-Force Visual Confirmation", MessageBoxButton.YesNo);
+                int estimateSimulationTime = (solver.solvePath.Count * 16) / 1000;
+                MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\n\r\nDo you want to see a simulation of the Backtracking algorithm solving the puzzle?\r\nTotal # of Digit Changes: "+solver.solvePath.Count+"\r\nEstimated Duration of Simulation: " + estimateSimulationTime + " seconds\r\n(Warning: The simulation can take a very long time to finish, ~16ms per digit change)", "Backtracking Simulation Confirmation", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    g_BruteSolvePath.AddRange(solver.solvePath);
+                    g_BacktrackingSolvePath.AddRange(solver.solvePath);
                     StartTimer();
                 }
                 else
@@ -807,6 +820,16 @@ namespace SudokuSolverSetter
                 }
 
             }
+        }
+
+        private void Symmetry_checkbox_Checked(object sender, RoutedEventArgs e)
+        {
+            AddPuzzlesToCombo(true);
+        }
+
+        private void Symmetry_checkbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            AddPuzzlesToCombo(false);
         }
     }
 }

@@ -1,31 +1,32 @@
 ﻿<Window x:Class="SudokuSolverSetter.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="Sudoku Project" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Close">
-    <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}" Background="#FFEEF1FF">
-        <Image Height="Auto" Width="Auto" Source="StartPageBackground_Design.png" Margin="-20,-20,-31,-19"/>
-        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="418" Margin="0,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="486" StrokeThickness="3"/>
-        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="57" Margin="0,15,773,0" Stroke="Black" VerticalAlignment="Top" Width="183" StrokeThickness="3"/>
-        <Button x:Name="Developer_Mode" Background="#FFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="25,25,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
-        <Button x:Name="Quit_btn" Background="#FFF7E6" Content="QUIT" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,660,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
-        <Button x:Name="Play_Sudoku_Btn" Background="#FFF7E6" Content="PLAY SUDOKU" Width="420" Click="Play_Sudoku_Click" Height="60" Margin="0,360,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Verdana"/>
-        <Button x:Name="Level_Selector_Btn" Background="#FFF7E6" Content="PUZZLE SELECTOR (WIP)" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,460,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
-        <ComboBox x:Name="Difficulty_ComboBox" Background="#FFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="573,425,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="30" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538" FontFamily="Verdana">
+        Title="Main Menu" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+    <Window.Background>
+        <ImageBrush ImageSource="StartPageBackground_Design.png"/>
+    </Window.Background>
+    <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}">
+        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="418" Margin="0,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="486" StrokeThickness="3"/>
+        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="57" Margin="0,15,773,0" Stroke="Black" VerticalAlignment="Top" Width="183" StrokeThickness="3"/>
+        <Button x:Name="Play_Sudoku_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PLAY SUDOKU" Width="420" Click="Play_Sudoku_Click" Height="60" Margin="0,360,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Verdana"/>
+        <ComboBox x:Name="Difficulty_ComboBox" Background="#BFFFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="573,425,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="30" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538" FontFamily="Verdana">
             <ComboBoxItem IsSelected="True" Content="Beginner"/>
             <ComboBoxItem Content="Moderate"/>
             <ComboBoxItem Content="Advanced"/>
             <ComboBoxItem Content="Extreme"/>
         </ComboBox>
+        <Button x:Name="Level_Selector_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PUZZLE SELECTOR (WIP)" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,460,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <ToggleButton x:Name="Help_btn" Cursor="Hand" Background="#BFFFF7E6" Content="OPEN HELP" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Help_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,560,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <Button x:Name="Quit_btn" Cursor="Hand" Background="#BFFFF7E6" Content="QUIT" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,660,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <Button x:Name="Developer_Mode" Cursor="Hand" Background="#BFFFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="25,25,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
         <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="415,420,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium" FontFamily="Verdana"/>
-        <Button x:Name="Help_btn" Background="#FFF7E6" Content="OPEN HELP" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Help_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,560,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
-        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="180" Margin="-50,80,-50,0" Stroke="Black" VerticalAlignment="Top" Width="1120" StrokeThickness="3"/>
-        <Image HorizontalAlignment="Center" Height="140" Margin="0,100,0,0" VerticalAlignment="Top" Width="810" Source="/Title_designV2.png"/>
+                <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="180" Margin="-50,80,-50,0" Stroke="Black" VerticalAlignment="Top" Width="1120" StrokeThickness="3"/>
+        <Image HorizontalAlignment="Center" Height="140" Margin="0,100,0,0" VerticalAlignment="Top" Width="810" Source="/Title_designV2.png" OpacityMask="Black"/>
 
-        <RichTextBox x:Name="HelpBlock" Background="#FFEEF1FF" Canvas.Top="50" Canvas.Left="10" IsReadOnly="True" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" Margin="0,10,0,216" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center">
+        <RichTextBox x:Name="HelpBlock" Cursor="Arrow" Background="#F6EEF1FF" Canvas.Top="50" Canvas.Left="10" IsReadOnly="True" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" Margin="0,10,0,216" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="3" Padding="3">
             <FlowDocument>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     _________________________________________________________________________
@@ -52,11 +53,17 @@
                     <Underline>Tips on How to Play:</Underline>
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    The most basic strategy is to look at any empty cell within the puzzle and then look at all the groups that it belongs to. 
-                    Then, make a note of all the numbers that can go into that cell.
+                    The most basic strategy is to look at any empty cell within the puzzle and then identfiy what can possibly go in that cell. 
+                    This is done by making a mental list of what numbers can go into a cell and then starting to look at the row, column, 
+                    and block that the cell belongs to and eliminating the numbers found in those groups from your 'list'. 
+                    Finally, if a that mental list of possible values has shrunk down to contain only one number, place that number in your cell.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    To make note of what numbers can exist within a cell, toggle the ‘Notes’ button by either clicking it or by pressing ‘N’ on your keyboard.
+                    It is also very helpful to make notes inside of cells if more than one number can go into that cell because it will help to surface and identify other strategies.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    To make note of what numbers can exist in a cell, toggle the ‘Notes’ button by either clicking it or by pressing ‘N’ on your keyboard. 
+                    This allows you to populate the cell with multiple smaller numbers which can help to remind you about what numbers can go where.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     Another basic strategy is to look at a group and identify which numbers are left to be placed in that group.
@@ -73,6 +80,9 @@
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     If it happens that there are no puzzles in storage or that you have completed all of the existing puzzles, click the 'Generate Puzzles' button in the bottom right and select how many puzzles you wish to generate.
                     Keep in mind that creating several puzzles at once can take a while, please be patient.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    All playable puzzles are rotationally symmetric and have one and only one solution.
                     _________________________________________________________________________
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
@@ -97,18 +107,115 @@
                     <Bold>Extreme</Bold> puzzles will require strategies such as Unique Rectangles (Type >=2), Swordfish, X-Cycles, XY-Chains, and possibly several other strategies.
                     - they will also require the lower tier strategies.
                     If a puzzle cannot be solved using the Strategic Solver then the rating is based off of the strategies that were used up until the point where the Strategic Solver couldn't find a solution.
-                    Each puzzle is validated with a brute-force (trial and error) solver, so there is only one solution to every Sudoku puzzle.
+                    Each puzzle is validated with a backtracking (trial and error) solver, so there is only one solution to every Sudoku puzzle.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     _________________________________________________________________________
                 </Paragraph>
-                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
+                    <Underline>Developer Window Help</Underline>
                 </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="16" LineHeight="20" Foreground="#FFFF4545">
+                    <Bold>WARNING: Unstable features in the Developer Window may cause crashes, use at own risk</Bold>
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    Password: sudokumetrics
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="16" LineHeight="20">
+                    <Underline>Sudoku Solver Buttons</Underline>
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Strategy Solver using objects</Bold> " button unleashes the Strategic Solver on the puzzle displayed in the grid. 
+                    The Strategic Solver is a method that is comprised of a collection of well-known deductive strategies, molded into algorithms, which eliminate possibilities and locate solutions to cells.
+                    This solver steps through the implemented strategies, from simplest to most complex, 
+                    and only moves to the next most complex strategy if the current strategy proves futile by making no changes to the puzzle.
+                    <LineBreak/>
+                    The order of the strategies within this solver is completely based off the depth that one has to search to identify each strategy and the visibility of each strategy within a puzzle. 
+                    However, this is merely just an educated guess and, ultimately, a personal opinion.
+                    <LineBreak/>
+                    <LineBreak/>
+                    If the Strategic Solver fails to find a solution to the puzzle utilizing the implemented strategies alone, the backtracking algorithm, described lower down, will finish the puzzle.
+                    However, once the solution is found, a pop-up will appear, notifying you with the time taken to solve the puzzle and the measured sudoku puzzle rating. 
+                    If the Strategic Solver alone fails to reach a solution, the pop-up will state that it has failed and the backtracking algorithm had to finish the puzzle off.
+                    Therefore, the rating of the puzzle is invalidated.
+                    <LineBreak/>
+                    <LineBreak/>
+                    Regardless of whether the Strategic Solver finds the solution in the end, a window will pop-up displaying the entire path that the 
+                    Strategic Solver navigated to reach the solution (or up until point at which the backtracking method took over).
+                    The layout of the solve path is designed to clearly show when a strategy has been used to deduce a solution to a cell or a candidate removal.
+                    <LineBreak/>
+                    <LineBreak/>
+                    The "...using objects" part of the name means that this solver uses a data structure consisting of and established by objects to contain a puzzle and extra properties.
+                    In this data structure, each cell is an object built from unique property values. 
+                    These cells are stored in a collection whereby a cell can be accessed through a row and a column number, this collection is stored as a property for larger object - named the Sudoku Grid.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Backtracking Solver using objects</Bold>" button calls up the backtracking algorithm that utilizes the object data struture, 
+                    mentioned above, to solve the puzzle displayed in the grid.
+                    A backtracking algorithm is notably used to solve constraint satisfaction problems, such as Sudoku puzzles. 
+                    This algorithm recursively navigates through the puzzle by starting at the top left-most cell, traversing deeper as it sweeps through the puzzle row by row.
+                    When this algorithm arrives at an empty cell, it initially establishes a set of all the possible candidates that can go in that cell by 
+                    checking which numbers would cause violations if they were placed in that cell.
+                    <LineBreak/>
+                    This is done by, for each number, checking if the certain number exists in the row, column, and block that is associated with that specific cell.
+                    Once a refined set of possible numbers for that cell is established, the algorithm tries the first number in the set and moves onto the next cell.
+                    If the backtracking method returns back to that cell having not found a solution to the puzzle, it tries the next number in the set - repeating the same process till the end of the set is reached.
+                    <LineBreak/>
+                    If the end of a set of possible numbers is reached and a solution has not been found, an error within a previous cell must be true. 
+                    Therefore, the algorithm backtracks to try a different number in the previous cell.
+                    These processes are repeated until the algorithm reaches the last cell (81st) and a number that doesn't cause a violation is placed in that cell.
+                    This completion causes the algorithm to be able step out of all the recursive states and end.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Backtracking Solver using <Span Foreground="Blue">char</Span>[][]</Bold>" button calls up the same backtracking algorithm as described above, however the algorithm utilizes the '<Span Foreground="Blue">char</Span>[][]' data struture to solve the puzzle displayed in the grid.
+                    The point of this button is test the performance of an alternate data structure on the same backtracking algorithm.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The two backtracking buttons above, when activated, will solve the puzzle and, once finished, will display an informative pop-up requesting a 'Yes' or 'No' response.
+                    <LineBreak/>
+                    Click 'Yes' if you want to see a simulation of the backtracking algorithm finding a solution to the most recently solved puzzle.
+                    Clicking 'No' will just present the solved state of the puzzle.
+                    <LineBreak/>
+                    Some metrics that are displayed are: "Time taken to solve:", "Total # of Digit Changes:", "Estimated Duration of Simulation:", and the time frame between displaying numbers in the simulation.
+                    <LineBreak/>
+                    "Time taken to solve" is the exact time that the algorithm took to reach the solution.
+                    <LineBreak/>
+                    "Total # of Digit Changes" describes the total number of digit placements/removals.
+                    <LineBreak/>
+                    "Estimated Duration of Simulation" portrays a rough estimation of how long the simulation will take to reach the solution, in seconds.
+                    This is due to the average time frame between placing any two numbers in the puzzle is 16ms. So, estimation simulation duration = 16 * Total # of Digit Changes / 1000.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Test All Three Solvers</Bold>" button is used to sequentially test all three solvers and present a comparison in time taken to solve.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="16" LineHeight="20">
+                    <Underline>Other Features</Underline>
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Import Puzzle</Bold>" button can be used to import a puzzle by pasting a string of 81 characters into the textbox that is displayed after clicking the button.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Symmetry?</Bold>" checkbox can be toggled 'On' for when you want to generate/display only symmetrical puzzles. 
+                    The form of symmetry will always be rotational symmetry, however other forms of symmetry can be present.
+                    <LineBreak/>
+                    When the checkbox is unchecked, the symmetry condition isn't required and non-symmetric puzzles can be generated and displayed.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Generate &amp; Display</Bold>" button generates and displays a puzzle of unknown difficulty in accordance to the state of the "Symmetry?" checkbox. 
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Generate &amp; Store Puzzles</Bold>" button produces a small window where you can select how many puzzles you wish to generate and store; 
+                    these generated puzzles are also in accordance to the state of the "Symmetry?" checkbox. 
+                    Puzzles can take a long time to generate so beware of waiting for a significant amount of time if more than 10 puzzles are selected to be generated.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "<Bold>Select existing puzzle</Bold>" drop down box displays all of the puzzles stored in the data files, in accordance to the state of the "Symmetry?" checkbox.
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">_________________________________________________________________________</Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Rectangle Fill="#FFEEF1FF" HorizontalAlignment="Center" Height="57" Margin="796,700,0,0" Stroke="Black" VerticalAlignment="Top" Width="180" StrokeThickness="3"/>
-        <Button x:Name="Generate_Puzzles_btn" Background="#FFF7E6" Content="Generate Puzzles" HorizontalAlignment="Left" Margin="810,710,0,0" VerticalAlignment="Top" Width="160" Click="Create_Store_Puzzles_btn_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
+        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="57" Margin="796,700,0,0" Stroke="Black" VerticalAlignment="Top" Width="180" StrokeThickness="3"/>
+        <Button x:Name="Generate_Puzzles_btn" Cursor="Hand" Background="#BFFFF7E6" Content="Generate Puzzles" HorizontalAlignment="Left" Margin="810,710,0,0" VerticalAlignment="Top" Width="160" Click="Create_Store_Puzzles_btn_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
 
 
 

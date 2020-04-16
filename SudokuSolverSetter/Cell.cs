@@ -12,7 +12,7 @@ namespace SudokuSolverSetter
         {
 
         }
-        public Cell(char num, int xLocation, int yLocation, int blockLoc, List<char> candidates, bool readOnly, List<Cell[]> neighbourCells)
+        public Cell(char num, int xLocation, int yLocation, int blockLoc, List<char> candidates, bool readOnly, Cell[][] neighbourCells)
         {
             Num = num;
             XLocation = xLocation;
@@ -28,7 +28,7 @@ namespace SudokuSolverSetter
         public int BlockLoc { get; set; }
         public List<char> Candidates { get; set; }
         public bool ReadOnly { get; set; }
-        public List<Cell[]> NeighbourCells { get; set; }
+        public Cell[][] NeighbourCells { get; set; }
 
     }
 }

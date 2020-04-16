@@ -3,28 +3,31 @@ using System.Linq;
 
 namespace SudokuSolverSetter
 {
-    public class PuzzleSolver
+    /// <summary>
+    /// This class handles Sudoku solving using objects (Cell/SudokuGrid)
+    /// </summary>
+    public class PuzzleSolverObjDS
     {
-        public bool g_BruteForced = false;
+        public bool g_BacktrackingReq = false;
         public int g_Rating = 0;
         public string g_Difficulty = "Beginner";
         private PuzzleGenerator g_Gen = new PuzzleGenerator();
         public List<string> g_SolvePath = new List<string>();
-        public List<string> g_BruteSolvePath = new List<string>();
+        public List<string> g_BacktrackingPath = new List<string>();
         
         /// <summary>
         /// 
         /// </summary>
         /// <param name="grid"></param>
-        /// <param name="method">method '1' is human-strategy solver. '2' is bruteforce solver. '3' is bruteforce solver using char[][]</param>
+        /// <param name="method">method '1' is human-strategy solver. '2' is Backtracking solver. '3' is Backtracking solver using char[][]</param>
         /// <returns>returns true if the puzzle is solved, false if not</returns>
-        public bool Solver(SudokuGrid grid, int method)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off the the scenarios provided.
+        public bool Solver(SudokuGrid grid, int method)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off of the current state of the puzzle.
         {
             g_Rating = 0;
             g_SolvePath = new List<string>();
-            g_BruteSolvePath = new List<string>();
+            g_BacktrackingPath = new List<string>();
             bool changeMade = false, moderate = false, advanced = false ;
-            g_BruteForced = false;
+            g_BacktrackingReq = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
              *  The if and elses are to make the process faster of solving faster, 
@@ -134,19 +137,19 @@ namespace SudokuSolverSetter
                     }
                 } while (changeMade);
             }
-            else if (method == 2)//Brute Solver with naked singles usage
+            else if (method == 2)//Backtracking Solver with candidate cleaning usage
             {
-                BruteForceSolve(grid, 0, 0, 0);
+                BacktrackingSolver(grid, 0, 0, 0);
             }
             
             if (!g_Gen.CheckIfSolved(grid))
             {
-                BruteForceSolve(grid, 0, 0, 0);
-                g_BruteForced = true;
+                BacktrackingSolver(grid, 0, 0, 0);
+                g_BacktrackingReq = true;
                 g_Difficulty = "Extreme";
-                g_SolvePath.Add("BRUTE FORCE USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
+                g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
             }
-            if (g_BruteForced == true)
+            if (g_BacktrackingReq == true)
             {
                 return false;
             }
@@ -1418,7 +1421,7 @@ namespace SudokuSolverSetter
             return changeMade;
         }
         #endregion
-        #region Brute Force Solver
+        #region Backtracking Solver
         /// <summary>
         /// Removes all values from the current cell's candidate list that are also found within neighbouring cells
         /// I.e. Cells that are in the same groups as the cell in question.
@@ -1453,12 +1456,12 @@ namespace SudokuSolverSetter
             if (grid.Rows[row][col].Candidates.Count == 1)
             {
                 grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];
-                g_BruteSolvePath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
+                g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
             }
             return true;
         }
         /// <summary>
-        /// This brute force solver uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
+        /// This Backtracking solver uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
         /// It initially starts from the top left cell and, with each recursive instance, looks at the next cell over in the current row.
         /// Once the last cell in the row is reached, the column counter is incremented and the row counter is set back to 0. 
         /// For example, if [i,j] is a cell, when looking at cell [0,8], the next cell to be looked at is [1,0].
@@ -1471,7 +1474,7 @@ namespace SudokuSolverSetter
         /// </param>
         /// <returns>Returns true if solver completes puzzle with all values in the correct place. 
         /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
-        public bool BruteForceSolve(SudokuGrid grid, int row, int col, byte variator)
+        public bool BacktrackingSolver(SudokuGrid grid, int row, int col, byte variator)
         {
 
 
@@ -1484,7 +1487,7 @@ namespace SudokuSolverSetter
                 else
                 {
                     grid.Rows[--row][--col].Num = '0';
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                     return false;
                 }
             }
@@ -1505,7 +1508,7 @@ namespace SudokuSolverSetter
                             else
                             {
                                 grid.Rows[--row][--col].Num = '0';
-                                g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                                g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                                 return false;
                             }
                         }
@@ -1528,7 +1531,7 @@ namespace SudokuSolverSetter
             if (!RemoveCands(grid, row, col))//if it returns false, candidates count must be 0 so a contradiction is found
             {
                 grid.Rows[row][col].Num = '0';
-                g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                 return false;
             }
 
@@ -1539,7 +1542,7 @@ namespace SudokuSolverSetter
                 if (++nextRow == 9)//Currently looking at cell 81 in grid
                 {
                     grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];//Sets the last cell to be the only value possible, then the solution is checked.
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
+                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
                     if (g_Gen.CheckIfSolved(grid))
                     {
                         return true;
@@ -1547,7 +1550,7 @@ namespace SudokuSolverSetter
                     else
                     {
                         grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
-                        g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                         return false;
                     }
                 }
@@ -1558,28 +1561,28 @@ namespace SudokuSolverSetter
                 foreach (char candidate in grid.Rows[row][col].Candidates)//iterates through each candidate value, assigning it to the current cell number.  
                 {
                     grid.Rows[row][col].Num = candidate;
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
-                    //A new instance of BruteForceSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
-                    if (BruteForceSolve(grid, nextRow, nextCol, variator))
+                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
+                    //A new instance of BacktrackingSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
+                    if (BacktrackingSolver(grid, nextRow, nextCol, variator))
                         return true;
                 }
             }
             else
             {
                 //If the current cell contains a number found from a naked single strategy,
-                //then it is dismissed and a new instance of BruteForceSolver is called and is provided with the next cell coordinates
-                if (BruteForceSolve(grid, nextRow, nextCol, variator))
+                //then it is dismissed and a new instance of BacktrackingSolver is called and is provided with the next cell coordinates
+                if (BacktrackingSolver(grid, nextRow, nextCol, variator))
                     return true;
                 else
                 {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
                     grid.Rows[row][col].Num = '0';
-                    g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                     return false;
                 }
             }
             grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
-            g_BruteSolvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-            return false;//gets hit if each brute force attempt with each 'candidate' returns false in the foreach
+            g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+            return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
         }
         #endregion
 

@@ -32,6 +32,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon_v3.ico</ApplicationIcon>
@@ -76,13 +78,13 @@
     <Compile Include="PuzzleSelector.xaml.cs">
       <DependentUpon>PuzzleSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PuzzleSolverCharVer.cs" />
+    <Compile Include="PuzzleSolverCharDS.cs" />
     <Compile Include="SolvePath.xaml.cs">
       <DependentUpon>SolvePath.xaml</DependentUpon>
     </Compile>
     <Compile Include="SudokuGrid.cs" />
     <Compile Include="PuzzleGenerator.cs" />
-    <Compile Include="PuzzleSolver.cs" />
+    <Compile Include="PuzzleSolverObjDS.cs" />
     <Page Include="CreatePuzzles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

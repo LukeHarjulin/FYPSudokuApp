@@ -12,7 +12,7 @@ namespace SudokuSolverSetter.Tests
     public class PuzzleGeneratorTests
     {
         [TestMethod()]
-        public void BruteSolveTest()
+        public void BacktrackingTest()
         {
             
         }

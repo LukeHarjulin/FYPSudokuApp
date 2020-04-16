@@ -43,7 +43,7 @@ namespace SudokuSolverSetter
         /// </summary>
         public void AddPuzzlesExpanders()
         {
-            string fileName = @"SudokuPuzzles.xml";
+            string fileName = @"Symmetric/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
             try
             {
@@ -129,8 +129,7 @@ namespace SudokuSolverSetter
             }
             catch (Exception)
             {
-                throw;
-                //MessageBox.Show("Warning! No existing XML file found in folder.");
+                MessageBox.Show("Warning! No existing puzzles found in folder.");
             }
         }
         public void ReactToSelectedPuzzle(TextBox sender)
@@ -163,19 +162,32 @@ namespace SudokuSolverSetter
                 }
                 if (sudokuString.Contains('_'))
                 {
-
+                    if (sudokuString[counter] == '|')
+                    {
+                        g_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                        counter++;
+                    }
+                    else if (sudokuString[counter] == '-')
+                    {
+                        g_txtBxList[i].FontSize = 16;
+                        counter++;
+                    }
+                    if (counter == sudokuString.Length)
+                    {
+                        break;
+                    }
                     if (sudokuString[counter] == '_')
                     {
                         i++;
-                        counter++;
                         g_txtBxList[i].Text = "";
+                        counter++;
                     }
                     if (sudokuString[counter] != '0')
                     {
                         g_txtBxList[i].Text += sudokuString[counter].ToString();
                         if (g_txtBxList[i].Text.Length > 1)
                         {
-                            g_txtBxList[i].FontSize = 12;
+                            g_txtBxList[i].FontSize = 16;
                         }
                         else
                         {
@@ -186,6 +198,7 @@ namespace SudokuSolverSetter
                     {
                         g_txtBxList[i].Text = "";
                     }
+                    
                 }
                 else
                 {
@@ -193,46 +206,51 @@ namespace SudokuSolverSetter
                     {
                         g_txtBxList[counter].Text = sudokuString[counter].ToString();
                         g_txtBxList[counter].FontSize = 36;
+                        g_txtBxList[counter].FontWeight = FontWeights.SemiBold;
                     }
                     else
                     {
                         g_txtBxList[counter].Text = "";
                     }
                 }
+                
             }
         }
         public void OpenSelectedPuzzle()
         {
-            string difficulty = "";
-            switch (g_selectedTxBx.Name[1])
+            if (g_selectedTxBx.Text != ".")
             {
-                case '0':
-                    difficulty = "Beginner";
-                    break;
-                case '1':
-                    difficulty = "Moderate";
-                    break;
-                case '2':
-                    difficulty = "Advanced";
-                    break;
-                case '3':
-                    difficulty = "Extreme";
-                    break;
-                default:
-                    break;
-            }
-            string index = g_selectedTxBx.Name[3].ToString();
-            if (g_selectedTxBx.Name.Length > 4)
-            {
-                for (int k = 4; k < g_selectedTxBx.Name.Length; k++)
+                string difficulty = "";
+                switch (g_selectedTxBx.Name[1])
                 {
-                    index += g_selectedTxBx.Name[k].ToString();
+                    case '0':
+                        difficulty = "Beginner";
+                        break;
+                    case '1':
+                        difficulty = "Moderate";
+                        break;
+                    case '2':
+                        difficulty = "Advanced";
+                        break;
+                    case '3':
+                        difficulty = "Extreme";
+                        break;
+                    default:
+                        break;
                 }
+                string index = g_selectedTxBx.Name[3].ToString();
+                if (g_selectedTxBx.Name.Length > 4)
+                {
+                    for (int k = 4; k < g_selectedTxBx.Name.Length; k++)
+                    {
+                        index += g_selectedTxBx.Name[k].ToString();
+                    }
+                }
+                PlaySudoku play = new PlaySudoku(difficulty, g_puzzles[int.Parse(index)]);
+                Hide();
+                play.Owner = this;
+                play.Show();
             }
-            PlaySudoku play = new PlaySudoku(difficulty, g_puzzles[int.Parse(index)]);
-            Hide();
-            play.Owner = this;
-            play.Show();
         }
         #endregion
         #region Event Handlers

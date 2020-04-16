@@ -79,12 +79,21 @@ namespace SudokuSolverSetter
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
             PuzzleGenerator gen = new PuzzleGenerator();
-            PuzzleSolverCharVer solverChar = new PuzzleSolverCharVer();
-            PuzzleSolver solver = new PuzzleSolver();
+            PuzzleSolverCharDS solverChar = new PuzzleSolverCharDS();
+            PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
             try
             {
                 XDocument doc;
-                string filename = @"SudokuPuzzles.xml";
+                string symmetric = "";
+                if (symmetry)
+                {
+                    symmetric = @"Symmetric";
+                }
+                else
+                {
+                    symmetric = @"NonSymmetric";
+                }
+                string filename = symmetric+"/SudokuPuzzles.xml";
                 if (File.Exists(filename))
                 {
                     doc = XDocument.Load(filename);
@@ -107,7 +116,7 @@ namespace SudokuSolverSetter
                                 new XElement("Advanced"),
                                 new XElement("Extreme")
                                 ),
-                            new XElement("Complete",
+                            new XElement("Completed",
                                 new XElement("Beginner"),
                                 new XElement("Moderate"),
                                 new XElement("Advanced"),
@@ -116,9 +125,9 @@ namespace SudokuSolverSetter
                             )
                         );
                 }
-                StreamWriter txtFile = new StreamWriter(@"ratings.txt");
-                StreamWriter txtFile2 = new StreamWriter(@"difficulties.txt");
-                StreamWriter txtFile3 = new StreamWriter(@"givens.txt");
+                StreamWriter txtFile = new StreamWriter(symmetric+"/ratings.txt");
+                StreamWriter txtFile2 = new StreamWriter(symmetric+"/difficulties.txt");
+                StreamWriter txtFile3 = new StreamWriter(symmetric+"/givens.txt");
                 Stopwatch Timer = new Stopwatch();
                 Timer.Start();
                 for (int i = 0; i < numPuzzles; i++)
@@ -166,7 +175,7 @@ namespace SudokuSolverSetter
         /// <returns>returns the difficulty rating of the puzzle</returns>
         public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString)
         {
-            PuzzleSolver solver = new PuzzleSolver();
+            PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
             long rating = 0;
             int counter = 0;
 

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 
 namespace SudokuSolverSetter
-{/// <summary>
-/// 
-/// </summary>
-    public class PuzzleSolverCharVer
+{
+    /// <summary>
+    /// This class handles Sudoku solving using char[][] 
+    /// </summary>
+    public class PuzzleSolverCharDS
     {
         private PuzzleGenerator gen = new PuzzleGenerator();
         public List<string> solvePath = new List<string>();
@@ -12,7 +13,7 @@ namespace SudokuSolverSetter
         /// 
         /// </summary>
         /// <param name="grid"></param>
-        /// <param name="method">method '1' is human-strategy solver. '2' is bruteforce solver. '3' is bruteforce solver using char[][]</param>
+        /// <param name="method">method '1' is human-strategy solver. '2' is Backtracking solver. '3' is Backtracking solver using char[][]</param>
         /// <returns></returns>
         public bool Solvers(char[][] grid, char method)
         {
@@ -33,7 +34,7 @@ namespace SudokuSolverSetter
             }
             else if (method == '2')
             {
-                BruteForceSolve(grid, 0, 0, 0);
+                BacktrackingSolver(grid, 0, 0, 0);
             }
             return gen.CheckIfSolved_array(grid);
         }
@@ -88,7 +89,7 @@ namespace SudokuSolverSetter
             return true;
         }
         /// <summary>
-        /// This brute force solver uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
+        /// This backtracking algorithm uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
         /// It initially starts from the top left cell and, with each recursive instance, looks at the next cell over in the current row.
         /// Once the last cell in the row is reached, the column counter is incremented and the row counter is set back to 0. 
         /// For example, if [i,j] is a cell, when looking at cell [0,8], the next cell to be looked at is [1,0].
@@ -99,7 +100,7 @@ namespace SudokuSolverSetter
         /// <param name="variator">The value of this changes whether the candidate list is reversed ('1') or not ('0')</param>
         /// <returns>Returns true if solver completes puzzle with all values in the correct place. 
         /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
-        public bool BruteForceSolve(char[][] grid, int row, int col, byte variator)
+        public bool BacktrackingSolver(char[][] grid, int row, int col, byte variator)
         {
 
             if (col == 9 && row == 9)//If somehow the method tries to look at this non-existent cell, this catches the exception
@@ -185,16 +186,16 @@ namespace SudokuSolverSetter
                 {
                     grid[row][col] = candidate;
                     solvePath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
-                    //A new instance of BruteForceSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
-                    if (BruteForceSolve(grid, nextRow, nextCol, variator))
+                    //A new instance of BacktrackingSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
+                    if (BacktrackingSolver(grid, nextRow, nextCol, variator))
                         return true;
                 }
             }
             else
             {
                 //If the current cell contains a number found from a naked single strategy,
-                //then it is dismissed and a new instance of BruteForceSolver is called and is provided with the next cell coordinates
-                if (BruteForceSolve(grid, nextRow, nextCol, variator))
+                //then it is dismissed and a new instance of BacktrackingSolver is called and is provided with the next cell coordinates
+                if (BacktrackingSolver(grid, nextRow, nextCol, variator))
                     return true;
                 else
                 {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
@@ -205,7 +206,7 @@ namespace SudokuSolverSetter
             }
             grid[row][col] = '0';//cell value must be set to 0 to backtrack
             solvePath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-            return false;//gets hit if each brute force attempt with each 'candidate' returns false in the foreach
+            return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
         }
     }
 }

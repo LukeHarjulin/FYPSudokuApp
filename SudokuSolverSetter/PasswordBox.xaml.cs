@@ -33,7 +33,7 @@ namespace SudokuSolverSetter
         }
         private void Enter_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (PassBx.Password == "iamadeveloper" || PassBx.Password == "lazy" || PassBx.Password == "password")
+            if (PassBx.Password == "sudokumetrics" || PassBx.Password == " ")
             {
                 DialogResult = true;
             }
