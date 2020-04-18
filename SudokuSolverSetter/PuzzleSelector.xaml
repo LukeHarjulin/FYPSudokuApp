@@ -5,65 +5,70 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" Closing="Window_Closing">
-
-    <Grid Background="#FFEEF1FF">
-        <Border BorderThickness="2" BorderBrush="Black">
-            <Grid Width="330" Canvas.Left="10" Height="671" Canvas.Top="115" ScrollViewer.VerticalScrollBarVisibility="Visible" Background="#C5E1C7" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,10">
-                <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="330"/>
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="SelectPuzzle" Content="Select Puzzle" HorizontalAlignment="Center" Click="SelectPuzzle_Button_Click" Width="145" FontSize="16" Background="#FFFFF7E6" Height="40" Grid.Row="0" VerticalAlignment="Top" Margin="0,5" FontFamily="Verdana"/>
-                <Expander Header="Started" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" IsExpanded="True" BorderBrush="Black" BorderThickness="2" Grid.Row="1" Margin="10,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="Started_STKPNL" Background="#EEF1FF" Height="Auto" >
-                    </StackPanel>
-                </ScrollViewer>
-            </Expander>
-            <Expander Header="Beginner" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="2" Margin="10,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="Beginner_STKPNL" Background="#EEF1FF" Height="Auto" >
-                    </StackPanel>
-                </ScrollViewer>
-            </Expander>
-            <Expander Header="Moderate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="3" Margin="10,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="Moderate_STKPNL" Background="#EEF1FF" Height="Auto" >
-                    </StackPanel>
-                </ScrollViewer>
-            </Expander>
-            <Expander Header="Advanced" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="4" Margin="10,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="Advanced_STKPNL" Background="#EEF1FF" Height="Auto" >
-                    </StackPanel>
-                </ScrollViewer>
-            </Expander>
-            <Expander Header="Extreme" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="5" Margin="10,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="Extreme_STKPNL" Background="#EEF1FF" Height="Auto" >
-                    </StackPanel>
-                </ScrollViewer>
-            </Expander>
-            <Expander Header="Completed" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="6" Margin="10,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="Completed_STKPNL" Background="#EEF1FF" Height="Auto" >
-                    </StackPanel>
-                </ScrollViewer>
-            </Expander>
-
-        </Grid>
+        Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner">
+    <Window.Background>
+        <ImageBrush ImageSource="StartPageBackground_Design.png"/>
+    </Window.Background>
+    <Grid>
+        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="60" Margin="0,30,779,0" Stroke="Black" VerticalAlignment="Top" Width="185" StrokeThickness="3"/>
+        <Border BorderBrush="Black" BorderThickness="3" Width="330" Height="630" Canvas.Top="115" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,10" >
+            <Canvas Background="#F2EEF1FF" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="630">
+                <Grid MaxHeight="615">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="330"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="SelectPuzzle" Cursor="Hand" Content="Select &amp; Play Puzzle" HorizontalAlignment="Center" Click="SelectPuzzle_Button_Click" Width="170" FontSize="16" Background="#FFFFF7E6" Height="40" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0" FontFamily="Verdana"/>
+                    <Expander x:Name="Started_Expander" Header="Started" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="1" Margin="7,3,0,0" MaxHeight="400" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="Started_STKPNL" Background="#EEF1FF" Height="Auto">
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+                    <Expander x:Name="Beginner_Expander" Header="Beginner" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="2" Margin="7,3,0,0" MaxHeight="415" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="Beginner_STKPNL" Background="#EEF1FF" Height="Auto" >
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+                    <Expander x:Name="Moderate_Expander" Header="Moderate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="3" Margin="7,3,0,0" MaxHeight="415" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="Moderate_STKPNL" Background="#EEF1FF" Height="Auto" >
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+                    <Expander x:Name="Advanced_Expander" Header="Advanced" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="4" Margin="7,3,0,0" MaxHeight="415" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="Advanced_STKPNL" Background="#EEF1FF" Height="Auto" >
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+                    <Expander x:Name="Extreme_Expander" Header="Extreme" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="5" Margin="7,3,0,0" MaxHeight="415" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="Extreme_STKPNL" Background="#EEF1FF" Height="Auto" >
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+                    <Expander x:Name="Completed_Expander" Header="Completed" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="6" Margin="7,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="Completed_STKPNL" Background="#EEF1FF" Height="Auto" >
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+                </Grid>
+            </Canvas>
         </Border>
-        <Button x:Name="Back_btn" Content="Back to Main Menu" HorizontalAlignment="Left" Click="Back_Button_Click" Width="165" FontSize="16" Background="#FFFFF7E6" Height="40" Canvas.Left="20" Canvas.Top="10" VerticalAlignment="Top" Margin="10,10,0,0" FontFamily="Verdana"/>
+
+
+        <Button x:Name="Back_btn" Cursor="Hand" Content="Back to Main Menu" HorizontalAlignment="Left" Click="Back_Button_Click" Width="165" FontSize="16" Background="#FFFFF7E6" Height="40" Canvas.Left="20" Canvas.Top="10" VerticalAlignment="Top" Margin="20,40,0,0" FontFamily="Verdana"/>
         <UniformGrid x:Name="SudokuGrid" Height="630" Width="630" Canvas.Top="115" Canvas.Left="345" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10">
             <TextBox x:Name="bx1"  IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="4,4,0.75,0.75" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" />
             <TextBox x:Name="bx2"  IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,4,0.75,0.75" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  />
@@ -147,8 +152,7 @@
             <TextBox x:Name="bx80" IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,4" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             <TextBox x:Name="bx81" IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,0.75,4,4" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
         </UniformGrid>
-        <Label x:Name="Sudoku_Title" Width="400" Height="64" FontSize="36" Content="Puzzle Selector" Canvas.Left="330" Canvas.Top="35" FontFamily="Verdana" HorizontalContentAlignment="Center" VerticalAlignment="Center" Margin="0,26,0,681" HorizontalAlignment="Center" FontWeight="Bold"/>
-
+        <Label x:Name="Sudoku_Title" Width="400" Height="75" FontSize="48" Content="Puzzle Selector" Canvas.Left="330" Canvas.Top="35" FontFamily="Verdana" HorizontalContentAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" HorizontalAlignment="Center" Background="#F2EEF1FF" BorderBrush="Black" BorderThickness="3"/>
     </Grid>
 
 </Window>

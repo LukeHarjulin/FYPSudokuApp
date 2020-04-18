@@ -35,6 +35,7 @@ namespace SudokuSolverSetter
                 bx80,bx81
             };
             AddPuzzlesExpanders();
+            Started_Expander.IsExpanded = true;
         }
         #endregion
         #region Functions/Methods
@@ -65,24 +66,23 @@ namespace SudokuSolverSetter
                                 BorderBrush = Brushes.DarkGray
                             };
                             
-                            TextBox textBlock = new TextBox { Background = Brushes.Transparent, FontSize = 16, TextWrapping = TextWrapping.Wrap, Padding = new Thickness(5, 5, 5, 1), IsReadOnly = true, Cursor = Cursors.Hand, FontFamily = new FontFamily("Verdana")};
+                            TextBox textBox = new TextBox { Background = Brushes.Transparent, FontSize = 16, TextWrapping = TextWrapping.Wrap, Padding = new Thickness(5, 5, 5, 1), IsReadOnly = true, Cursor = Cursors.Hand, FontFamily = new FontFamily("Verdana")};
                             if (label.Name == "Started" || label.Name == "Completed")
                             {
                                 sudokuString = puzzle["SudokuString"].InnerText;
 
-                                textBlock.Text = "Rating: " + puzzle["DifficultyRating"].InnerText + "\r\nDifficulty: " + difficulty.Name + "\r\nElapsed Time: " + puzzle["TimeTaken"].InnerText + "\r\nLast Played: " + puzzle["Date"].InnerText;
-                                border.Child = textBlock;
+                                textBox.Text = "Rating: " + puzzle["DifficultyRating"].InnerText + "\r\nDifficulty: " + difficulty.Name + "\r\nElapsed Time: " + puzzle["TimeTaken"].InnerText + "\r\nLast Played: " + puzzle["Date"].InnerText;
+                                border.Child = textBox;
                                 if (label.Name == "Started")
                                     Started_STKPNL.Children.Add(border);
                                 else
                                     Completed_STKPNL.Children.Add(border);
-                                
                             }
                             else
                             {
                                 sudokuString = puzzle["SudokuString"].InnerText;
-                                textBlock.Text = "Rating: " + puzzle["DifficultyRating"].InnerText;
-                                border.Child = textBlock;
+                                textBox.Text = "Rating: " + puzzle["DifficultyRating"].InnerText;
+                                border.Child = textBox;
                                 switch (difficulty.Name)
                                 {
                                     case "Beginner":
@@ -106,7 +106,7 @@ namespace SudokuSolverSetter
                                 }
                             }
                             int givens = 0;
-                            textBlock.Name = "n"+difficulty_Num+"_" + g_puzzles.Count.ToString();
+                            textBox.Name = "n"+difficulty_Num+"_" + g_puzzles.Count.ToString();
                             g_puzzles.Add(sudokuString);
                             for (int i = 0; i < sudokuString.Length; i++)
                             {
@@ -120,11 +120,24 @@ namespace SudokuSolverSetter
                             }
                             if (label.Name != "Started")
                             {
-                                textBlock.Text += "\r\n# of Starting Numbers: " + givens;
+                                textBox.Text += "\r\n# of Starting Numbers: " + givens;
                             }
-                            textBlock.GotFocus += new RoutedEventHandler(Selected_Puzzle);
+                            textBox.GotFocus += new RoutedEventHandler(Selected_Puzzle);
+                            textBox.MouseEnter += new MouseEventHandler(MouseEnter_Textbox);
+                            textBox.MouseLeave += new MouseEventHandler(MouseLeave_Textbox);
+
                         }
                     }
+                }
+                if (Started_STKPNL.Children.Count > 0)
+                {
+                    g_selectedTxBx = (TextBox)((Border)Started_STKPNL.Children[0]).Child;
+                    ReactToSelectedPuzzle(g_selectedTxBx);
+                }
+                else if (Beginner_STKPNL.Children.Count > 0)
+                {
+                    g_selectedTxBx = (TextBox)((Border)Beginner_STKPNL.Children[0]).Child;
+                    ReactToSelectedPuzzle(g_selectedTxBx);
                 }
             }
             catch (Exception)
@@ -132,6 +145,9 @@ namespace SudokuSolverSetter
                 MessageBox.Show("Warning! No existing puzzles found in folder.");
             }
         }
+
+        
+
         public void ReactToSelectedPuzzle(TextBox sender)
         {
             //Previous selected puzzle set to normal
@@ -246,25 +262,36 @@ namespace SudokuSolverSetter
                         index += g_selectedTxBx.Name[k].ToString();
                     }
                 }
-                PlaySudoku play = new PlaySudoku(difficulty, g_puzzles[int.Parse(index)]);
+                PlaySudoku play = new PlaySudoku(difficulty, g_puzzles[int.Parse(index)])
+                {
+                    Owner = Owner
+                };
                 Hide();
-                play.Owner = this;
-                play.Show();
+                play.ShowDialog();
+                Close();
             }
         }
         #endregion
         #region Event Handlers
+        private void MouseLeave_Textbox(object sender, MouseEventArgs e)
+        {
+            if ((TextBox)sender != g_selectedTxBx)
+            {
+                ((TextBox)sender).Background = Brushes.Transparent;
+            }
+        }
+        private void MouseEnter_Textbox(object sender, MouseEventArgs e)
+        {
+            if ((TextBox)sender != g_selectedTxBx)
+            {
+                ((TextBox)sender).Background = new SolidColorBrush(Color.FromArgb(200, 255, 224, 223));
+            }
+            
+        }
         private void Back_Button_Click(object sender, RoutedEventArgs e)
         {
-            Hide();
-            homePage.Owner = this;
-            homePage.Show();
+            Close();
         }
-        private void Window_Closing(object sender, EventArgs e)
-        {
-            homePage.Show();
-        }
-
         private void SelectPuzzle_Button_Click(object sender, RoutedEventArgs e)
         {
             OpenSelectedPuzzle();
@@ -274,5 +301,40 @@ namespace SudokuSolverSetter
             ReactToSelectedPuzzle((TextBox)sender);
         }
         #endregion
+
+        private void Expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            if (((StackPanel)((ScrollViewer)((Expander)sender).Content).Content).Children.Count > 0)
+            {
+                if (g_selectedTxBx.Text != ".")
+                    g_selectedTxBx.Background = Brushes.Transparent;
+                g_selectedTxBx = (TextBox)((Border)((StackPanel)((ScrollViewer)((Expander)sender).Content).Content).Children[0]).Child;
+                ReactToSelectedPuzzle(g_selectedTxBx);
+            }
+            if ((Expander)sender != Started_Expander)
+            {
+                Started_Expander.IsExpanded = false;
+            }
+            if ((Expander)sender != Beginner_Expander)
+            {
+                Beginner_Expander.IsExpanded = false;
+            }
+            if ((Expander)sender != Moderate_Expander)
+            {
+                Moderate_Expander.IsExpanded = false;
+            }
+            if ((Expander)sender != Advanced_Expander)
+            {
+                Advanced_Expander.IsExpanded = false;
+            }
+            if ((Expander)sender != Extreme_Expander)
+            {
+                Extreme_Expander.IsExpanded = false;
+            }
+            if ((Expander)sender != Completed_Expander)
+            {
+                Completed_Expander.IsExpanded = false;
+            }
+        }
     }
 }

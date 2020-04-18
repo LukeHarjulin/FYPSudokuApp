@@ -62,17 +62,17 @@ namespace SudokuSolverSetter
                 for (int j = 0; j < 9; j++)
                 {
                     int nbCounter = 0;//nbCounter is neighbourcounter
-                    grid.Rows[i][j].NeighbourCells = new Cell[3][]
+                    grid.Rows[i][j].NeighbourCells = new List<List<Cell>>(3)
                     {
-                        new Cell[8],
-                        new Cell[8],
-                        new Cell[8]
+                        new List<Cell>(8),
+                        new List<Cell>(8),
+                        new List<Cell>(8)
                     };
                     for (int k = 0; k < 9; k++)
                     {
                         if (j != k)
                         {
-                            grid.Rows[i][j].NeighbourCells[0][nbCounter] = grid.Rows[i][k];//add neighbour in i
+                            grid.Rows[i][j].NeighbourCells[0].Add(grid.Rows[i][k]);//add neighbour in i
                             nbCounter++;
                         }
                     }
@@ -81,7 +81,7 @@ namespace SudokuSolverSetter
                     {
                         if (l != i)
                         {
-                            grid.Rows[i][j].NeighbourCells[1][nbCounter] = grid.Rows[l][j];//add neighbour in column
+                            grid.Rows[i][j].NeighbourCells[1].Add(grid.Rows[l][j]);//add neighbour in column
                             nbCounter++;
                         }
                     }
@@ -94,7 +94,7 @@ namespace SudokuSolverSetter
                         {
                             if (grid.Rows[x][y] != grid.Rows[i][j])
                             {
-                                grid.Rows[i][j].NeighbourCells[2][nbCounter] = grid.Rows[x][y];//add neighbour in block
+                                grid.Rows[i][j].NeighbourCells[2].Add(grid.Rows[x][y]);//add neighbour in block
                                 nbCounter++;
                             }
                         }

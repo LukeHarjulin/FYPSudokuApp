@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace SudokuSolverSetter
 {
@@ -381,17 +382,17 @@ namespace SudokuSolverSetter
                 for (int j = 0; j < 9; j++)
                 {
                     int nbCounter = 0;//nbCounter is neighbourcounter
-                    grid.Rows[i][j].NeighbourCells = new Cell[3][]
+                    grid.Rows[i][j].NeighbourCells = new List<List<Cell>>(3)
                     {
-                        new Cell[8],
-                        new Cell[8],
-                        new Cell[8]
+                        new List<Cell>(8),
+                        new List<Cell>(8),
+                        new List<Cell>(8)
                     };
                     for (int k = 0; k < 9; k++)
                     {
                         if (j != k)
                         {
-                            grid.Rows[i][j].NeighbourCells[0][nbCounter] = grid.Rows[i][k];//add neighbour in i
+                            grid.Rows[i][j].NeighbourCells[0].Add(grid.Rows[i][k]);//add neighbour in i
                             nbCounter++;
                         }
                     }
@@ -400,7 +401,7 @@ namespace SudokuSolverSetter
                     {
                         if (l != i)
                         {
-                            grid.Rows[i][j].NeighbourCells[1][nbCounter] = grid.Rows[l][j];//add neighbour in column
+                            grid.Rows[i][j].NeighbourCells[1].Add(grid.Rows[l][j]);//add neighbour in column
                             nbCounter++;
                         }
                     }
@@ -413,7 +414,7 @@ namespace SudokuSolverSetter
                         {
                             if (grid.Rows[x][y] != grid.Rows[i][j])
                             {
-                                grid.Rows[i][j].NeighbourCells[2][nbCounter] = grid.Rows[x][y];//add neighbour in block
+                                grid.Rows[i][j].NeighbourCells[2].Add(grid.Rows[x][y]);//add neighbour in block
                                 nbCounter++;
                             }
                         }
@@ -573,7 +574,6 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Back_Button_Click(object sender, RoutedEventArgs e)
         {
-            Hide();
             if (G_Timer != null)
             {
                 if (G_Timer.IsRunning)
@@ -581,8 +581,7 @@ namespace SudokuSolverSetter
                     StopTimer();
                 }
             }
-            g_homePage.Owner = this;
-            g_homePage.Show();
+            Close();
         }
         /// <summary>
         /// Closes the window properly
@@ -591,14 +590,7 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Window_Closing(object sender, EventArgs e)
         {
-            if (G_Timer != null)
-            {
-                if (G_Timer.IsRunning)
-                {
-                    StopTimer();
-                }
-            }
-            g_homePage.Show();
+            
         }
         /// <summary>
         /// Brings up a window to generate and store puzzles
@@ -708,7 +700,9 @@ namespace SudokuSolverSetter
                     counter++;
                 }
             }
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
             char method = '1';
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
             if ((Button)sender == Backtracking_Solve_char)
             {
                 method = '2';
@@ -727,7 +721,7 @@ namespace SudokuSolverSetter
                         puzzleTemp[x][y] = puzzle[x][y];
                     }
                 }
-                var watch = System.Diagnostics.Stopwatch.StartNew();
+                var watch = Stopwatch.StartNew();
                 solved = solver.Solvers(puzzleTemp, '2');
                 watch.Stop();
                 averageTime += watch.ElapsedMilliseconds;
@@ -830,6 +824,16 @@ namespace SudokuSolverSetter
         private void Symmetry_checkbox_Unchecked(object sender, RoutedEventArgs e)
         {
             AddPuzzlesToCombo(false);
+        }
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (G_Timer != null)
+            {
+                if (G_Timer.IsRunning)
+                {
+                    StopTimer();
+                }
+            }
         }
     }
 }

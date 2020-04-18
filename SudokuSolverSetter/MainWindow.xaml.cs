@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,10 +20,21 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class MainWindow : Window
     {
-        
         public MainWindow()
         {
             InitializeComponent();
+        }
+        private bool ShutdownApp()
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to quit?", "Quit Confirmation", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                return true;//Closes the application properly if the red 'X' is clicked
+            }
+            else
+            {
+                return false;
+            }
         }
         private void DeveloperMode_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -37,8 +49,9 @@ namespace SudokuSolverSetter
                 {
                     Owner = this
                 };
-                developerWindow.Show();
                 Hide();
+                developerWindow.ShowDialog();
+                Show();
             }
         }
         /// <summary>
@@ -48,10 +61,9 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Quit_btn_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to quit?", "Quit Confirmation", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            if (ShutdownApp())
             {
-                Environment.Exit(0);//Closes the application properly if the red 'X' is clicked
+                Application.Current.Shutdown(0);//Closes the application properly if the red 'X' is clicked
             }
         }
         /// <summary>
@@ -63,13 +75,14 @@ namespace SudokuSolverSetter
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             PlaySudoku playSudoku;
+            Hide();
             if (Difficulty_ComboBox.SelectedIndex == 0)//Beginner
             {
                 playSudoku = new PlaySudoku("Beginner", "")
                 {
                     Owner = this
                 };
-                playSudoku.Show();
+                playSudoku.ShowDialog();
             }
             else if (Difficulty_ComboBox.SelectedIndex == 1)//Moderate
             {
@@ -77,7 +90,7 @@ namespace SudokuSolverSetter
                 {
                     Owner = this
                 };
-                playSudoku.Show();
+                playSudoku.ShowDialog();
             }
             else if (Difficulty_ComboBox.SelectedIndex == 2)//Advanced
             {
@@ -85,7 +98,7 @@ namespace SudokuSolverSetter
                 {
                     Owner = this
                 };
-                playSudoku.Show();
+                playSudoku.ShowDialog();
             }
             else                                           //Extreme
             {
@@ -93,22 +106,9 @@ namespace SudokuSolverSetter
                 {
                     Owner = this
                 };
-                playSudoku.Show();
+                playSudoku.ShowDialog();
             }
-            
-            Hide();
-        }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to quit?", "Quit Confirmation", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
-            {
-                Environment.Exit(0);//Closes the application properly if the red 'X' is clicked
-            }
-            else if (result == MessageBoxResult.No)
-            {
-                e.Cancel = true;
-            }
+            Show();
         }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -116,13 +116,13 @@ namespace SudokuSolverSetter
         }
         private void Level_Selector_Click(object sender, RoutedEventArgs e)
         {
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            PuzzleSelector selector = new PuzzleSelector
+            PuzzleSelector selector = new PuzzleSelector()
             {
                 Owner = this
             };
-            selector.Show();
             Hide();
+            selector.ShowDialog();
+            Show();
         }
         /// <summary>
         /// Produces a help menu
@@ -144,11 +144,16 @@ namespace SudokuSolverSetter
         }
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
-            CreatePuzzles createPuzzles = new CreatePuzzles(10, true)//user is only allowed to create a max of 10 puzzles, all of which must be symmetrical
+            CreatePuzzles createPuzzles = new CreatePuzzles(5, true)//user is only allowed to create a max of 5 puzzles to prevent extensive wait times and potential crashes all of which must be symmetrical
             {
                 Owner = this
             };
             createPuzzles.ShowDialog();
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }

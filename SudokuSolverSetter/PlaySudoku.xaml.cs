@@ -27,7 +27,7 @@ namespace SudokuSolverSetter
         private TextBox g_selectedCell;
         private SudokuGrid g_grid = new SudokuGrid();
         private string g_cellContents = "", g_currentTime = "", g_rating, g_difficulty, g_originalPuzzleString;
-        private bool g_pencilMarker = false, g_toggleRecursion = true, g_puzzledSolved = false;
+        private bool g_pencilMarker = false, g_toggleRecursion = true;
 
         private SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
@@ -272,7 +272,7 @@ namespace SudokuSolverSetter
                     RTB_HelpText.Inlines.Clear();
                     PauseBlock.Visibility = Visibility.Visible;
                     RTB_LargeText.Inlines.Add("PAUSED");
-                    RTB_LargeText.FontSize = 72;
+                    RTB_LargeText.FontSize = 64;
                     RTB_LargeText.Padding = new Thickness(210);
                 }
                 else
@@ -657,11 +657,9 @@ namespace SudokuSolverSetter
             {
                 ///SavePuzzle
                 SavePuzzle(false);
-                homePage.Show();
             }
             else if (result == MessageBoxResult.No)
             {
-                homePage.Show();
             }
             else
             {
@@ -853,20 +851,7 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void SaveQuit_Button_Click(object sender, RoutedEventArgs e)
         {
-            homePage.Owner = this;
-            MessageBoxResult result = MessageBox.Show("Do you want to save your progress on this puzzle before you quit?", "Confirm", MessageBoxButton.YesNoCancel);
-            if (result == MessageBoxResult.Yes)
-            {
-                ///SavePuzzle
-                SavePuzzle(false);
-                Hide();
-                homePage.Show();
-            }
-            else if (result == MessageBoxResult.No)
-            {
-                Hide();
-                homePage.Show();
-            }
+            Close();
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -894,9 +879,9 @@ namespace SudokuSolverSetter
             {
                 PlaySudoku playSudoku = new PlaySudoku(g_difficulty, "")
                 {
-                    Owner = this
+                    Owner = Owner
                 };
-                Hide();
+                Close();
                 playSudoku.Show();
             }
         }

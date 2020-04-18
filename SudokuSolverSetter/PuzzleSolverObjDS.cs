@@ -531,7 +531,7 @@ namespace SudokuSolverSetter
                                             && neighbourB.Candidates.Contains(candidateB))//Found 2/2/2 naked triple
                                         {
                                             foundTriple = true;
-                                            for (int n = 0; n < grid.Rows[i][j].NeighbourCells[index].Length; n++)
+                                            for (int n = 0; n < grid.Rows[i][j].NeighbourCells[index].Count; n++)
                                             {
                                                 if (grid.Rows[i][j].NeighbourCells[index][n].Num == '0' && grid.Rows[i][j].NeighbourCells[index][n] != neighbour 
                                                     && grid.Rows[i][j].NeighbourCells[index][n] != neighbourB)//Finds next empty cell in group that isn't apart of the triple
@@ -1476,8 +1476,6 @@ namespace SudokuSolverSetter
         /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
         public bool BacktrackingSolver(SudokuGrid grid, int row, int col, byte variator)
         {
-
-
             if (col == 9 && row == 9)//If somehow the method tries to look at this non-existent cell, this catches the exception
             {
                 if (g_Gen.CheckIfSolved(grid))
@@ -1591,7 +1589,9 @@ namespace SudokuSolverSetter
         #region Solver for Solving Cell by Cell button
         public SudokuGrid SolveCellByCell(SudokuGrid grid)
         {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool changeMade = false;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 
             if (!FindNakedNumbers1by1(grid))
             {

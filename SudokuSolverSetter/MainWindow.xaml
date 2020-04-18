@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Main Menu" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+        Title="Main Menu" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Closed">
     <Window.Background>
         <ImageBrush ImageSource="StartPageBackground_Design.png"/>
     </Window.Background>
@@ -18,7 +18,7 @@
             <ComboBoxItem Content="Advanced"/>
             <ComboBoxItem Content="Extreme"/>
         </ComboBox>
-        <Button x:Name="Level_Selector_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PUZZLE SELECTOR (WIP)" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,460,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <Button x:Name="Level_Selector_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PUZZLE SELECTOR" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,460,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
         <ToggleButton x:Name="Help_btn" Cursor="Hand" Background="#BFFFF7E6" Content="OPEN HELP" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Help_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,560,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
         <Button x:Name="Quit_btn" Cursor="Hand" Background="#BFFFF7E6" Content="QUIT" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,660,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
         <Button x:Name="Developer_Mode" Cursor="Hand" Background="#BFFFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="25,25,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
