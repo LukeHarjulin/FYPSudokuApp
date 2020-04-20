@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using System.Xml.Linq;
 using System.IO;
 using System.Xml;
+using System.Windows.Ink;
 
 namespace SudokuSolverSetter
 {
@@ -27,14 +28,14 @@ namespace SudokuSolverSetter
         private TextBox g_selectedCell;
         private SudokuGrid g_grid = new SudokuGrid();
         private string g_cellContents = "", g_currentTime = "", g_rating, g_difficulty, g_originalPuzzleString;
-        private bool g_pencilMarker = false, g_toggleRecursion = true;
+        private bool g_pencilMarker = false, g_toggleRecursion = true, penType = false;
 
         private SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
         private SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
         private SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(255, 255, 224, 233));
         private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, darkTextColour, buttonColour, altDarkCellColour;
-
+        private DrawingAttributes g_penDA, g_highlighterDA;
         private TimeSpan g_StartingTS = new TimeSpan();
         public DispatcherTimer DT { get; set; }
         public Stopwatch Timer { get; set; }
@@ -48,7 +49,23 @@ namespace SudokuSolverSetter
         public PlaySudoku(string difficulty, string puzzleString)//Initialize window
         {
             InitializeComponent();
-            
+            g_penDA = new DrawingAttributes();
+            g_penDA = new DrawingAttributes
+            {
+                Color = Colors.SpringGreen,
+                Height = 3,
+                Width = 3
+            };
+            g_highlighterDA = new DrawingAttributes
+            {
+                Color = Colors.SpringGreen,
+                IsHighlighter = true,
+                IgnorePressure = true,
+                StylusTip = StylusTip.Rectangle,
+                Height = 15,
+                Width = 5
+            };
+            ColourCanvas.DefaultDrawingAttributes = g_highlighterDA;
             PuzzleGenerator gen = new PuzzleGenerator();
             timer_txtbx.Text = "0:00";
             g_txtBxList = new List<TextBox> {
@@ -250,7 +267,7 @@ namespace SudokuSolverSetter
             Timer = new Stopwatch();
             DT = new DispatcherTimer();
             DT.Tick += new EventHandler(DT_Tick);
-            DT.Interval = new TimeSpan(0,0,1);
+            DT.Interval = new TimeSpan(0,0,0,0,100);
             Timer.Start();
             DT.Start();
         }
@@ -274,6 +291,9 @@ namespace SudokuSolverSetter
                     RTB_LargeText.Inlines.Add("PAUSED");
                     RTB_LargeText.FontSize = 64;
                     RTB_LargeText.Padding = new Thickness(210);
+
+                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false;
+                    btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false; del_btn.IsEnabled = false; TogglePencil.IsEnabled = false;
                 }
                 else
                 {
@@ -303,6 +323,8 @@ namespace SudokuSolverSetter
                 Timer.Start();
                 DT.Start();
                 PauseBlock.Visibility = Visibility.Hidden;
+                btn1.IsEnabled = true; btn2.IsEnabled = true; btn3.IsEnabled = true; btn4.IsEnabled = true; btn5.IsEnabled = true; btn6.IsEnabled = true;
+                btn7.IsEnabled = true; btn8.IsEnabled = true; btn9.IsEnabled = true; del_btn.IsEnabled = true; TogglePencil.IsEnabled = true;
             }
         }
         /// <summary>
@@ -532,7 +554,8 @@ namespace SudokuSolverSetter
                 if (ts.Seconds < 10)
                 {
                     g_currentTime = ts.Minutes + ":0" + ts.Seconds;
-                    
+                    if (ts.Hours > 0)
+                        g_currentTime = ts.Hours + ":" + ts.Minutes + ":0" + ts.Seconds;
                 }
                 else if (ts.Hours > 0)
                 {
@@ -666,6 +689,69 @@ namespace SudokuSolverSetter
                 e.Cancel = true;
             }
         }
+
+        private void ToggleDrawing_Checked(object sender, RoutedEventArgs e)
+        {
+            ToggleDrawing.Content = "Drawing ON";
+            ColourCanvas.Visibility = Visibility.Visible;
+            DrawSelection_grid.Visibility = Visibility.Visible;
+        }
+        private void ToggleDrawing_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ToggleDrawing.Content = "Drawing OFF";
+            ColourCanvas.Visibility = Visibility.Hidden;
+            DrawSelection_grid.Visibility = Visibility.Hidden;
+            
+        }
+        private void ChangeDA_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (!penType)
+            {
+                penType = true;
+                changeDA_Button.Content = "Change To Highlighter";
+                ColourCanvas.DefaultDrawingAttributes = g_penDA;
+            }
+            else
+            {
+                penType = false;
+                changeDA_Button.Content = "Change To Pen";
+                ColourCanvas.DefaultDrawingAttributes = g_highlighterDA;
+            }
+            
+        }
+
+        private void ClearDrawings_Button_Click(object sender, RoutedEventArgs e)
+        {
+            ColourCanvas.Strokes.Clear();
+        }
+
+        private void Radio_Colour_Checked(object sender, RoutedEventArgs e)
+        {
+            switch (((RadioButton)sender).Name)
+            {
+                case "radio_Red":
+                    g_penDA.Color = Colors.Red;
+                    g_highlighterDA.Color = Colors.Red;
+                    break;
+                case "radio_Blue":
+                    g_penDA.Color = Colors.Blue;
+                    g_highlighterDA.Color = Colors.Blue;
+                    break;
+                case "radio_Green":
+                    g_penDA.Color = Colors.SpringGreen;
+                    g_highlighterDA.Color = Colors.SpringGreen;
+                    break;
+                case "radio_Orange":
+                    g_penDA.Color = Colors.Gold;
+                    g_highlighterDA.Color = Colors.Gold;
+                    break;
+                default:
+                    break;
+            }
+                
+        }
+
+
 
         /// <summary>
         /// Changes the colour of the selected cell back to normal when the cell is no longer in focus
@@ -909,6 +995,7 @@ namespace SudokuSolverSetter
             Sudoku_Title.Foreground = darkTextColour;
             time_lbl.Foreground = darkTextColour;
             Rating_lbl.Foreground = darkTextColour;
+            selectPen_lbl.Foreground = darkTextColour;
             timer_txtbx.Foreground = darkTextColour;
             TogglePencil.Foreground = darkTextColour; TogglePencil.Background = darkButtonColour;
             Back_btn.Foreground = darkTextColour; Back_btn.Background = darkButtonColour;
@@ -917,8 +1004,11 @@ namespace SudokuSolverSetter
             Help_btn.Foreground = darkTextColour; Help_btn.Background = darkButtonColour;
             Pause_btn.Foreground = darkTextColour; Pause_btn.Background = darkButtonColour;
             nightmode_chkbx.Foreground = darkTextColour;
-            PauseBlock.Background = darkerColour;
-            PauseBlock.Foreground = darkTextColour;
+            PauseBlock.Background = darkerColour; PauseBlock.Foreground = darkTextColour;
+            DrawSelection_grid.Background = darkerColour;
+            changeDA_Button.Background = darkButtonColour; changeDA_Button.Foreground = darkTextColour;
+            clearCanvas_Button.Background = darkButtonColour; clearCanvas_Button.Foreground = darkTextColour;
+            ToggleDrawing.Background = darkButtonColour; ToggleDrawing.Foreground = darkTextColour;
             btn1.Foreground = darkTextColour; btn2.Foreground = darkTextColour; btn3.Foreground = darkTextColour; btn4.Foreground = darkTextColour;
             btn5.Foreground = darkTextColour; btn6.Foreground = darkTextColour; btn7.Foreground = darkTextColour; btn8.Foreground = darkTextColour; btn9.Foreground = darkTextColour;
             btn1.Background = darkButtonColour; btn2.Background = darkButtonColour;btn3.Background = darkButtonColour; btn4.Background = darkButtonColour;
@@ -968,6 +1058,7 @@ namespace SudokuSolverSetter
             Sudoku_Title.Foreground = Brushes.Black;
             time_lbl.Foreground = Brushes.Black;
             Rating_lbl.Foreground = Brushes.Black;
+            selectPen_lbl.Foreground = Brushes.Black;
             timer_txtbx.Foreground = Brushes.Black;
             TogglePencil.Foreground = Brushes.Black; TogglePencil.Background = buttonColour;
             Back_btn.Foreground = Brushes.Black; Back_btn.Background = buttonColour;
@@ -978,6 +1069,10 @@ namespace SudokuSolverSetter
             nightmode_chkbx.Foreground = Brushes.Black;
             PauseBlock.Background = backgroundCol;
             PauseBlock.Foreground = Brushes.Black;
+            DrawSelection_grid.Background = backgroundCol;
+            changeDA_Button.Background = buttonColour; changeDA_Button.Foreground = Brushes.Black;
+            clearCanvas_Button.Background = buttonColour; clearCanvas_Button.Foreground = Brushes.Black;
+            ToggleDrawing.Background = buttonColour; ToggleDrawing.Foreground = Brushes.Black;
             btn1.Foreground = Brushes.Black; btn2.Foreground = Brushes.Black; btn3.Foreground = Brushes.Black; btn4.Foreground = Brushes.Black;
             btn5.Foreground = Brushes.Black; btn6.Foreground = Brushes.Black; btn7.Foreground = Brushes.Black; btn8.Foreground = Brushes.Black; btn9.Foreground = Brushes.Black;
             btn1.Background = buttonColour; btn2.Background = buttonColour; btn3.Background = buttonColour; btn4.Background = buttonColour;

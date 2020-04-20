@@ -17,7 +17,7 @@ namespace SudokuSolverSetter
         /// <returns></returns>
         public bool Solvers(char[][] grid, char method)
         {
-            solvePath.Clear();
+            solvePath = new List<string>();
             bool changeMade = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)

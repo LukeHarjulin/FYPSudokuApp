@@ -9,8 +9,8 @@
         <ImageBrush ImageSource="StartPageBackground_Design.png"/>
     </Window.Background>
     <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}">
-        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="418" Margin="0,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="486" StrokeThickness="3"/>
-        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="57" Margin="0,15,773,0" Stroke="Black" VerticalAlignment="Top" Width="183" StrokeThickness="3"/>
+        <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="418" Margin="0,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="486" StrokeThickness="3"/>
+        <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="57" Margin="0,15,773,0" Stroke="Black" VerticalAlignment="Top" Width="183" StrokeThickness="3"/>
         <Button x:Name="Play_Sudoku_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PLAY SUDOKU" Width="420" Click="Play_Sudoku_Click" Height="60" Margin="0,360,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Verdana"/>
         <ComboBox x:Name="Difficulty_ComboBox" Background="#BFFFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="573,425,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="30" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538" FontFamily="Verdana">
             <ComboBoxItem IsSelected="True" Content="Beginner"/>
@@ -23,7 +23,7 @@
         <Button x:Name="Quit_btn" Cursor="Hand" Background="#BFFFF7E6" Content="QUIT" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,660,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
         <Button x:Name="Developer_Mode" Cursor="Hand" Background="#BFFFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="25,25,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
         <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="415,420,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium" FontFamily="Verdana"/>
-                <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="180" Margin="-50,80,-50,0" Stroke="Black" VerticalAlignment="Top" Width="1120" StrokeThickness="3"/>
+                <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="180" Margin="-50,80,-50,0" Stroke="Black" VerticalAlignment="Top" Width="1120" StrokeThickness="3"/>
         <Image HorizontalAlignment="Center" Height="140" Margin="0,100,0,0" VerticalAlignment="Top" Width="810" Source="/Title_designV2.png" OpacityMask="Black"/>
 
         <RichTextBox x:Name="HelpBlock" Cursor="Arrow" Background="#F6EEF1FF" Canvas.Top="50" Canvas.Left="10" IsReadOnly="True" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" Margin="0,10,0,216" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="3" Padding="3">
@@ -214,7 +214,7 @@
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">_________________________________________________________________________</Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="57" Margin="796,700,0,0" Stroke="Black" VerticalAlignment="Top" Width="180" StrokeThickness="3"/>
+        <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="57" Margin="796,700,0,0" Stroke="Black" VerticalAlignment="Top" Width="180" StrokeThickness="3"/>
         <Button x:Name="Generate_Puzzles_btn" Cursor="Hand" Background="#BFFFF7E6" Content="Generate Puzzles" HorizontalAlignment="Left" Margin="810,710,0,0" VerticalAlignment="Top" Width="160" Click="Create_Store_Puzzles_btn_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
 
 

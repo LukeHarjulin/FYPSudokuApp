@@ -32,6 +32,11 @@ namespace SudokuSolverSetter
             return grid;
         }
         #region Private Functions
+        private SudokuGrid InitialCells(SudokuGrid grid)
+        {
+            
+            return grid;
+        }
         private SudokuGrid ConstructGrid()
         {
             SudokuGrid grid = new SudokuGrid
@@ -265,7 +270,6 @@ namespace SudokuSolverSetter
         /// <returns></returns>
         public List<char> Shuffler(List<char> rowNumbers)
         {
-            rand = new Random();
             int index = rowNumbers.Count;
             while (index > 1)//Shuffle the numbers that can go in the row.
             {
@@ -284,7 +288,6 @@ namespace SudokuSolverSetter
         /// <returns></returns>
         public List<int> Shuffler_intList(List<int> rowNumbers)
         {
-            rand = new Random();
             int index = rowNumbers.Count;
             while (index > 1)//Shuffle the numbers that can go in the row.
             {

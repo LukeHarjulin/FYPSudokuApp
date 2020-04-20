@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="CreatePuzzles" Height="275" Width="350" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize">
+        Title="Generate Puzzles" Height="275" Width="350" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize">
     <Grid Margin="0,0,0,1" Background="#FFEEF1FF">
         <Button Content="Create and Store" HorizontalAlignment="Center" Margin="0,0,0,50" VerticalAlignment="Bottom" Width="150" Height="30" FontSize="16" Click="Button_Click"/>
         <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" Margin="224,86,0,0" VerticalAlignment="Top" Width="71" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16"/>

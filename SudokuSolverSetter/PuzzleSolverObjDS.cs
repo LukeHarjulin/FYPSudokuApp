@@ -148,18 +148,12 @@ namespace SudokuSolverSetter
                 g_BacktrackingReq = true;
                 g_Difficulty = "Extreme";
                 g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
-            }
-            if (g_BacktrackingReq == true)
-            {
                 return false;
             }
             if (moderate)
-            {
-                if (advanced)
-                    g_Difficulty = "Advanced";
-                else
-                    g_Difficulty = "Moderate";
-            }
+                g_Difficulty = "Moderate";
+            if (advanced)
+                g_Difficulty = "Advanced";
             return g_Gen.CheckIfSolved(grid);
         }
         /// <summary>

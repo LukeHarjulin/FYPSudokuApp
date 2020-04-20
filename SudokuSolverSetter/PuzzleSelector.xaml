@@ -10,9 +10,9 @@
         <ImageBrush ImageSource="StartPageBackground_Design.png"/>
     </Window.Background>
     <Grid>
-        <Rectangle Fill="#F2EEF1FF" HorizontalAlignment="Center" Height="60" Margin="0,30,779,0" Stroke="Black" VerticalAlignment="Top" Width="185" StrokeThickness="3"/>
+        <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="60" Margin="0,30,779,0" Stroke="Black" VerticalAlignment="Top" Width="185" StrokeThickness="3"/>
         <Border BorderBrush="Black" BorderThickness="3" Width="330" Height="630" Canvas.Top="115" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,10" >
-            <Canvas Background="#F2EEF1FF" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="630">
+            <Canvas Background="#E5EEF1FF" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="630">
                 <Grid MaxHeight="615">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -26,7 +26,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="330"/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="SelectPuzzle" Cursor="Hand" Content="Select &amp; Play Puzzle" HorizontalAlignment="Center" Click="SelectPuzzle_Button_Click" Width="170" FontSize="16" Background="#FFFFF7E6" Height="40" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0" FontFamily="Verdana"/>
+                    <Button x:Name="SelectPuzzle" Cursor="Hand" Content="Select &amp; Play Puzzle" HorizontalAlignment="Center" Click="SelectPuzzle_Button_Click" Width="170" FontSize="16" Background="#BFFFF7E6" Height="40" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0" FontFamily="Verdana"/>
                     <Expander x:Name="Started_Expander" Header="Started" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="1" Margin="7,3,0,0" MaxHeight="400" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel x:Name="Started_STKPNL" Background="#EEF1FF" Height="Auto">
@@ -68,7 +68,7 @@
         </Border>
 
 
-        <Button x:Name="Back_btn" Cursor="Hand" Content="Back to Main Menu" HorizontalAlignment="Left" Click="Back_Button_Click" Width="165" FontSize="16" Background="#FFFFF7E6" Height="40" Canvas.Left="20" Canvas.Top="10" VerticalAlignment="Top" Margin="20,40,0,0" FontFamily="Verdana"/>
+        <Button x:Name="Back_btn" Cursor="Hand" Content="Back to Main Menu" HorizontalAlignment="Left" Click="Back_Button_Click" Width="165" FontSize="16" Background="#BFFFF7E6" Height="40" Canvas.Left="20" Canvas.Top="10" VerticalAlignment="Top" Margin="20,40,0,0" FontFamily="Verdana"/>
         <UniformGrid x:Name="SudokuGrid" Height="630" Width="630" Canvas.Top="115" Canvas.Left="345" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10">
             <TextBox x:Name="bx1"  IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="4,4,0.75,0.75" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" />
             <TextBox x:Name="bx2"  IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,4,0.75,0.75" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  />
@@ -152,7 +152,7 @@
             <TextBox x:Name="bx80" IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,4" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             <TextBox x:Name="bx81" IsReadOnly="True" Cursor="Arrow" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,0.75,4,4" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
         </UniformGrid>
-        <Label x:Name="Sudoku_Title" Width="400" Height="75" FontSize="48" Content="Puzzle Selector" Canvas.Left="330" Canvas.Top="35" FontFamily="Verdana" HorizontalContentAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" HorizontalAlignment="Center" Background="#F2EEF1FF" BorderBrush="Black" BorderThickness="3"/>
+        <Label x:Name="Sudoku_Title" Width="400" Height="75" FontSize="48" Content="Puzzle Selector" Canvas.Left="330" Canvas.Top="35" FontFamily="Verdana" HorizontalContentAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" HorizontalAlignment="Center" Background="#E5EEF1FF" BorderBrush="Black" BorderThickness="3"/>
     </Grid>
 
 </Window>

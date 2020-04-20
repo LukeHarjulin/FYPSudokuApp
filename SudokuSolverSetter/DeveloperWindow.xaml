@@ -106,12 +106,18 @@
             <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="91" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16" Canvas.Left="169" Canvas.Top="68"/>
             <Label Content="Number of solves:" Canvas.Left="10" Canvas.Top="67" FontSize="18"/>
             <Button x:Name="TestAllThree" Cursor="Hand" Content="Test All Three Solvers" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="308" Height="110" FontSize="18"/>
-            <Label Content="Select existing puzzle:" Canvas.Left="775" Canvas.Top="17" FontSize="16" HorizontalContentAlignment="Right"/>
-            <ComboBox x:Name="PuzzlesByRating_combo" Canvas.Left="810" Canvas.Top="48" MaxDropDownHeight="700" Width="95" Height="45" FontSize="16" SelectionChanged="RatingCombo_SelectionChanged"/>
+            <Label Content="Select existing puzzle:" Canvas.Left="655" Canvas.Top="12" FontSize="16" HorizontalContentAlignment="Right"/>
+            <ComboBox x:Name="PuzzleDifficulty_combo" Canvas.Left="835" Canvas.Top="37" MaxDropDownHeight="700" Width="95" Height="25" FontSize="14" SelectionChanged="DifficultyCombo_SelectionChanged">
+                <ComboBoxItem Content="Beginner"/>
+                <ComboBoxItem Content="Moderate"/>
+                <ComboBoxItem Content="Advanced"/>
+                <ComboBoxItem Content="Extreme"/>
+            </ComboBox>
+            <ComboBox x:Name="PuzzlesByRating_combo" Canvas.Left="835" Canvas.Top="67" MaxDropDownHeight="700" Width="95" Height="25" FontSize="16" SelectionChanged="RatingCombo_SelectionChanged"/>
+            <CheckBox x:Name="Symmetry_checkbox" Content="Symmetry?" Canvas.Left="530" Canvas.Top="17" FontSize="16" Width="143" Checked="Symmetry_checkbox_Checked" Unchecked="Symmetry_checkbox_Unchecked"/>
             <Label x:Name="givenNums_lbl" Content="Given Numbers: " Canvas.Left="315" Canvas.Top="53" FontSize="16" Width="150"/>
             <Label x:Name="difficulty_lbl" Content="Difficulty: Unknown" Canvas.Left="315" Canvas.Top="79" FontSize="16" Width="185"/>
-            <CheckBox x:Name="Symmetry_checkbox" Content="Symmetry?" IsChecked="True" Canvas.Left="530" Canvas.Top="17" FontSize="16" Width="143" Checked="Symmetry_checkbox_Checked" Unchecked="Symmetry_checkbox_Unchecked"/>
-
+            
         </Canvas>
     </Border>
 </Window>
