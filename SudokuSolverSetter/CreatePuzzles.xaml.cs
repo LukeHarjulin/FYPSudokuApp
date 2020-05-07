@@ -102,7 +102,7 @@ namespace SudokuSolverSetter
                 {
                     doc = new XDocument(
                         new XDeclaration("1.0", "utf-8", "yes"),
-                        new XComment("This is a new comment"),
+                        new XComment("Sudoku Puzzle Storage For SudokuSolverSetter App"),
                         new XElement("SudokuPuzzles",
                             new XElement("NotStarted",
                                 new XElement("Beginner"),

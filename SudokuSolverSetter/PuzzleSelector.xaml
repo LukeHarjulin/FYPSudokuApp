@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner">
+        Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" BorderBrush="Black" BorderThickness="3">
     <Window.Background>
         <ImageBrush ImageSource="StartPageBackground_Design.png"/>
     </Window.Background>
@@ -57,7 +57,7 @@
                             </StackPanel>
                         </ScrollViewer>
                     </Expander>
-                    <Expander x:Name="Completed_Expander" Header="Completed" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="6" Margin="7,3,0,0" MaxHeight="505" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
+                    <Expander x:Name="Completed_Expander" Header="Completed" HorizontalAlignment="Left" VerticalAlignment="Top" Width="310" Background="#FFDDC0" BorderBrush="Black" BorderThickness="2" Grid.Row="6" Margin="7,3,0,0" MaxHeight="415" FontFamily="Verdana" FontSize="16" Expanded="Expander_Expanded">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel x:Name="Completed_STKPNL" Background="#EEF1FF" Height="Auto" >
                             </StackPanel>

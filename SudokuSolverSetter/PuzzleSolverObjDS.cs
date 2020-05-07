@@ -141,7 +141,6 @@ namespace SudokuSolverSetter
             {
                 BacktrackingSolver(grid, 0, 0, 0);
             }
-            
             if (!g_Gen.CheckIfSolved(grid))
             {
                 BacktrackingSolver(grid, 0, 0, 0);
@@ -161,7 +160,7 @@ namespace SudokuSolverSetter
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
-        #region Strategy-Usage Solver method
+#region Strategy-Usage Solver method
         
         private bool CleanCandidateLists(SudokuGrid grid)
         {
@@ -1024,30 +1023,29 @@ namespace SudokuSolverSetter
                                     {
                                         if (cellD.NeighbourCells[axis].Contains(cellB))
                                         {
+                                            string type = axis == 0 ? "Type2" : "Type1";
                                             for (int n = 0; n < 8; n++)
                                             {
                                                 if (cellC.NeighbourCells[axis][n].Candidates.Contains(candidate) && cellC.NeighbourCells[axis][n] != cellA && cellC.NeighbourCells[axis][n] != cellB)
                                                 {
                                                     cellC.NeighbourCells[axis][n].Candidates.Remove(candidate);
                                                     changeMade = true;
-                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellC.NeighbourCells[axis][n].XLocation + "," + cellC.NeighbourCells[axis][n].YLocation + "] - X-WING formed in ["+cellA.XLocation+","+cellA.YLocation+ "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] ["+cellD.XLocation+","+cellD.YLocation+"]");
+                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellC.NeighbourCells[axis][n].XLocation + "," + cellC.NeighbourCells[axis][n].YLocation + "] - X-WING " + type + " formed in [" + cellA.XLocation+","+cellA.YLocation+ "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] ["+cellD.XLocation+","+cellD.YLocation+"]");
                                                 }
                                                 if (cellD.NeighbourCells[axis][n].Candidates.Contains(candidate) && cellC.NeighbourCells[axis][n] != cellA && cellC.NeighbourCells[axis][n] != cellB)
                                                 {
                                                     cellD.NeighbourCells[axis][n].Candidates.Remove(candidate);
                                                     changeMade = true;
-                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellD.NeighbourCells[axis][n].XLocation + "," + cellD.NeighbourCells[axis][n].YLocation + "] - X-WING formed in [" + cellA.XLocation + "," + cellA.YLocation + "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] [" + cellD.XLocation + "," + cellD.YLocation + "]");
+                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellD.NeighbourCells[axis][n].XLocation + "," + cellD.NeighbourCells[axis][n].YLocation + "] - X-WING " + type + " formed in [" + cellA.XLocation + "," + cellA.YLocation + "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] [" + cellD.XLocation + "," + cellD.YLocation + "]");
                                                 }
                                             }
                                             if (changeMade)
                                                 return true;
                                         }
                                     }
-                                    
                                 }
                             }
                         }
-                        
                     }
                 }
             }
@@ -1414,8 +1412,8 @@ namespace SudokuSolverSetter
             }
             return changeMade;
         }
-        #endregion
-        #region Backtracking Solver
+#endregion
+#region Backtracking Solver
         /// <summary>
         /// Removes all values from the current cell's candidate list that are also found within neighbouring cells
         /// I.e. Cells that are in the same groups as the cell in question.
@@ -1576,11 +1574,11 @@ namespace SudokuSolverSetter
             g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
             return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
         }
-        #endregion
+#endregion
 
 
         //Non-functional/Incomplete - IGNORE REGION "SOLVER FOR SOLVING CELL BY CELL BUTTON"
-        #region Solver for Solving Cell by Cell button
+#region Solver for Solving Cell by Cell button
         public SudokuGrid SolveCellByCell(SudokuGrid grid)
         {
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
@@ -1928,6 +1926,6 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-        #endregion
+#endregion
     }
 }

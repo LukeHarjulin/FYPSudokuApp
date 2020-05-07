@@ -34,6 +34,8 @@ namespace SudokuSolverSetter
         private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
         private SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
         private SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(255, 255, 224, 233));
+        private SolidColorBrush pauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
+        private SolidColorBrush darkPauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
         private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, darkTextColour, buttonColour, altDarkCellColour;
         private DrawingAttributes g_penDA, g_highlighterDA;
         private TimeSpan g_StartingTS = new TimeSpan();
@@ -65,6 +67,7 @@ namespace SudokuSolverSetter
                 Height = 15,
                 Width = 5
             };
+            radio_Green.IsChecked = true;
             ColourCanvas.DefaultDrawingAttributes = g_highlighterDA;
             PuzzleGenerator gen = new PuzzleGenerator();
             timer_txtbx.Text = "0:00";
@@ -185,7 +188,7 @@ namespace SudokuSolverSetter
                         if (puzzleString[counter] == '|')
                         {
                             g_txtBxList[i].IsReadOnly = true;
-                            g_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                            g_txtBxList[i].FontWeight = FontWeights.Bold;
                             counter++;
                         }
                         else if (puzzleString[counter] == '-')
@@ -234,7 +237,7 @@ namespace SudokuSolverSetter
                         {
                             g_txtBxList[i].Text = puzzleString[i].ToString();
                             g_txtBxList[i].IsReadOnly = true;
-                            g_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                            g_txtBxList[i].FontWeight = FontWeights.Bold;
                         }
                     }
                     g_originalPuzzleString = puzzleString;
@@ -272,7 +275,7 @@ namespace SudokuSolverSetter
             DT.Start();
         }
         /// <summary>
-        /// Pauses the timer if pause or help is requested
+        /// Pauses the timer if pause or help is requested (or if puzzle is complete)
         /// </summary>
         /// <param name="type"></param>
         private void PauseTimer(int type)
@@ -288,18 +291,25 @@ namespace SudokuSolverSetter
                     RTB_LargeText.Inlines.Clear();
                     RTB_HelpText.Inlines.Clear();
                     PauseBlock.Visibility = Visibility.Visible;
+                    if (nightmode_chkbx.IsChecked == false)
+                        PauseBlock.Background = pauseBlockBckGrd;
+                    else
+                        PauseBlock.Background = darkerColour;
                     RTB_LargeText.Inlines.Add("PAUSED");
                     RTB_LargeText.FontSize = 64;
-                    RTB_LargeText.Padding = new Thickness(210);
-
-                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false;
-                    btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false; del_btn.IsEnabled = false; TogglePencil.IsEnabled = false;
+                    RTB_LargeText.Padding = new Thickness(120, 250, 120, 0);
+                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
+                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Helper_btn.IsEnabled = false;
                 }
-                else
+                else if (type == 2)
                 {
                     RTB_LargeText.Inlines.Clear();
                     RTB_HelpText.Inlines.Clear();
                     PauseBlock.Visibility = Visibility.Visible;
+                    if (nightmode_chkbx.IsChecked == false)
+                        PauseBlock.Background = pauseBlockBckGrd;
+                    else
+                        PauseBlock.Background = darkerColour;
                     RTB_LargeText.Padding = new Thickness(0);
                     RTB_LargeText.Inlines.Add("HELP");
                     RTB_HelpText.Inlines.Add("Objective:\r\n\r\nFill in all the empty cells with a single number from 1-9 till the entire grid is full.\r\n" +
@@ -308,14 +318,45 @@ namespace SudokuSolverSetter
                         "A pop up will occur to notify you if you have completed the puzzle.\r\n\r\n\r\n" +
                         "Tips on How to Play:\r\n\r\n" +
                          "The most basic strategy is to look at any empty cell within the puzzle and then look at all the groups that it belongs to. Then, make a note of all the numbers that can go into that cell.\r\n" +
-                        "To make note of what numbers can exist within a cell, toggle the ‘Notes’ button by either clicking it or by pressing ‘N’ on your keyboard.\r\n\r\n" +
+                        "To make note of what numbers can exist within a cell, toggle the \"Notes\" button by either clicking it or by pressing ‘N’ on your keyboard.\r\n\r\n" +
                         "Another basic strategy is to look at a group and identify which numbers are left to be placed in that group.\r\n" +
-                        "Then, for each number that doesn't exist in that group, look at each cell within that group and check whether that possible number can be placed in that cell by looking at the other groups that the cell belongs to.\r\n\r\n\r\n" + 
+                        "Then, for each number that doesn't exist in that group, look at each cell within that group and check whether that possible number can be placed in that cell by looking at the other groups that the cell belongs to.\r\n\r\n" +
+                        "Another tool at your disposal is the the \"Drawing\" tool toggle button. " +
+                        "Whilst the Drawing tool is toggled 'ON', you can highlight and draw over the puzzle. " +
+                        "There are 4 colours that can be used to aid the discovery/removal of a number from a cell.\r\n\r\n" +
+                        "An example of how this tool can be used is to indicate individual links between numbers or to designate a set of numbers to meet certain conditions (i.e. Chaining/Cycles).\r\n" +
+                        "There is a \"Clear Drawings\" button if you wish to erase drawings.\r\n" +
+                        "Finally, the Drawing tool can be toggled 'OFF' to remove the overlay of drawings. " +
+                        "However, your drawings will be saved for when you toggle the Drawing tool back 'ON'.\r\n\r\n\r\n" +
                         "\"What does the rating mean?\"\r\n\r\n" +
                         "The rating of the puzzle is based off the weighting and frequency of simplest strategies required to solve the puzzle.\r\n\r\n" +
-                        "Dark Mode is available below the 'Help' button, for those who prefer a darker colour scheme.\r\n\r\n");
+                        "Dark Mode is available above the 'Help Menu' button, for those who prefer a darker colour scheme.\r\n\r\n\r\n" +
+                        "The \"Show Clue\" button is currently non-functional.\r\n\r\n");
                     RTB_LargeText.FontSize = 42;
                     RTB_HelpText.FontSize = 18;
+                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
+                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Helper_btn.IsEnabled = false;
+                }
+                else if (type == 3)
+                {
+                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
+                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Pause_btn.IsEnabled = false; Help_btn.IsEnabled = false; nightmode_chkbx.IsEnabled = false; Helper_btn.IsEnabled = false;
+                    SudokuGrid.IsEnabled = false;
+                    for (int i = 0; i < 81; i++)
+                    {
+                        g_txtBxList[i].IsReadOnly = true;
+                    }
+                    RTB_LargeText.Inlines.Clear();
+                    RTB_HelpText.Inlines.Clear();
+                    PauseBlock.Visibility = Visibility.Visible;
+                    if (nightmode_chkbx.IsChecked == false)
+                        PauseBlock.Background = new SolidColorBrush(Color.FromArgb(150, 238, 241, 255));
+                    else
+                        PauseBlock.Background = new SolidColorBrush(Color.FromArgb(150, 45, 45, 45));
+                    RTB_LargeText.Inlines.Add("Congratulations! Sudoku Complete!");
+                    RTB_LargeText.FontSize = 48;
+                    RTB_LargeText.Padding = new Thickness(120,250,120,0);
+                    SavePuzzle(true);
                 }
             }
             else
@@ -323,8 +364,8 @@ namespace SudokuSolverSetter
                 Timer.Start();
                 DT.Start();
                 PauseBlock.Visibility = Visibility.Hidden;
-                btn1.IsEnabled = true; btn2.IsEnabled = true; btn3.IsEnabled = true; btn4.IsEnabled = true; btn5.IsEnabled = true; btn6.IsEnabled = true;
-                btn7.IsEnabled = true; btn8.IsEnabled = true; btn9.IsEnabled = true; del_btn.IsEnabled = true; TogglePencil.IsEnabled = true;
+                btn1.IsEnabled = true; btn2.IsEnabled = true; btn3.IsEnabled = true; btn4.IsEnabled = true; btn5.IsEnabled = true; btn6.IsEnabled = true; btn7.IsEnabled = true; btn8.IsEnabled = true; btn9.IsEnabled = true;
+                del_btn.IsEnabled = true; TogglePencil.IsEnabled = true; ToggleDrawing.IsEnabled = true; Helper_btn.IsEnabled = true;
             }
         }
         /// <summary>
@@ -339,7 +380,7 @@ namespace SudokuSolverSetter
             {
                 if (TogglePencil.IsChecked == true)
                 {
-                    TogglePencil.Content = "Notes ON (N)";
+                    TogglePencil.Content = "Notes are ON (N)";
                     g_pencilMarker = true;
                     if (g_selectedCell != null)
                     {
@@ -348,7 +389,7 @@ namespace SudokuSolverSetter
                 }
                 else if (TogglePencil.IsChecked == false)
                 {
-                    TogglePencil.Content = "Notes OFF (N)";
+                    TogglePencil.Content = "Notes are OFF (N)";
                     g_pencilMarker = false;
                     if (g_selectedCell != null)
                     {
@@ -361,7 +402,7 @@ namespace SudokuSolverSetter
                 if (TogglePencil.IsChecked == false)
                 {
                     TogglePencil.IsChecked = true;
-                    TogglePencil.Content = "Notes ON (N)";
+                    TogglePencil.Content = "Notes are ON (N)";
                     g_pencilMarker = true;
                     if (g_selectedCell != null)
                     {
@@ -371,7 +412,7 @@ namespace SudokuSolverSetter
                 else if (TogglePencil.IsChecked == true)
                 {
                     TogglePencil.IsChecked = false;
-                    TogglePencil.Content = "Notes OFF (N)";
+                    TogglePencil.Content = "Notes are OFF (N)";
                     g_pencilMarker = false;
                     if (g_selectedCell != null)
                     {
@@ -399,7 +440,7 @@ namespace SudokuSolverSetter
                     m_txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
                     if (grid.Rows[x][y].ReadOnly == true)//The readonly property ensures that the default given values of the sudoku puzzle remain readonly.
                     {
-                        m_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                        m_txtBxList[i].FontWeight = FontWeights.Bold;
                         m_txtBxList[i].IsReadOnly = true;
                     }
                 }
@@ -426,7 +467,7 @@ namespace SudokuSolverSetter
                 ? XDocument.Load(filename)
                 : new XDocument(
                     new XDeclaration("1.0", "utf-8", "yes"),
-                    new XComment("This is a new comment"),
+                    new XComment("Sudoku Puzzle Storage For SudokuSolverSetter App"),
                     new XElement("SudokuPuzzles",
                         new XElement("NotStarted",
                             new XElement("Beginner"),
@@ -692,13 +733,13 @@ namespace SudokuSolverSetter
 
         private void ToggleDrawing_Checked(object sender, RoutedEventArgs e)
         {
-            ToggleDrawing.Content = "Drawing ON";
+            ToggleDrawing.Content = "Drawing is ON";
             ColourCanvas.Visibility = Visibility.Visible;
             DrawSelection_grid.Visibility = Visibility.Visible;
         }
         private void ToggleDrawing_Unchecked(object sender, RoutedEventArgs e)
         {
-            ToggleDrawing.Content = "Drawing OFF";
+            ToggleDrawing.Content = "Drawing is OFF";
             ColourCanvas.Visibility = Visibility.Hidden;
             DrawSelection_grid.Visibility = Visibility.Hidden;
             
@@ -723,6 +764,11 @@ namespace SudokuSolverSetter
         private void ClearDrawings_Button_Click(object sender, RoutedEventArgs e)
         {
             ColourCanvas.Strokes.Clear();
+        }
+
+        private void Helper_btn_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void Radio_Colour_Checked(object sender, RoutedEventArgs e)
@@ -855,14 +901,7 @@ namespace SudokuSolverSetter
                         }
                         if (g_Gen.CheckIfSolved_array(basicGrid))
                         {
-                            Timer.Stop();
-                            DT.Stop();
-                            MessageBox.Show("Congratulations!\n\rSudoku Complete!");
-                            for (int i = 0; i < 81; i++)
-                            {
-                                g_txtBxList[i].IsReadOnly = true;
-                            }
-                            SavePuzzle(true);
+                            PauseTimer(3);
                         }
                     }
                     g_cellContents = g_selectedCell.Text;
@@ -967,8 +1006,8 @@ namespace SudokuSolverSetter
                 {
                     Owner = Owner
                 };
-                Close();
-                playSudoku.Show();
+                Hide();//Unfortunately, this is the only way to get rid of the current puzzle and open a new one. Rather close, but that opens the main menu as well
+                playSudoku.ShowDialog();
             }
         }
         /// <summary>
@@ -994,15 +1033,18 @@ namespace SudokuSolverSetter
             cnvs.Background = darkerColour;
             Sudoku_Title.Foreground = darkTextColour;
             time_lbl.Foreground = darkTextColour;
+            clue_lbl.Foreground = darkTextColour;
             Rating_lbl.Foreground = darkTextColour;
             selectPen_lbl.Foreground = darkTextColour;
             timer_txtbx.Foreground = darkTextColour;
+            clue_txtbx.Foreground = darkTextColour;
             TogglePencil.Foreground = darkTextColour; TogglePencil.Background = darkButtonColour;
             Back_btn.Foreground = darkTextColour; Back_btn.Background = darkButtonColour;
             del_btn.Foreground = darkTextColour; del_btn.Background = darkButtonColour;
             newPuzzle_btn.Foreground = darkTextColour; newPuzzle_btn.Background = darkButtonColour;
             Help_btn.Foreground = darkTextColour; Help_btn.Background = darkButtonColour;
             Pause_btn.Foreground = darkTextColour; Pause_btn.Background = darkButtonColour;
+            Helper_btn.Foreground = darkTextColour; Helper_btn.Background = darkButtonColour;
             nightmode_chkbx.Foreground = darkTextColour;
             PauseBlock.Background = darkerColour; PauseBlock.Foreground = darkTextColour;
             DrawSelection_grid.Background = darkerColour;
@@ -1057,15 +1099,18 @@ namespace SudokuSolverSetter
             cnvs.Background = backgroundCol;
             Sudoku_Title.Foreground = Brushes.Black;
             time_lbl.Foreground = Brushes.Black;
+            clue_lbl.Foreground = Brushes.Black;
             Rating_lbl.Foreground = Brushes.Black;
             selectPen_lbl.Foreground = Brushes.Black;
             timer_txtbx.Foreground = Brushes.Black;
+            clue_txtbx.Foreground = Brushes.Black;
             TogglePencil.Foreground = Brushes.Black; TogglePencil.Background = buttonColour;
             Back_btn.Foreground = Brushes.Black; Back_btn.Background = buttonColour;
             del_btn.Foreground = Brushes.Black; del_btn.Background = buttonColour;
             newPuzzle_btn.Foreground = Brushes.Black; newPuzzle_btn.Background = buttonColour;
             Help_btn.Foreground = Brushes.Black; Help_btn.Background = buttonColour;
             Pause_btn.Foreground = Brushes.Black; Pause_btn.Background = buttonColour;
+            Helper_btn.Foreground = Brushes.Black; Helper_btn.Background = buttonColour;
             nightmode_chkbx.Foreground = Brushes.Black;
             PauseBlock.Background = backgroundCol;
             PauseBlock.Foreground = Brushes.Black;

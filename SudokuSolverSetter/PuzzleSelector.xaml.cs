@@ -108,18 +108,15 @@ namespace SudokuSolverSetter
                             int givens = 0;
                             textBox.Name = "n"+difficulty_Num+"_" + g_puzzles.Count.ToString();
                             g_puzzles.Add(sudokuString);
-                            for (int i = 0; i < sudokuString.Length; i++)
+                            if (label.Name != "Started" && label.Name != "Completed")
                             {
-                                if (sudokuString[i] != '0')
+                                for (int i = 0; i < sudokuString.Length; i++)
                                 {
-                                    if (label.Name != "Started")
+                                    if (sudokuString[i] != '0')
                                     {
                                         givens++;
                                     }
                                 }
-                            }
-                            if (label.Name != "Started")
-                            {
                                 textBox.Text += "\r\n# of Starting Numbers: " + givens;
                             }
                             textBox.GotFocus += new RoutedEventHandler(Selected_Puzzle);
@@ -172,7 +169,7 @@ namespace SudokuSolverSetter
             g_txtBxList[0].Text = "";
             for (int i = 0, counter = 0; counter < sudokuString.Length; counter++)
             {
-                if (sudokuString.Contains('.'))
+                if (sudokuString[counter] == '.')
                 {
                     counter++;
                 }
@@ -180,12 +177,13 @@ namespace SudokuSolverSetter
                 {
                     if (sudokuString[counter] == '|')
                     {
-                        g_txtBxList[i].FontWeight = FontWeights.SemiBold;
+                        g_txtBxList[i].FontWeight = FontWeights.Bold;
                         counter++;
                     }
                     else if (sudokuString[counter] == '-')
                     {
                         g_txtBxList[i].FontSize = 16;
+                        g_txtBxList[i].FontWeight = FontWeights.Normal;
                         counter++;
                     }
                     if (counter == sudokuString.Length)
@@ -220,14 +218,15 @@ namespace SudokuSolverSetter
                 {
                     if (sudokuString[counter] != '0')
                     {
-                        g_txtBxList[counter].Text = sudokuString[counter].ToString();
-                        g_txtBxList[counter].FontSize = 36;
-                        g_txtBxList[counter].FontWeight = FontWeights.SemiBold;
+                        g_txtBxList[i].Text = sudokuString[counter].ToString();
+                        g_txtBxList[i].FontSize = 36;
+                        g_txtBxList[i].FontWeight = FontWeights.Bold;
                     }
                     else
                     {
-                        g_txtBxList[counter].Text = "";
+                        g_txtBxList[i].Text = "";
                     }
+                    i++;
                 }
                 
             }
