@@ -59,39 +59,39 @@ namespace SudokuSolverSetter
                         g_Rating += 100;
                         moderate = true;
                     }
-                    else if (FindNakedTriple(grid))//A Naked Triple contributes +150 to the rating.
+                    else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
                     {
                         changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 150;
                         moderate = true;
                     }
-                    else if (FindHiddenPair(grid))//A Hidden Pair contributes +200 to the rating.
-                    {
-                        changeMade = true;
-                        g_SolvePath.Add(separator);
-                        g_Rating += 200;
-                        moderate = true;
-                    }
-                    else if (FindHiddenTriple(grid))//A Hidden Triple contributes +250 to the rating.
+                    else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
                     {
                         changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 250;
                         moderate = true;
                     }
-                    else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +300 to the rating.
+                    else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
                     {
                         changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 300;
                         moderate = true;
                     }
-                    else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +350 to the rating.
+                    else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
                     {
                         changeMade = true;
                         g_SolvePath.Add(separator);
-                        g_Rating += 350;
+                        g_Rating += 400;
+                        moderate = true;
+                    }
+                    else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
+                    {
+                        changeMade = true;
+                        g_SolvePath.Add(separator);
+                        g_Rating += 450;
                         moderate = true;
                     }
                     else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
