@@ -36,7 +36,7 @@
     </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon_v3.ico</ApplicationIcon>
+    <ApplicationIcon>Images\Icon_v3.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -59,45 +59,45 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Cell.cs" />
-    <Compile Include="CreatePuzzles.xaml.cs">
+    <Compile Include="Objects\Cell.cs" />
+    <Compile Include="Windows\CreatePuzzles.xaml.cs">
       <DependentUpon>CreatePuzzles.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImportPuzzle.xaml.cs">
+    <Compile Include="Windows\ImportPuzzle.xaml.cs">
       <DependentUpon>ImportPuzzle.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PasswordBox.xaml.cs">
+    <Compile Include="Windows\PasswordBox.xaml.cs">
       <DependentUpon>PasswordBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlaySudoku.xaml.cs">
+    <Compile Include="Windows\PlaySudoku.xaml.cs">
       <DependentUpon>PlaySudoku.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PuzzleSelector.xaml.cs">
+    <Compile Include="Windows\PuzzleSelector.xaml.cs">
       <DependentUpon>PuzzleSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PuzzleSolverCharDS.cs" />
-    <Compile Include="SolvePath.xaml.cs">
+    <Compile Include="Logic\PuzzleSolverCharDS.cs" />
+    <Compile Include="Windows\SolvePath.xaml.cs">
       <DependentUpon>SolvePath.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SudokuGrid.cs" />
-    <Compile Include="PuzzleGenerator.cs" />
-    <Compile Include="PuzzleSolverObjDS.cs" />
-    <Page Include="CreatePuzzles.xaml">
+    <Compile Include="Objects\SudokuGrid.cs" />
+    <Compile Include="Logic\PuzzleGenerator.cs" />
+    <Compile Include="Logic\PuzzleSolverObjDS.cs" />
+    <Page Include="Windows\CreatePuzzles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImportPuzzle.xaml">
+    <Page Include="Windows\ImportPuzzle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Windows\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DeveloperWindow.xaml">
+    <Page Include="Windows\DeveloperWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -105,23 +105,23 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DeveloperWindow.xaml.cs">
+    <Compile Include="Windows\DeveloperWindow.xaml.cs">
       <DependentUpon>DeveloperWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="PasswordBox.xaml">
+    <Page Include="Windows\PasswordBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PlaySudoku.xaml">
+    <Page Include="Windows\PlaySudoku.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PuzzleSelector.xaml">
+    <Page Include="Windows\PuzzleSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SolvePath.xaml">
+    <Page Include="Windows\SolvePath.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,13 +153,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icon_v3.ico" />
+    <Resource Include="Images\Icon_v3.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Title_designV2.png" />
+    <Resource Include="Images\Title_designV2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="StartPageBackground_Design.png" />
+    <Resource Include="Images\StartPageBackground_Design.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

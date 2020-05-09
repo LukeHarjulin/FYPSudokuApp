@@ -7,7 +7,7 @@ namespace SudokuSolverSetter
     /// </summary>
     public class PuzzleSolverCharDS
     {
-        private PuzzleGenerator gen = new PuzzleGenerator();
+        private readonly PuzzleGenerator gen = new PuzzleGenerator();
         public List<string> solvePath = new List<string>();
         /// <summary>
         /// 

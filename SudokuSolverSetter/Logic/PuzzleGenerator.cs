@@ -7,7 +7,7 @@ namespace SudokuSolverSetter
     public class PuzzleGenerator
     {
         //Initialising global objects/variables
-        private Random rand = new Random();
+        private readonly Random rand = new Random();
         /// <summary>
         /// 
         /// </summary>
@@ -32,11 +32,6 @@ namespace SudokuSolverSetter
             return grid;
         }
         #region Private Functions
-        private SudokuGrid InitialCells(SudokuGrid grid)
-        {
-            
-            return grid;
-        }
         private SudokuGrid ConstructGrid()
         {
             SudokuGrid grid = new SudokuGrid

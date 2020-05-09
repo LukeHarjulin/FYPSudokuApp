@@ -8,12 +8,12 @@ namespace SudokuSolverSetter
     /// </summary>
     public class PuzzleSolverObjDS
     {
-        public bool g_BacktrackingReq = false;
-        public int g_Rating = 0;
-        public string g_Difficulty = "Beginner";
-        private PuzzleGenerator g_Gen = new PuzzleGenerator();
-        public List<string> g_SolvePath = new List<string>();
-        public List<string> g_BacktrackingPath = new List<string>();
+        public bool g_BacktrackingReq = false;//backtracking required?
+        public int g_Rating = 0;//puzzle rating score
+        public string g_Difficulty = "Beginner";//puzzle difficulty
+        private readonly PuzzleGenerator g_Gen = new PuzzleGenerator();
+        public List<string> g_SolvePath = new List<string>();//solve path using strategies
+        public List<string> g_BacktrackingPath = new List<string>();//solve path using backtracker
         
         /// <summary>
         /// 
@@ -137,7 +137,7 @@ namespace SudokuSolverSetter
                     }
                 } while (changeMade);
             }
-            else if (method == 2)//Backtracking Solver with candidate cleaning usage
+            else if (method == 2)
             {
                 BacktrackingSolver(grid, 0, 0, 0);
             }
@@ -995,7 +995,7 @@ namespace SudokuSolverSetter
                         foreach (char candidate in grid.Rows[i][j].Candidates)
                         {
                             Cell cellA = grid.Rows[i][j];
-                            Cell cellB = CheckRowColumn(grid, grid.Rows[i][j], candidate, 0);//check row
+                            Cell cellB = CheckRowColumn(grid.Rows[i][j], candidate, 0);//check row
                             Cell cellC;
                             Cell cellD;
                             int axis = 0;
@@ -1005,7 +1005,7 @@ namespace SudokuSolverSetter
                             }
                             else
                             {
-                                cellB = CheckRowColumn(grid, grid.Rows[i][j], candidate, 1);//checks column
+                                cellB = CheckRowColumn(grid.Rows[i][j], candidate, 1);//checks column
                                 if (cellB != null)
                                 {
                                     axis = 0;//look in column
@@ -1017,7 +1017,7 @@ namespace SudokuSolverSetter
                                 {
                                     axis = axis == 0 ? 1 : 0;//need to swap axis values to access row/column instead of column/row
                                     cellC = neighbourToA;
-                                    cellD = CheckRowColumn(grid, cellC, candidate, axis);
+                                    cellD = CheckRowColumn(cellC, candidate, axis);
                                     axis = axis == 0 ? 1 : 0;
                                     if (cellD != null)
                                     {
@@ -1060,7 +1060,7 @@ namespace SudokuSolverSetter
         /// <param name="candidate">current candidate that is being examined for an X-Wing</param>
         /// <returns>true if only one cell with candidate exists, false if > 1</returns>
         ///
-        private Cell CheckRowColumn(SudokuGrid grid, Cell cell, char candidate, int axis)
+        private Cell CheckRowColumn(Cell cell, char candidate, int axis)
         {
             int counter = 0;
             Cell saveCell = null;
