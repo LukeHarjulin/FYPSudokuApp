@@ -35,7 +35,14 @@ namespace SudokuSolverSetter
                 bx80,bx81
             };
             AddPuzzlesExpanders();
-            Started_Expander.IsExpanded = true;
+            if (Started_STKPNL.Children.Count == 0)
+            {
+                Beginner_Expander.IsExpanded = true;
+            }
+            else
+            {
+                Started_Expander.IsExpanded = true;
+            }
         }
         #endregion
         #region Functions/Methods
@@ -144,7 +151,10 @@ namespace SudokuSolverSetter
         }
 
         
-
+        /// <summary>
+        /// Highlight and displays selected puzzle
+        /// </summary>
+        /// <param name="sender"></param>
         public void ReactToSelectedPuzzle(TextBox sender)
         {
             //Previous selected puzzle set to normal
@@ -231,6 +241,9 @@ namespace SudokuSolverSetter
                 
             }
         }
+        /// <summary>
+        /// Redirects user to play sudoku window with selected puzzle
+        /// </summary>
         public void OpenSelectedPuzzle()
         {
             if (g_selectedTxBx.Text != ".")

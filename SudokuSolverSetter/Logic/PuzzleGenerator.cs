@@ -271,11 +271,10 @@ namespace SudokuSolverSetter
                         }
                     }
                 }
-                ///Tries to remove as many numbers as possible to toughen the puzzle
                 #endregion
 
 
-            } while (removed <= 45 && changeMade);
+            } while (removed <= 41 && changeMade);
         }
         /// <summary>
         /// Reassigns the values in the puzzle to what they were prior to being solved

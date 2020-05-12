@@ -542,8 +542,6 @@ namespace SudokuSolverSetter
                             .Elements("puzzle")
                             .First(n => n.Element("OriginalSudokuString").Value == g_originalPuzzleString);
                             childNode.Remove();
-                            doc.Save(filename);
-                            xmlDoc.Save(filename);
                             break;
                         }                        
                     }

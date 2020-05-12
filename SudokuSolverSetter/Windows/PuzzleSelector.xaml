@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Puzzle Selector" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" BorderBrush="Black" BorderThickness="3">
     <Window.Background>
-        <ImageBrush ImageSource="StartPageBackground_Design.png"/>
+        <ImageBrush ImageSource="/Images/StartPageBackground_Design.png"/>
     </Window.Background>
     <Grid>
         <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="60" Margin="0,30,779,0" Stroke="Black" VerticalAlignment="Top" Width="185" StrokeThickness="3"/>
