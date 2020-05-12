@@ -127,7 +127,7 @@ namespace SudokuSolverSetter
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error");
+                MessageBox.Show("Something went wrong with loading puzzles... \r\n\r\nError Message:" + ex, "Error");
             }
         }
         /// <summary>

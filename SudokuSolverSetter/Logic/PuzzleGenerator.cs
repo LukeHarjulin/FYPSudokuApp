@@ -132,7 +132,26 @@ namespace SudokuSolverSetter
                             {
                                 int altRow = NumberSwitch(row);
                                 int altCol = NumberSwitch(col);
-                                if (grid.Rows[altRow][altCol].Num != '0' && grid.Rows[row][col].Num != '0')
+                                bool valid = false;
+                                List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                for (int x = 0; x < 9 && !valid; x++)//checks for if the puzzle is valid in the sense that is has more than 7 unique numbers at any point in the puzzle
+                                {
+                                    for (int y = 0; y < 9 && !valid; y++)
+                                    {
+                                        if (grid.Rows[x][y].Num != '0')
+                                        {
+                                            if (x != altRow && y != altCol && x != row && y != col)
+                                            {
+                                                numList.Remove(grid.Rows[x][y].Num);
+                                            }
+                                            if (numList.Count <= 1)
+                                            {
+                                                valid = true;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (grid.Rows[altRow][altCol].Num != '0' && grid.Rows[row][col].Num != '0' && valid)
                                 {
                                     for (int r = 0; r < 9; r++)
                                     {
@@ -178,7 +197,7 @@ namespace SudokuSolverSetter
                         }
                     }
                 }
-                #region Symmetry not essential to the puzzle
+                #region Asymmetrical : Symmetry not essential to the puzzle
                 else
                 {
                     foreach (int row in rowList)
@@ -191,7 +210,26 @@ namespace SudokuSolverSetter
                             { changeMade = true; break; }
                             if (!cellsChecked.Contains(row.ToString() + col.ToString()))
                             {
-                                if (grid.Rows[row][col].Num != 0)
+                                bool valid = false;
+                                List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                for (int x = 0; x < 9 && !valid; x++)//checks for if the puzzle is valid in the sense that is has more than 7 unique numbers at any point in the puzzle
+                                {
+                                    for (int y = 0; y < 9 && !valid; y++)
+                                    {
+                                        if (grid.Rows[x][y].Num != '0')
+                                        {
+                                            if (x != row && y != col)
+                                            {
+                                                numList.Remove(grid.Rows[x][y].Num);
+                                            }
+                                            if (numList.Count <= 1)
+                                            {
+                                                valid = true;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (grid.Rows[row][col].Num != 0 && valid)
                                 {
                                     for (int r = 0; r < 9; r++)
                                     {

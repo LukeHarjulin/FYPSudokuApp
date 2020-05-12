@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Title="Main Menu" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Closed="Window_Closed" BorderBrush="Black" BorderThickness="3">
     <Window.Background>
-        <ImageBrush ImageSource="StartPageBackground_Design.png"/>
+        <ImageBrush ImageSource="/Images/StartPageBackground_Design.png"/>
     </Window.Background>
     <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}">
         <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="418" Margin="0,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="486" StrokeThickness="3"/>
@@ -24,7 +24,7 @@
         <Button x:Name="Developer_Mode" Cursor="Hand" Background="#BFFFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="25,25,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
         <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="415,420,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium" FontFamily="Verdana"/>
         <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="180" Margin="0,80,0,0" Stroke="Black" VerticalAlignment="Top" Width="994" StrokeThickness="3"/>
-        <Image HorizontalAlignment="Center" Height="140" Margin="0,100,0,0" VerticalAlignment="Top" Width="810" Source="/Title_designV2.png" OpacityMask="Black"/>
+        <Image HorizontalAlignment="Center" Height="140" Margin="0,100,0,0" VerticalAlignment="Top" Width="810" Source="/Images/Title_designV2.png" OpacityMask="Black"/>
 
         <RichTextBox x:Name="HelpBlock" Cursor="Arrow" Background="#F6EEF1FF" Canvas.Top="50" Canvas.Left="10" IsReadOnly="True" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" Margin="0,10,0,216" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="3" Padding="3">
             <FlowDocument>

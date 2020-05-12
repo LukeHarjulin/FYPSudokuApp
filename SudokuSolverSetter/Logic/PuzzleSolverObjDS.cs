@@ -19,7 +19,7 @@ namespace SudokuSolverSetter
         /// 
         /// </summary>
         /// <param name="grid"></param>
-        /// <param name="method">method '1' is human-strategy solver. '2' is Backtracking solver. '3' is Backtracking solver using char[][]</param>
+        /// <param name="method">method '1' is human-strategy solver. '2' is Backtracking solver. </param>
         /// <returns>returns true if the puzzle is solved, false if not</returns>
         public bool Solver(SudokuGrid grid, int method)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off of the current state of the puzzle.
         {
@@ -139,7 +139,7 @@ namespace SudokuSolverSetter
             }
             else if (method == 2)
             {
-                BacktrackingSolver(grid, 0, 0, 0);
+                BacktrackingSolver(grid, 0, 0, 3);
             }
             if (!g_Gen.CheckIfSolved(grid))
             {
@@ -1423,7 +1423,7 @@ namespace SudokuSolverSetter
         /// <param name="row">Current row number being examined in this instance of the method</param>
         /// <param name="col">Current column number being examined in this instance of the method</param>
         /// <returns>false if an error occurs and a candidate list contains 0 values | true if it is ok</returns>        
-        public bool RemoveCands(SudokuGrid grid, int row, int col)
+        public bool RemoveCands(SudokuGrid grid, int row, int col, byte variator)
         {
             for (int n = 0; n < 8; n++)
             {
@@ -1448,7 +1448,8 @@ namespace SudokuSolverSetter
             if (grid.Rows[row][col].Candidates.Count == 1)
             {
                 grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];
-                g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
+                if (variator == 3)
+                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
             }
             return true;
         }
@@ -1477,7 +1478,8 @@ namespace SudokuSolverSetter
                 else
                 {
                     grid.Rows[--row][--col].Num = '0';
-                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                    if (variator == 3)
+                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                     return false;
                 }
             }
@@ -1498,7 +1500,8 @@ namespace SudokuSolverSetter
                             else
                             {
                                 grid.Rows[--row][--col].Num = '0';
-                                g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                                if (variator == 3)
+                                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                                 return false;
                             }
                         }
@@ -1510,7 +1513,7 @@ namespace SudokuSolverSetter
                         emptyCell = true;
                 } while (!emptyCell);
             }
-            if (variator == 0)
+            if (variator == 0 || variator == 3)
                 grid.Rows[row][col].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
             else if (variator == 1)
                 grid.Rows[row][col].Candidates = new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' };
@@ -1518,10 +1521,11 @@ namespace SudokuSolverSetter
                 grid.Rows[row][col].Candidates = g_Gen.Shuffler(new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' });
             //Reversed list is for checking for multiple solutions or shuffle if given the generating
 
-            if (!RemoveCands(grid, row, col))//if it returns false, candidates count must be 0 so a contradiction is found
+            if (!RemoveCands(grid, row, col, variator))//if it returns false, candidates count must be 0 so a contradiction is found
             {
                 grid.Rows[row][col].Num = '0';
-                g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                if (variator == 3)
+                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                 return false;
             }
 
@@ -1532,7 +1536,8 @@ namespace SudokuSolverSetter
                 if (++nextRow == 9)//Currently looking at cell 81 in grid
                 {
                     grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];//Sets the last cell to be the only value possible, then the solution is checked.
-                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
+                    if (variator == 3)
+                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
                     if (g_Gen.CheckIfSolved(grid))
                     {
                         return true;
@@ -1540,7 +1545,8 @@ namespace SudokuSolverSetter
                     else
                     {
                         grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
-                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                        if (variator == 3)
+                            g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                         return false;
                     }
                 }
@@ -1551,7 +1557,8 @@ namespace SudokuSolverSetter
                 foreach (char candidate in grid.Rows[row][col].Candidates)//iterates through each candidate value, assigning it to the current cell number.  
                 {
                     grid.Rows[row][col].Num = candidate;
-                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
+                    if (variator == 3)
+                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
                     //A new instance of BacktrackingSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
                     if (BacktrackingSolver(grid, nextRow, nextCol, variator))
                         return true;
@@ -1566,12 +1573,14 @@ namespace SudokuSolverSetter
                 else
                 {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
                     grid.Rows[row][col].Num = '0';
-                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+                    if (variator == 3)
+                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
                     return false;
                 }
             }
             grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
-            g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
+            if (variator == 3)
+                g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
             return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
         }
 #endregion
