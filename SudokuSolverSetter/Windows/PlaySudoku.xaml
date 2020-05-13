@@ -117,7 +117,7 @@
             <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" Canvas.Left="867" Canvas.Top="12" Width="90" FontSize="20" IsReadOnly="True" BorderBrush="{x:Null}" FontFamily="Verdana"/>
             <Button x:Name="Pause_btn" Cursor="Hand" Content="Pause (P)" Canvas.Left="797" Canvas.Top="47" Width="160" Height="40" FontSize="22" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Pauses the stopwatch" Background="#FFF7E6" FontFamily="Verdana"/>
             <CheckBox x:Name="nightmode_chkbx" Content="Dark mode" Canvas.Left="617" Canvas.Top="12" Checked="CheckBox_Checked" Height="30" Unchecked="CheckBox_Unchecked" FontSize="22" Width="146" FontFamily="Verdana"/>
-            <RichTextBox x:Name="PauseBlock" Background="#A5EEF1FF" Height="660" Canvas.Top="95" Width="672" IsReadOnly="True" FontSize="72" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" VerticalScrollBarVisibility="Auto">
+            <RichTextBox x:Name="PauseBlock" Background="#A5EEF1FF" Height="655" Canvas.Top="95" Width="672" IsReadOnly="True" FontSize="72" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" VerticalScrollBarVisibility="Auto">
                 <FlowDocument>
                     <Paragraph x:Name="RTB_LargeText" TextAlignment="Center" Padding="0"></Paragraph>
                     <Paragraph x:Name="RTB_HelpText" TextAlignment="Center" ></Paragraph>

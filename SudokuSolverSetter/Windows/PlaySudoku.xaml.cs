@@ -28,7 +28,7 @@ namespace SudokuSolverSetter
         private TextBox g_selectedCell;
         private SudokuGrid g_grid = new SudokuGrid();
         private string g_cellContents = "", g_currentTime = "", g_rating, g_difficulty, g_originalPuzzleString;
-        private bool g_pencilMarker = false, g_toggleRecursion = true, penType = false;
+        private bool g_pencilMarker = false, g_toggleRecursion = true, penType = false, g_solved = false;
 
         private SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
@@ -714,18 +714,21 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Do you want to save your progress on this puzzle before you quit?", "Confirm", MessageBoxButton.YesNoCancel);
-            if (result == MessageBoxResult.Yes)
+            if (!g_solved)
             {
-                ///SavePuzzle
-                SavePuzzle(false);
-            }
-            else if (result == MessageBoxResult.No)
-            {
-            }
-            else
-            {
-                e.Cancel = true;
+                MessageBoxResult result = MessageBox.Show("Do you want to save your progress on this puzzle before you quit?", "Confirm", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Yes)
+                {
+                    ///SavePuzzle
+                    SavePuzzle(false);
+                }
+                else if (result == MessageBoxResult.No)
+                {
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
             }
         }
 
@@ -871,37 +874,6 @@ namespace SudokuSolverSetter
                             g_selectedCell.Text = numbers;
                         }
                     }
-                    if (g_selectedCell.Text.Length < 2 && !g_pencilMarker)
-                    {
-                        //Check if solved
-                        char[][] basicGrid = new char[9][];
-                        for (int i = 0; i < basicGrid.Length; i++)
-                        {
-                            basicGrid[i] = new char[9];
-                        }
-                        int c = 0;
-                        int r = 0;
-                        for (int i = 0; i < g_txtBxList.Count; i++, c++)//populate basic grid so it can be checked.
-                        {
-                            if (c == 9)
-                            {
-                                c = 0;
-                                r++;
-                            }
-                            if (g_txtBxList[i].Text == "" || g_txtBxList[i].Text.Length > 1 || g_txtBxList[i].FontSize == 16)
-                            {
-                                basicGrid[r][c] = '0';
-                            }
-                            else
-                            {
-                                basicGrid[r][c] = g_txtBxList[i].Text[0];
-                            }
-                        }
-                        if (g_Gen.CheckIfSolved_array(basicGrid))
-                        {
-                            PauseTimer(3);
-                        }
-                    }
                     g_cellContents = g_selectedCell.Text;
                     if (!g_pencilMarker)
                     {
@@ -911,6 +883,39 @@ namespace SudokuSolverSetter
                     else
                     {
                         g_selectedCell.FontSize = 16;
+                    }
+                }
+                if (g_selectedCell.Text.Length < 2 && !g_pencilMarker)
+                {
+                    //Check if solved
+                    char[][] basicGrid = new char[9][];
+                    for (int i = 0; i < basicGrid.Length; i++)
+                    {
+                        basicGrid[i] = new char[9];
+                    }
+                    int c = 0;
+                    int r = 0;
+                    for (int i = 0; i < g_txtBxList.Count; i++, c++)//populate basic grid so it can be checked.
+                    {
+                        if (c == 9)
+                        {
+                            c = 0;
+                            r++;
+                        }
+                        if (g_txtBxList[i].Text == "" || g_txtBxList[i].Text.Length > 1 || g_txtBxList[i].FontSize == 16)
+                        {
+                            basicGrid[r][c] = '0';
+                        }
+                        else
+                        {
+                            basicGrid[r][c] = g_txtBxList[i].Text[0];
+                        }
+                    }
+                    if (g_Gen.CheckIfSolved_array(basicGrid))
+                    {
+                        g_solved = true;
+                        Back_btn.Content = "Quit";
+                        PauseTimer(3);
                     }
                 }
                 g_toggleRecursion = true;
@@ -961,7 +966,8 @@ namespace SudokuSolverSetter
                     PencilMarkONOFF('k');
                     break;
                 case Key.P:
-                    PauseTimer(1);
+                    if (!g_solved)
+                        PauseTimer(1);
                     break;
                 default:
                     break;

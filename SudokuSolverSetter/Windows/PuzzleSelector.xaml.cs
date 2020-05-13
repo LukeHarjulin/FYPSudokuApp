@@ -74,6 +74,7 @@ namespace SudokuSolverSetter
                                 pzle.Add(puzzle["TimeTaken"].InnerText);
                                 pzle.Add(puzzle["Date"].InnerText);
                             }
+                            ///Sort puzzles by rating!
                             int rating = int.Parse(pzle[1]), i = 0;
                             bool added = false;
                             if (allPuzzles.Count > 0)
