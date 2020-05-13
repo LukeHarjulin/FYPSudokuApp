@@ -59,12 +59,41 @@ namespace SudokuSolverSetter
                 XmlNode sudokuPuzzles = doc.DocumentElement.SelectSingleNode("/SudokuPuzzles");
                 XmlNodeList puzzleLabels = sudokuPuzzles.ChildNodes;
                 string sudokuString = "";
+
                 foreach (XmlNode label in puzzleLabels)
                 {
                     XmlNodeList difficulties = label.ChildNodes;
                     foreach (XmlNode difficulty in difficulties)
                     {
+                        List<List<string>> allPuzzles = new List<List<string>>();
                         foreach (XmlNode puzzle in difficulty)
+                        {
+                            List<string> pzle = new List<string>() { puzzle["SudokuString"].InnerText, puzzle["DifficultyRating"].InnerText };
+                            if (label.Name == "Started" || label.Name == "Completed")
+                            {
+                                pzle.Add(puzzle["TimeTaken"].InnerText);
+                                pzle.Add(puzzle["Date"].InnerText);
+                            }
+                            int rating = int.Parse(pzle[1]), i = 0;
+                            bool added = false;
+                            if (allPuzzles.Count > 0)
+                            {
+                                for (i = 0; i < allPuzzles.Count; i++)
+                                {
+                                    if (rating < int.Parse(allPuzzles[i][1]))
+                                    {
+                                        allPuzzles.Insert(i, pzle);
+                                        added = true;
+                                        break;
+                                    }
+                                }
+                                if (!added)
+                                    allPuzzles.Add(pzle);
+                            }
+                            else
+                                allPuzzles.Add(pzle);
+                        }
+                        for (int n = 0; n < allPuzzles.Count; n++)
                         {
                             int difficulty_Num = 0;
                             Border border = new Border
@@ -72,13 +101,11 @@ namespace SudokuSolverSetter
                                 BorderThickness = new Thickness(2),
                                 BorderBrush = Brushes.DarkGray
                             };
-                            
-                            TextBox textBox = new TextBox { Background = Brushes.Transparent, FontSize = 16, TextWrapping = TextWrapping.Wrap, Padding = new Thickness(5, 5, 5, 1), IsReadOnly = true, Cursor = Cursors.Hand, FontFamily = new FontFamily("Verdana")};
+                            sudokuString = allPuzzles[n][0];
+                            TextBox textBox = new TextBox { Background = Brushes.Transparent, FontSize = 16, TextWrapping = TextWrapping.Wrap, Padding = new Thickness(5, 5, 5, 1), IsReadOnly = true, Cursor = Cursors.Hand, FontFamily = new FontFamily("Verdana") };
                             if (label.Name == "Started" || label.Name == "Completed")
                             {
-                                sudokuString = puzzle["SudokuString"].InnerText;
-
-                                textBox.Text = "Rating: " + puzzle["DifficultyRating"].InnerText + "\r\nDifficulty: " + difficulty.Name + "\r\nElapsed Time: " + puzzle["TimeTaken"].InnerText + "\r\nLast Played: " + puzzle["Date"].InnerText;
+                                textBox.Text = "Rating: " + allPuzzles[n][1] + "\r\nDifficulty: " + difficulty.Name + "\r\nElapsed Time: " + allPuzzles[n][2] + "\r\nLast Played: " + allPuzzles[n][3];
                                 border.Child = textBox;
                                 if (label.Name == "Started")
                                     Started_STKPNL.Children.Add(border);
@@ -87,8 +114,7 @@ namespace SudokuSolverSetter
                             }
                             else
                             {
-                                sudokuString = puzzle["SudokuString"].InnerText;
-                                textBox.Text = "Rating: " + puzzle["DifficultyRating"].InnerText;
+                                textBox.Text = "Rating: " + allPuzzles[n][1];
                                 border.Child = textBox;
                                 switch (difficulty.Name)
                                 {
@@ -113,7 +139,7 @@ namespace SudokuSolverSetter
                                 }
                             }
                             int givens = 0;
-                            textBox.Name = "n"+difficulty_Num+"_" + g_puzzles.Count.ToString();
+                            textBox.Name = "n" + difficulty_Num + "_" + g_puzzles.Count.ToString();
                             g_puzzles.Add(sudokuString);
                             if (label.Name != "Started" && label.Name != "Completed")
                             {
@@ -129,7 +155,6 @@ namespace SudokuSolverSetter
                             textBox.GotFocus += new RoutedEventHandler(Selected_Puzzle);
                             textBox.MouseEnter += new MouseEventHandler(MouseEnter_Textbox);
                             textBox.MouseLeave += new MouseEventHandler(MouseLeave_Textbox);
-
                         }
                     }
                 }
