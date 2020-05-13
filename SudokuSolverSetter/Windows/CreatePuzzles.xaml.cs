@@ -125,9 +125,10 @@ namespace SudokuSolverSetter
                             )
                         );
                 }
-                StreamWriter txtFile = new StreamWriter(symmetric+"/ratings.txt");
-                StreamWriter txtFile2 = new StreamWriter(symmetric+"/difficulties.txt");
-                StreamWriter txtFile3 = new StreamWriter(symmetric+"/givens.txt");
+                StreamWriter ratingWrite = new StreamWriter(symmetric+"/ratings.txt",true);
+                StreamWriter difficWrite = new StreamWriter(symmetric+"/difficulties.txt", true); 
+                StreamWriter givensWrite = new StreamWriter(symmetric+"/givens.txt", true);
+                
                 Stopwatch Timer = new Stopwatch();
                 Timer.Start();
                 for (int i = 0; i < numPuzzles; i++)
@@ -141,8 +142,7 @@ namespace SudokuSolverSetter
                             new XElement("SudokuString", puzzleString)
                             )
                         );
-                    txtFile.WriteLine(rating);
-                    txtFile2.WriteLine(sudokuPuzzles[i].Difficulty);
+                    
                     int givens = 0;
                     for (int x = 0; x < puzzleString.Length; x++)
                     {
@@ -151,12 +151,14 @@ namespace SudokuSolverSetter
                             givens++;
                         }
                     }
-                    txtFile3.WriteLine(givens);
+                    ratingWrite.WriteLine(rating);
+                    difficWrite.WriteLine(sudokuPuzzles[i].Difficulty);
+                    givensWrite.WriteLine(givens);
                 }
                 Timer.Stop();
-                txtFile.Close();
-                txtFile2.Close();
-                txtFile3.Close();
+                ratingWrite.Close();
+                difficWrite.Close();
+                givensWrite.Close();
                 doc.Save(filename);
                 MessageBox.Show("Successfully added " + numPuzzles + " puzzles.\r\nThe generator took " + Timer.Elapsed + " to generate and store all of those puzzles.", "Success!");
 
