@@ -8,12 +8,14 @@ namespace SudokuSolverSetter
     /// </summary>
     public class PuzzleSolverObjDS
     {
-        public bool g_BacktrackingReq = false;//backtracking required?
+        //backtracking required?                change made?            moderate?           advanced?
+        public bool g_BacktrackingReq = false, g_changeMade = false, g_moderate = false, g_advanced = false;
         public int g_Rating = 0;//puzzle rating score
-        public string g_Difficulty = "Beginner";//puzzle difficulty
+        public string g_Difficulty = "Beginner", g_strategy = "";//puzzle difficulty
         private readonly PuzzleGenerator g_Gen = new PuzzleGenerator();
         public List<string> g_SolvePath = new List<string>();//solve path using strategies
         public List<string> g_BacktrackingPath = new List<string>();//solve path using backtracker
+        public int[] g_StrategyCount = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         
         /// <summary>
         /// 
@@ -26,7 +28,7 @@ namespace SudokuSolverSetter
             g_Rating = 0;
             g_SolvePath = new List<string>();
             g_BacktrackingPath = new List<string>();
-            bool changeMade = false, moderate = false, advanced = false ;
+            g_changeMade = false; g_moderate = false; g_advanced = false;
             g_BacktrackingReq = false;
             /*
              *  This do...while is necessary for repeating these methods for solving until no changes are made (which it assumes that the puzzle is complete or it could not complete it)
@@ -44,98 +46,111 @@ namespace SudokuSolverSetter
                     }
                     if (FindNakedSingles(grid))//Naked singles contributes +10 to the rating for each naked single found
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
+                        
                     }
                     else if (FindHiddenSingles(grid))//Naked singles contributes +15 to the rating for each hidden single found
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
+                       
                     }
                     else if (FindNakedPair(grid))//A Naked Pair contributes +100 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 100;
-                        moderate = true;
+                        g_moderate = true;
+                        g_StrategyCount[3]++;
                     }
                     else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 150;
-                        moderate = true;
+                        g_moderate = true;
+                        g_StrategyCount[4]++;
                     }
                     else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 250;
-                        moderate = true;
+                        g_moderate = true;
+                        g_StrategyCount[5]++;
                     }
                     else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 300;
-                        moderate = true;
+                        g_moderate = true;
+                        g_StrategyCount[6]++;
                     }
                     else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 400;
-                        moderate = true;
+                        g_moderate = true;
+                        g_StrategyCount[7]++;
                     }
                     else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 450;
-                        moderate = true;
+                        g_moderate = true;
+                        g_StrategyCount[8]++;
                     }
                     else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 550;
-                        advanced = true;
+                        g_advanced = true;
+                        g_StrategyCount[9]++;
                     }
                     else if (FindYWing(grid))//A Y-Wing contributes +600 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 600;
-                        advanced = true;
+                        g_advanced = true;
+                        g_StrategyCount[10]++;
                     }
                     else if (FindXYZWing(grid))//An XYZ-Wing contributes +650 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 650;
-                        advanced = true;
+                        g_advanced = true;
+                        g_StrategyCount[11]++;
                     }
                     else if (FindSingleChains(grid))//A successful Single Chain contributes +700 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 700;
-                        advanced = true;
+                        g_advanced = true;
+                        g_StrategyCount[12]++;
                     }
                     else if (FindUniqueRectangleType1(grid))//A Unique Rectangle contributes +750 to the rating.
                     {
-                        changeMade = true;
+                        g_changeMade = true;
                         g_SolvePath.Add(separator);
                         g_Rating += 750;
-                        advanced = true;
+                        g_advanced = true;
+                        g_StrategyCount[13]++;
                     }
                     //More methods to add
                     else
                     {
-                        changeMade = false;
+                        g_changeMade = false;
                         g_SolvePath.Add(separator);
                     }
-                } while (changeMade);
+                } while (g_changeMade);
             }
             else if (method == 2)
             {
@@ -147,11 +162,12 @@ namespace SudokuSolverSetter
                 g_BacktrackingReq = true;
                 g_Difficulty = "Extreme";
                 g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
+                g_StrategyCount[0]++;
                 return false;
             }
-            if (moderate)
+            if (g_moderate)
                 g_Difficulty = "Moderate";
-            if (advanced)
+            if (g_advanced)
                 g_Difficulty = "Advanced";
             return g_Gen.CheckIfSolved(grid);
         }
@@ -220,6 +236,7 @@ namespace SudokuSolverSetter
                         changeMade = true;
                         g_SolvePath.Add("Number " + grid.Rows[i][j].Num + " placed in cell [" + i + "," + j + "] - NAKED SINGLE");
                         g_Rating += 10;
+                        g_StrategyCount[1]++;
                     }
                 }
             }
@@ -238,7 +255,6 @@ namespace SudokuSolverSetter
         private bool FindHiddenSingles(SudokuGrid grid)
         {
             bool changeMade = false;
-            
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -265,15 +281,15 @@ namespace SudokuSolverSetter
                                     grid.Rows[i][j].Candidates.Clear();
                                     changeMade = true;
                                     g_Rating += 15;
+                                    g_StrategyCount[2]++;
                                     g_SolvePath.Add("Number " + candidate + " placed in cell [" + i + "," + j + "] - HIDDEN SINGLE");
-                                    break;
+                                    return true;
                                 }
                             }
                         }
                     }
                 }
             }
-            
             return changeMade;
         }
         /// <summary>
@@ -771,11 +787,10 @@ namespace SudokuSolverSetter
                                     }
                                 }
                             }
+                            if (changeMade)
+                                return true;
                         }
-                        if (changeMade)
-                        {
-                            return true;
-                        }
+                        
                     }
                 }
             }
@@ -854,6 +869,8 @@ namespace SudokuSolverSetter
                                     }
                                 }
                             }
+                            if (changeMade)
+                                return true;
                         }
                     }
                 }
@@ -1137,48 +1154,61 @@ namespace SudokuSolverSetter
                                 }
                                 if (candiCount == 2)
                                 {
-                                    if (XYZWing.Count == 2)
+                                    XYZWing.Add(neighbour);
+                                    for (int index2 = index+1; index2 < 3; index2++)
                                     {
-                                        if (!XYZWing[1].Candidates.SequenceEqual(neighbour.Candidates) && neighbour.XLocation != XYZWing[1].XLocation && neighbour.YLocation != XYZWing[1].YLocation && neighbour.BlockLoc != XYZWing[1].BlockLoc)
+                                        foreach (Cell neighbour2 in XYZWing[0].NeighbourCells[index2])//Foreach neighbour to first cell, find out how many candidates they have in common
                                         {
-                                            XYZWing.Add(neighbour);
-                                            break;
+                                            int candiCount2 = 0;
+                                            foreach (char candidate in grid.Rows[i][j].Candidates)
+                                            {
+                                                if (neighbour2.Num == '0' && neighbour2.Candidates.Count == 2 && neighbour2.Candidates.Contains(candidate))
+                                                {
+                                                    candiCount2++;
+                                                }
+                                            }
+                                            if (candiCount2 == 2)
+                                            {
+                                                if (XYZWing.Count == 2)
+                                                {
+                                                    if (!XYZWing[1].Candidates.SequenceEqual(neighbour2.Candidates) && neighbour2.XLocation != XYZWing[1].XLocation && neighbour2.YLocation != XYZWing[1].YLocation && neighbour2.BlockLoc != XYZWing[1].BlockLoc)
+                                                    {
+                                                        XYZWing.Add(neighbour2);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (XYZWing.Count == 3 && (XYZWing[1].BlockLoc == XYZWing[0].BlockLoc || XYZWing[2].BlockLoc == XYZWing[0].BlockLoc))
+                                        {
+                                            int outsiderCell = XYZWing[1].BlockLoc == XYZWing[0].BlockLoc ? 2 : 1;
+                                            commonCandidate = XYZWing[1].Candidates.Contains(XYZWing[2].Candidates[0]) ? XYZWing[2].Candidates[0] : XYZWing[2].Candidates[1];
+                                            foreach (Cell neighbour3 in XYZWing[0].NeighbourCells[2])
+                                            {
+                                                if (neighbour3.Num == '0' && (XYZWing[outsiderCell].XLocation == neighbour3.XLocation || XYZWing[outsiderCell].YLocation == neighbour3.YLocation))
+                                                {
+                                                    if (neighbour3.Candidates.Remove(commonCandidate))
+                                                    {
+                                                        changeMade = true;
+                                                        g_SolvePath.Add("Candidate number " + commonCandidate + " removed from cell [" + neighbour3.XLocation + "," + neighbour3.YLocation + "] - XYZ-WING - HINGE [" + XYZWing[0].XLocation + "," + XYZWing[0].YLocation + "] - WINGS [" + XYZWing[1].XLocation + "," + XYZWing[1].YLocation + "] [" + XYZWing[2].XLocation + "," + XYZWing[2].YLocation + "]");
+                                                        
+                                                    }
+                                                }
+                                            }
+                                            if (changeMade)
+                                            {
+                                                return true;
+                                            }
                                         }
                                     }
-                                    else
-                                    {
-                                        XYZWing.Add(neighbour);
-                                        break;
-                                    }
+                                    if (XYZWing.Count > 2)
+                                        XYZWing.RemoveAt(2);
+                                    XYZWing.RemoveAt(1);
                                 }
-
-                                if (XYZWing.Count > 3)
-                                {
-                                    g_SolvePath.Add("Something has gone terribly wrong with xyz wing...");//emergency eject - should never occur
-                                    return false;
-                                }
-                            }
-                            if (XYZWing.Count == 3)
-                            {
-                                break;
+                                
                             }
                         }
-                        if (XYZWing.Count == 3 && (XYZWing[1].BlockLoc == XYZWing[0].BlockLoc || XYZWing[2].BlockLoc == XYZWing[0].BlockLoc))
-                        {
-                            int outsiderCell = XYZWing[1].BlockLoc == XYZWing[0].BlockLoc ? 2 : 1;
-                            foreach (Cell neighbour in XYZWing[0].NeighbourCells[2])
-                            {
-                                if (neighbour.Num == '0' && (XYZWing[outsiderCell].XLocation == neighbour.XLocation || XYZWing[outsiderCell].YLocation == neighbour.YLocation))
-                                {
-                                    if (neighbour.Candidates.Remove(commonCandidate))
-                                    {
-                                        changeMade = true;
-                                        g_SolvePath.Add("Candidate number " + commonCandidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - XYZ-WING - HINGE [" + XYZWing[0].XLocation + "," + XYZWing[0].YLocation + "] - WINGS [" + XYZWing[1].XLocation + "," + XYZWing[1].YLocation + "] [" + XYZWing[2].XLocation + "," + XYZWing[2].YLocation + "]");
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
+                        
                     }
                 }
             }
@@ -1588,352 +1618,126 @@ namespace SudokuSolverSetter
 
         //Non-functional/Incomplete - IGNORE REGION "SOLVER FOR SOLVING CELL BY CELL BUTTON"
 #region Solver for Solving Cell by Cell button
-        public SudokuGrid SolveCellByCell(SudokuGrid grid)
+        public bool SolveNextStep(SudokuGrid grid)
         {
-#pragma warning disable CS0219 // Variable is assigned but its value is never used
-            bool changeMade = false;
-#pragma warning restore CS0219 // Variable is assigned but its value is never used
-
-            if (!FindNakedNumbers1by1(grid))
+            if (g_Gen.CheckIfSolved(grid))
             {
-                FindHiddenNumbers1by1(grid);
+                return true;
             }
-            return grid;
-        }
+            g_changeMade = false; g_moderate = false; g_advanced = false;
+            string separator = "|>---------------------------------------------------------------------------------------------------------------------->|";
 
-        private bool FindNakedNumbers1by1(SudokuGrid grid)//This method searches through all empty cells and revaluates the candidates for each cell. If there is only one candidate for a cell, it must be that number.
-        {
-            bool changeMade = false;//Used to flag if a number has been discovered, so the grid can be checked again
-
-            for (int i = 0; i < grid.Rows.Length; i++)
+            if (CleanCandidateLists(grid))
             {
-                for (int j = 0; j < grid.Rows[i].Length; j++)
-                {
-                    if (grid.Rows[i][j].Num == 0)
-                    {
-                        //Start checking the rows, columns or block, eliminating numbers from the candidate list
-                        //If only one candidate remains, it must the answer. If multiple candidates remain, move on for now.
-                        foreach (Cell[] item in grid.Rows)
-                        {
-                            foreach (Cell cell in item)
-                            {
-                                if (grid.Rows[i][j].Candidates.Contains(cell.Num) &&
-                                    (grid.Rows[i][j].XLocation == cell.XLocation || grid.Rows[i][j].YLocation == cell.YLocation || grid.Rows[i][j].BlockLoc == cell.BlockLoc))
-                                {
-                                    grid.Rows[i][j].Candidates.Remove(cell.Num);
-
-                                    changeMade = true;
-                                }
-                            }
-                        }
-                        if (grid.Rows[i][j].Candidates.Count == 1)
-                        {
-                            grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
-                            changeMade = true;
-                        }
-                        else if (grid.Rows[i][j].Candidates.Count == 2)
-                        {
-                            if (FindNakedPair1by1(grid, grid.Rows[i][j]))
-                            {
-                                changeMade = true;
-                            }
-                        }
-                    }
-                }
+                g_SolvePath.Add(separator);
+                g_strategy = "Clean Candidates";
             }
-
-            return changeMade;
-        }
-
-        private bool FindNakedPair1by1(SudokuGrid grid, Cell cellWithPair)
-        {
-            bool changeMade = false;
-            for (int i = 0; i < grid.Rows.Length; i++)
+            else if (FindNakedSingles(grid))//Naked singles contributes +10 to the rating for each naked single found
             {
-                for (int j = 0; j < grid.Rows[i].Length; j++)
-                {
-                    if (cellWithPair.Candidates.SequenceEqual(grid.Rows[i][j].Candidates) && !cellWithPair.Equals(grid.Rows[i][j]))
-                    {
-                        if (cellWithPair.XLocation == grid.Rows[i][j].XLocation && cellWithPair != grid.Rows[i][j])
-                        {
-                            foreach (Cell curCell in grid.Rows[i])
-                            {
-                                if (!cellWithPair.Equals(curCell) && !curCell.Equals(grid.Rows[i][j]) && curCell.Candidates.Contains(cellWithPair.Candidates[0]))
-                                { curCell.Candidates.Remove(cellWithPair.Candidates[0]); return true; }
-                                if (!cellWithPair.Equals(curCell) && !curCell.Equals(grid.Rows[i][j]) && curCell.Candidates.Contains(cellWithPair.Candidates[1]))
-                                { curCell.Candidates.Remove(cellWithPair.Candidates[1]); return true; }
-                            }
-                        }
-                        if (cellWithPair.YLocation == grid.Rows[i][j].YLocation && cellWithPair != grid.Rows[i][j])
-                        {
-                            for (int k = 0; k < grid.Rows.Length; k++)
-                            {
-                                if (!cellWithPair.Equals(grid.Rows[k][j]) && !grid.Rows[k][j].Equals(grid.Rows[i][j]) && grid.Rows[k][j].Candidates.Contains(cellWithPair.Candidates[0]))
-                                { grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[0]); return true; }
-                                if (!cellWithPair.Equals(grid.Rows[k][j]) && !grid.Rows[k][j].Equals(grid.Rows[i][j]) && grid.Rows[k][j].Candidates.Contains(cellWithPair.Candidates[1]))
-                                { grid.Rows[k][j].Candidates.Remove(cellWithPair.Candidates[1]); return true; }
-                            }
-                        }
-                        if (cellWithPair.BlockLoc == grid.Rows[i][j].BlockLoc)
-                        {
-                            int xStart = 0, yStart = 0;
-                            switch (cellWithPair.BlockLoc)
-                            {
-                                case 1:
-                                    xStart = 0;
-                                    yStart = 0;
-                                    break;
-                                case 2:
-                                    xStart = 0;
-                                    yStart = 3;
-                                    break;
-                                case 3:
-                                    xStart = 0;
-                                    yStart = 6;
-                                    break;
-                                case 4:
-                                    xStart = 3;
-                                    yStart = 0;
-                                    break;
-                                case 5:
-                                    xStart = 3;
-                                    yStart = 3;
-                                    break;
-                                case 6:
-                                    xStart = 3;
-                                    yStart = 6;
-                                    break;
-                                case 7:
-                                    xStart = 6;
-                                    yStart = 0;
-                                    break;
-                                case 8:
-                                    xStart = 6;
-                                    yStart = 3;
-                                    break;
-                                case 9:
-                                    xStart = 6;
-                                    yStart = 6;
-                                    break;
-                                default:
-                                    break;
-                            }
-                            for (int x = xStart; x < xStart + 3; x++)
-                            {
-                                for (int y = yStart; y < yStart + 3; y++)
-                                {
-                                    if (!cellWithPair.Equals(grid.Rows[x][y]) && !grid.Rows[x][y].Equals(grid.Rows[i][j]) && grid.Rows[x][y].Candidates.Contains(cellWithPair.Candidates[0]))
-                                    { grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[0]); return true; }
-                                    if (!cellWithPair.Equals(grid.Rows[x][y]) && !grid.Rows[x][y].Equals(grid.Rows[i][j]) && grid.Rows[x][y].Candidates.Contains(cellWithPair.Candidates[1]))
-                                    { grid.Rows[x][y].Candidates.Remove(cellWithPair.Candidates[1]); return true; }
-                                }
-                            }
-
-                        }
-                    }
-
-
-                }
+                g_SolvePath.Add(separator);
+                g_strategy = "Naked Singles";
             }
-
-            return changeMade;
-        }
-        private bool FindHiddenNumbers1by1(SudokuGrid grid)
-        {
-            bool changeMade = false;
-
-            for (int i = 0; i < grid.Rows.Length; i++)//Finding Hidden Singles in rows
+            else if (FindHiddenSingles(grid))//Naked singles contributes +15 to the rating for each hidden single found
             {
-                int[] freqOfEachCandi = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                for (int j = 0; j < grid.Rows[i].Length; j++)
-                {
-
-                    for (int l = 0; l < grid.Rows[i][j].Candidates.Count; l++)
-                    {
-                        if (grid.Rows[i][j].Num == 0)
-                        {
-                            freqOfEachCandi[grid.Rows[i][j].Candidates[l] - 1]++;//Increments the frequency of the value that corresponds with the candidate number - 1 (arrays index at 0)
-                        }
-                    }
-
-                }
-                for (int n = 0; n < freqOfEachCandi.Length; n++)
-                {
-                    if (freqOfEachCandi[n] == 1)
-                    {
-                        for (int h = 0; h < grid.Rows[i].Length; h++)
-                        {
-                            if (grid.Rows[i][h].Candidates.Contains((n + 1).ToString()[0]))
-                            {
-                                grid.Rows[i][h].Num = (n + 1).ToString()[0];
-                                grid.Rows[i][h].Candidates.Clear();
-                                return true;
-                            }
-                        }
-                        break;
-                    }
-                }
+                g_SolvePath.Add(separator);
+                g_strategy = "Hidden Singles";
             }
-            for (int colu = 0; colu < 9; colu++)//Finding Hidden Singles in columns
+            else if (FindNakedPair(grid))//A Naked Pair contributes +100 to the rating.
             {
-                int[] freqOfEachCandi = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                for (int row = 0; row < 9; row++)
-                {
-                    for (int l = 0; l < grid.Rows[row][colu].Candidates.Count; l++)
-                    {
-                        if (grid.Rows[row][colu].Num == 0)
-                        {
-                            freqOfEachCandi[grid.Rows[row][colu].Candidates[l] - 1]++;
-                        }
-                    }
-
-                }
-                for (int n = 0; n < 9; n++)
-                {
-                    if (freqOfEachCandi[n] == 1)
-                    {
-                        for (int h = 0; h < 9; h++)
-                        {
-                            if (grid.Rows[h][colu].Candidates.Contains((n + 1).ToString()[0]))
-                            {
-                                grid.Rows[h][colu].Num = (n + 1).ToString()[0];
-                                grid.Rows[h][colu].Candidates.Clear();
-                                return true;
-                            }
-                        }
-                        break;
-                    }
-                }
+                g_SolvePath.Add(separator);
+                g_Rating += 100;
+                g_moderate = true;
+                g_strategy = "Naked Pair";
             }
-
-            int xStart = 0, yStart = 0;
-            for (int sg = 0; sg < 9; sg++)//Finding Hidden Singles in blocks
+            else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
             {
-                int[] freqOfEachCandi = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                for (int x = xStart; x < xStart + 3; x++)
-                {
-                    for (int y = yStart; y < yStart + 3; y++)
-                    {
-                        for (int l = 0; l < grid.Rows[x][y].Candidates.Count; l++)
-                        {
-                            if (grid.Rows[x][y].Num == 0)
-                            {
-                                freqOfEachCandi[grid.Rows[x][y].Candidates[l] - 1]++;
-                            }
-                        }
-                    }
-                }
-                for (int n = 0; n < 9; n++)
-                {
-                    if (freqOfEachCandi[n] == 1)
-                    {
-                        for (int x = xStart; x < xStart + 3; x++)
-                        {
-                            for (int y = yStart; y < yStart + 3; y++)
-                            {
-                                if (grid.Rows[x][y].Candidates.Contains((n + 1).ToString()[0]))
-                                {
-                                    grid.Rows[x][y].Num = (n + 1).ToString()[0];
-                                    grid.Rows[x][y].Candidates.Clear();
-                                    return true;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                    if (freqOfEachCandi[n] == 2)
-                    {
-                        Cell cell1 = new Cell();
-                        Cell cell2 = new Cell();
-                        int counter = 0;
-                        for (int x = xStart; x < xStart + 3; x++)
-                        {
-                            for (int y = yStart; y < yStart + 3; y++)
-                            {
-                                if (grid.Rows[x][y].Candidates.Contains((n + 1).ToString()[0]))
-                                {
-                                    counter++;
-                                    if (counter == 1)
-                                    {
-                                        cell1 = grid.Rows[x][y];
-                                    }
-                                    else
-                                    {
-                                        cell2 = grid.Rows[x][y];
-                                    }
-                                }
-                            }
-                        }
-                        if (cell1.XLocation == cell2.XLocation)
-                        {
-                            int xLoc = cell1.XLocation;
-                            for (int c = 0; c < 9; c++)
-                            {
-                                if (grid.Rows[xLoc][c].Candidates.Contains((n + 1).ToString()[0]) && cell1.YLocation != c && cell2.YLocation != c)
-                                { grid.Rows[xLoc][c].Candidates.Remove((n + 1).ToString()[0]); return true; }
-                            }
-                        }
-                        else if (cell1.YLocation == cell2.YLocation)
-                        {
-                            int yLoc = cell1.YLocation;
-                            for (int c = 0; c < 9; c++)
-                            {
-                                if (grid.Rows[c][yLoc].Candidates.Contains((n + 1).ToString()[0]) && cell1.XLocation != c && cell2.XLocation != c)
-                                { grid.Rows[c][yLoc].Candidates.Remove((n + 1).ToString()[0]); return true; }
-                            }
-                        }
-                    }
-                    if (freqOfEachCandi[n] == 3)
-                    {
-                        Cell cell1 = new Cell();
-                        Cell cell2 = new Cell();
-                        Cell cell3 = new Cell();
-                        int counter = 0;
-                        for (int x = xStart; x < xStart + 3; x++)
-                        {
-                            for (int y = yStart; y < yStart + 3; y++)
-                            {
-                                if (grid.Rows[x][y].Candidates.Contains((n + 1).ToString()[0]))
-                                {
-                                    counter++;
-                                    if (counter == 1)
-                                    { cell1 = grid.Rows[x][y]; }
-                                    else if (counter == 2)
-                                    { cell2 = grid.Rows[x][y]; }
-                                    else
-                                    { cell3 = grid.Rows[x][y]; }
-                                }
-                            }
-                        }
-                        if (cell1.XLocation == cell2.XLocation && cell1.XLocation == cell3.XLocation)
-                        {
-                            int xLoc = cell1.XLocation;
-                            for (int c = 0; c < 9; c++)
-                            {
-                                if (grid.Rows[xLoc][c].Candidates.Contains((n + 1).ToString()[0]) && cell1.YLocation != c && cell2.YLocation != c && cell3.YLocation != c)
-                                { grid.Rows[xLoc][c].Candidates.Remove((n + 1).ToString()[0]); return true; }
-                            }
-                        }
-                        else if (cell1.YLocation == cell2.YLocation && cell1.YLocation == cell3.YLocation)
-                        {
-                            int yLoc = cell1.YLocation;
-                            for (int c = 0; c < 9; c++)
-                            {
-                                if (grid.Rows[c][yLoc].Candidates.Contains((n + 1).ToString()[0]) && cell1.XLocation != c && cell2.XLocation != c && cell3.XLocation != c)
-                                { grid.Rows[c][yLoc].Candidates.Remove((n + 1).ToString()[0]); return true; }
-                            }
-                        }
-                    }
-                }
-                yStart += 3;
-                if (yStart == 9)
-                {
-                    yStart = 0;
-                    xStart += 3;
-                }
+                g_SolvePath.Add(separator);
+                g_Rating += 150;
+                g_moderate = true;
+                g_strategy = "Hidden Pair";
             }
-
-            return changeMade;
+            else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 250;
+                g_moderate = true;
+                g_strategy = "Pointing Pair/Triple";
+            }
+            else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 300;
+                g_moderate = true;
+                g_strategy = "Block-Line Reduction";
+            }
+            else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 400;
+                g_moderate = true;
+                g_strategy = "Naked Triple";
+            }
+            else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 450;
+                g_moderate = true;
+                g_strategy = "Hidden Triple";
+            }
+            else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 550;
+                g_advanced = true;
+                g_strategy = "X-Wing";
+            }
+            else if (FindYWing(grid))//A Y-Wing contributes +600 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 600;
+                g_advanced = true;
+                g_strategy = "Y-Wing";
+            }
+            else if (FindXYZWing(grid))//An XYZ-Wing contributes +650 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 650;
+                g_advanced = true;
+                g_strategy = "XYZ-Wing";
+            }
+            else if (FindSingleChains(grid))//A successful Single Chain contributes +700 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 700;
+                g_advanced = true;
+                g_strategy = "Single Chains/Simple Colouring";
+            }
+            else if (FindUniqueRectangleType1(grid))//A Unique Rectangle contributes +750 to the rating.
+            {
+                g_SolvePath.Add(separator);
+                g_Rating += 750;
+                g_advanced = true;
+                g_strategy = "Unique Rectangle Type 1";
+            }
+            //More methods to add
+            else
+            {
+                BacktrackingSolver(grid, 0, 0, 0);
+                g_BacktrackingReq = true;
+                g_Difficulty = "Extreme";
+                g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
+                g_SolvePath.Add(separator);
+                g_strategy = "Trial-and-error/Brute-force";
+            }
+            if (g_Gen.CheckIfSolved(grid))
+            {
+                return true;
+            }
+            if (g_moderate)
+                g_Difficulty = "Moderate";
+            if (g_advanced)
+                g_Difficulty = "Advanced";
+            return false;
         }
 #endregion
     }

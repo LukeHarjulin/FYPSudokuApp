@@ -125,6 +125,8 @@
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     _________________________________________________________________________
+                    ___________________________________________________________________________________________
+                    _________________________________________________________________________
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
                     <Underline>Developer Window Help</Underline>
@@ -208,6 +210,16 @@
                 <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
                     The "
                     <Bold>Test All Three Solvers</Bold> " button is used to sequentially test all three solvers and present a comparison in time taken to solve.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "
+                    <Bold>Solve Next Step</Bold> " button allows you step through the solve path that the Strategy Solver takes.
+                    <LineBreak/>
+                    With each step, the strategy that is used is most previously used is shown below the button.
+                    <LineBreak/>
+                    Plans for improving this feature do exist. For example, an improvement would be to highlight the cells that have been used/changed in the process of the strategy used.
+                    <LineBreak/>
+                    I.e. if an X-Wing strategy is used, the 4 corners of the X-Wing would be highlighted in one colour and the cell(s) that have had changes made would be in an alternate colour.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="16" LineHeight="20">
                     <Underline>Other Features</Underline>

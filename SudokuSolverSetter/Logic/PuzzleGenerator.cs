@@ -8,6 +8,8 @@ namespace SudokuSolverSetter
     {
         //Initialising global objects/variables
         private readonly Random rand = new Random();
+        private readonly int g_MaxRemoves = 63;
+        private readonly int g_MinRemoves = 41;
         /// <summary>
         /// 
         /// </summary>
@@ -122,11 +124,11 @@ namespace SudokuSolverSetter
                 {
                     foreach (int row in rowList)
                     {
-                        if (removed > 63)
+                        if (removed > g_MaxRemoves)
                         { changeMade = true; break; }
                         foreach (int col in colList)
                         {
-                            if (removed > 63)
+                            if (removed > g_MaxRemoves)
                             { changeMade = true; break; }
                             if (!cellsChecked.Contains(row.ToString() + col.ToString()))
                             {
@@ -202,11 +204,11 @@ namespace SudokuSolverSetter
                 {
                     foreach (int row in rowList)
                     {
-                        if (removed > 63)
+                        if (removed > g_MaxRemoves)
                         { changeMade = true; break; }
                         foreach (int col in colList)
                         {
-                            if (removed > 63)
+                            if (removed > g_MaxRemoves)
                             { changeMade = true; break; }
                             if (!cellsChecked.Contains(row.ToString() + col.ToString()))
                             {
@@ -274,7 +276,7 @@ namespace SudokuSolverSetter
                 #endregion
 
 
-            } while (removed <= 41 && changeMade);
+            } while (removed <= g_MinRemoves && changeMade && cellsChecked.Count >= 80);
         }
         /// <summary>
         /// Reassigns the values in the puzzle to what they were prior to being solved

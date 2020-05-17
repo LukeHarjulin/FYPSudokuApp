@@ -153,9 +153,9 @@
                 <Button x:Name="changeDA_Button" Width="250" Content="Change To Pen" Cursor="Hand" FontSize="20" FontFamily="Verdana" Background="#FFF7E6" Grid.Row="5" Click="ChangeDA_Button_Click" Margin="2,0,0,0"/>
                 <Button x:Name="clearCanvas_Button" Width="250" Content="Clear Drawings" Cursor="Hand" FontSize="20" FontFamily="Verdana" Background="#FFF7E6" Grid.Row="6" Click="ClearDrawings_Button_Click" Margin="2,5,0,-5"/>
             </Grid>
-            <Button x:Name="Helper_btn" Cursor="Hand" Content="Show Clue (WIP)" Canvas.Left="392" Canvas.Top="47" Width="200" Height="40" Click="Helper_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6" FontFamily="Verdana"/>
-            <Label x:Name="clue_lbl" Content="Clue:" Canvas.Left="415" Canvas.Top="8" Width="72" FontSize="20" FontFamily="Verdana"/>
-            <TextBox x:Name="clue_txtbx" Text="&lt;clue&gt;" Background="{x:Null}" Canvas.Left="487" Width="90" FontSize="20" IsReadOnly="True" BorderBrush="{x:Null}" FontFamily="Verdana" Height="30" Canvas.Top="12"/>
+            <Button x:Name="Helper_btn" Cursor="Hand" Content="Show Clue (WIP)" Canvas.Left="392" Canvas.Top="47" Width="200" Height="40" Click="Helper_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="False"/>
+            <Label x:Name="clue_lbl" Content="Clue:" Canvas.Left="415" Canvas.Top="8" Width="72" FontSize="20" FontFamily="Verdana" IsEnabled="False"/>
+            <TextBox x:Name="clue_txtbx" Text="&lt;clue&gt;" Background="{x:Null}" Canvas.Left="487" Width="90" FontSize="20" IsReadOnly="True" BorderBrush="{x:Null}" FontFamily="Verdana" Height="30" Canvas.Top="12" IsEnabled="False"/>
         </Canvas>
     </Border>
 </Window>

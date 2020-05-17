@@ -42,6 +42,10 @@ namespace SudokuSolverSetter
                 Number_List_combo.Items.Add(750);
                 Number_List_combo.Items.Add(1000);
                 Number_List_combo.Items.Add(2000);
+                Number_List_combo.Items.Add(2500);
+                Number_List_combo.Items.Add(5000);
+                Number_List_combo.Items.Add(10000);
+                Number_List_combo.Items.Add(20000);
             }
             else
             {
@@ -79,8 +83,6 @@ namespace SudokuSolverSetter
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
             PuzzleGenerator gen = new PuzzleGenerator();
-            PuzzleSolverCharDS solverChar = new PuzzleSolverCharDS();
-            PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
             try
             {
                 XDocument doc;
@@ -128,14 +130,15 @@ namespace SudokuSolverSetter
                 StreamWriter ratingWrite = new StreamWriter(symmetric+"/ratings.txt",true);
                 StreamWriter difficWrite = new StreamWriter(symmetric+"/difficulties.txt", true); 
                 StreamWriter givensWrite = new StreamWriter(symmetric+"/givens.txt", true);
-                
+                StreamWriter stratWrite = new StreamWriter(symmetric + "/strat.txt", true);
                 Stopwatch Timer = new Stopwatch();
                 Timer.Start();
                 for (int i = 0; i < numPuzzles; i++)
                 {
                     sudokuPuzzles.Add(gen.Setter(symmetry));
                     string puzzleString = gen.SudokuToString(sudokuPuzzles[i]);
-                    long rating = GetDifficulty(sudokuPuzzles[i], puzzleString);
+                    PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
+                    long rating = GetDifficulty(sudokuPuzzles[i], puzzleString, solver);
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
                         new XElement("puzzle",
                             new XElement("DifficultyRating", rating),
@@ -152,13 +155,36 @@ namespace SudokuSolverSetter
                         }
                     }
                     ratingWrite.WriteLine(rating);
-                    difficWrite.WriteLine(sudokuPuzzles[i].Difficulty);
+                    switch (sudokuPuzzles[i].Difficulty)
+                    {
+                        case "Beginner":
+                            difficWrite.WriteLine("1");
+                            break;
+                        case "Moderate":
+                            difficWrite.WriteLine("2");
+                            break;
+                        case "Advanced":
+                            difficWrite.WriteLine("3");
+                            break;
+                        default:
+                            difficWrite.WriteLine("4");
+                            break;
+                    }
                     givensWrite.WriteLine(givens);
+                    for (int n = 1; n < solver.g_StrategyCount.Length; n++)
+                    {
+                        if (solver.g_StrategyCount[n] < 10)
+                            stratWrite.Write(0);
+                        stratWrite.Write(solver.g_StrategyCount[n] + ",");
+                    }
+                    stratWrite.Write(solver.g_StrategyCount[0]);
+                    stratWrite.WriteLine();
                 }
                 Timer.Stop();
                 ratingWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
+                stratWrite.Close();
                 doc.Save(filename);
                 MessageBox.Show("Successfully added " + numPuzzles + " puzzles.\r\nThe generator took " + Timer.Elapsed + " to generate and store all of those puzzles.", "Success!");
 
@@ -175,9 +201,8 @@ namespace SudokuSolverSetter
         /// <param name="puzzleGrid"></param>
         /// <param name="puzzleString"></param>
         /// <returns>returns the difficulty rating of the puzzle</returns>
-        public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString)
+        public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString, PuzzleSolverObjDS solver)
         {
-            PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
             long rating = 0;
             int counter = 0;
 
