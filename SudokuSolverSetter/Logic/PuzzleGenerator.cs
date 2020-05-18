@@ -9,7 +9,7 @@ namespace SudokuSolverSetter
         //Initialising global objects/variables
         private readonly Random rand = new Random();
         private readonly int g_MaxRemoves = 63;
-        private readonly int g_MinRemoves = 43;
+        private readonly int g_MinRemoves = 39;
         /// <summary>
         /// 
         /// </summary>
@@ -180,8 +180,6 @@ namespace SudokuSolverSetter
                                                 grid.Rows[altRow][altCol].Num = '0';
                                                 changeMade = true;
                                                 removed += 2;
-                                                cellsChecked.Add(row.ToString() + col.ToString());
-                                                cellsChecked.Add(altRow.ToString() + altCol.ToString());
                                             }
                                             else//Multiple solutions
                                             {
@@ -193,6 +191,8 @@ namespace SudokuSolverSetter
                                     {
                                         grid = RestartPuzzle(grid, sudokuArray);
                                     }
+                                    cellsChecked.Add(row.ToString() + col.ToString());
+                                    cellsChecked.Add(altRow.ToString() + altCol.ToString());
                                 }
                             }
 
@@ -255,7 +255,6 @@ namespace SudokuSolverSetter
                                                 grid.Rows[row][col].Num = '0';
                                                 changeMade = true;
                                                 removed++;
-                                                cellsChecked.Add(row.ToString() + col.ToString());
                                             }
                                             else
                                             {

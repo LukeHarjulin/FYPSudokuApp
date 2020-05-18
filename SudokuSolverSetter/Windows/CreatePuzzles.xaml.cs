@@ -130,7 +130,12 @@ namespace SudokuSolverSetter
                 StreamWriter ratingWrite = new StreamWriter(symmetric+"/ratings.txt",true);
                 StreamWriter difficWrite = new StreamWriter(symmetric+"/difficulties.txt", true); 
                 StreamWriter givensWrite = new StreamWriter(symmetric+"/givens.txt", true);
-                StreamWriter stratWrite = new StreamWriter(symmetric + "/strat.txt", true);
+                #region Strategy Files
+                StreamWriter NS = new StreamWriter(symmetric+"/StratsCounts/nakedsingles.txt", true), HS = new StreamWriter(symmetric+"/StratsCounts/hiddensingles.txt", true), NP = new StreamWriter(symmetric+"/StratsCounts/nakedpair.txt", true),
+                HP = new StreamWriter(symmetric+"/StratsCounts/hiddenpair.txt", true), PP = new StreamWriter(symmetric + "/StratsCounts/pointline.txt", true), BLR = new StreamWriter(symmetric+"/StratsCounts/blocklinereduc.txt", true), NT = new StreamWriter(symmetric+"/StratsCounts/nakedtriple.txt", true),
+                HT = new StreamWriter(symmetric+"/StratsCounts/hiddentriple.txt", true), XW = new StreamWriter(symmetric+"/StratsCounts/xwing.txt", true), YW = new StreamWriter(symmetric+"/StratsCounts/ywing.txt", true), XYZ = new StreamWriter(symmetric+"/StratsCounts/xyzwing.txt", true),
+                SC = new StreamWriter(symmetric + "/StratsCounts/singlechains.txt", true), UR1 = new StreamWriter(symmetric+"/StratsCounts/uniquerecttyp1.txt", true), BT = new StreamWriter(symmetric+"/StratsCounts/backtrack.txt", true);
+                #endregion
                 Stopwatch Timer = new Stopwatch();
                 Timer.Start();
                 for (int i = 0; i < numPuzzles; i++)
@@ -171,20 +176,18 @@ namespace SudokuSolverSetter
                             break;
                     }
                     givensWrite.WriteLine(givens);
-                    for (int n = 1; n < solver.g_StrategyCount.Length; n++)
-                    {
-                        if (solver.g_StrategyCount[n] < 10)
-                            stratWrite.Write(0);
-                        stratWrite.Write(solver.g_StrategyCount[n] + ",");
-                    }
-                    stratWrite.Write(solver.g_StrategyCount[0]);
-                    stratWrite.WriteLine();
+                    NS.WriteLine(solver.g_StrategyCount[1]);HS.WriteLine(solver.g_StrategyCount[2]);NP.WriteLine(solver.g_StrategyCount[3]);
+                    HP.WriteLine(solver.g_StrategyCount[4]);PP.WriteLine(solver.g_StrategyCount[5]);BLR.WriteLine(solver.g_StrategyCount[6]);
+                    NT.WriteLine(solver.g_StrategyCount[7]);HT.WriteLine(solver.g_StrategyCount[8]);XW.WriteLine(solver.g_StrategyCount[9]);
+                    YW.WriteLine(solver.g_StrategyCount[10]);XYZ.WriteLine(solver.g_StrategyCount[11]);SC.WriteLine(solver.g_StrategyCount[12]);
+                    UR1.WriteLine(solver.g_StrategyCount[13]);BT.WriteLine(solver.g_StrategyCount[0]);
                 }
                 Timer.Stop();
                 ratingWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
-                stratWrite.Close();
+                NS.Close();HS.Close();NP.Close();HP.Close();PP.Close();BLR.Close();NT.Close();
+                HT.Close();XW.Close();YW.Close();XYZ.Close();SC.Close();UR1.Close();BT.Close();
                 doc.Save(filename);
                 MessageBox.Show("Successfully added " + numPuzzles + " puzzles.\r\nThe generator took " + Timer.Elapsed + " to generate and store all of those puzzles.", "Success!");
 
