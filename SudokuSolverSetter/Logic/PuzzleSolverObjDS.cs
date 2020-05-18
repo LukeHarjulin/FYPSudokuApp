@@ -132,7 +132,6 @@ namespace SudokuSolverSetter
                     {
                         g_changeMade = true;
                         g_SolvePath.Add(separator);
-                        g_Rating += 700;
                         g_advanced = true;
                         g_StrategyCount[12]++;
                     }
@@ -891,6 +890,19 @@ namespace SudokuSolverSetter
         /// and none of the three Cells share more than one group(row/column/block), a Y-Wing is formed.
         /// -The candidate that can start being removed from places is the candidate that CellB and CellC have in common. (i.e. CellA {1,2}, CellB {1,3}, CellC {2,3})
         /// -This candidate can be removed from all cells where the groups from CellB and CellC overlap
+        /// 
+        /// The diagrams below show three different formats of YWings, the astericks(*) show where 'X' cannot exist. 
+        ///     1   2   3   4   5   6   7   8   9      -|-        1   2   3   4   5   6   7   8   9     -|-        1   2   3   4   5   6   7   8   9 
+        ///   _____________________________________    -|-     _____________________________________    -|-     _____________________________________
+        /// A |   ¦   ¦   |   ¦ * ¦   |   ¦   ¦   |    -|-   A |XZ ¦   ¦   | * ¦ * ¦ * |   ¦   ¦   |    -|-   A |XZ ¦   ¦   |   ¦   ¦ * |   ¦   ¦   |
+        /// B |   ¦   ¦   |   ¦ * ¦XZ |   ¦   ¦   |    -|-   B |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   B |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// C |   ¦   ¦   |   ¦YZ ¦   |   ¦   ¦   |    -|-   C |YZ ¦ * ¦ * |   ¦   ¦XY |   ¦   ¦   |    -|-   C |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        ///   |___________|___________|___________|    -|-     |___________|___________|___________|    -|-     |___________|___________|___________|
+        /// D |   ¦   ¦   |   ¦   ¦ * |   ¦   ¦   |    -|-   D |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   D |YZ ¦   ¦   |   ¦   ¦XY |   ¦   ¦   |
+        /// E |   ¦   ¦   |   ¦XY ¦ * |   ¦   ¦   |    -|-   E |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   E |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// F |   ¦   ¦   |   ¦   ¦ * |   ¦   ¦   |    -|-   F |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   F |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// G |___________________________________|    -|-   G |___________________________________|    -|-   G |___________________________________|
+        /// -This is because no matter how you place X,Y,Z in those cells, X will always be ruled out of the cells marked as '*'
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
@@ -997,6 +1009,31 @@ namespace SudokuSolverSetter
         /// 
         /// Finding X-wing type 2 is exactly the same as the above, however replace row with colmun and column with row.
         /// 
+        /// The diagrams below show three different formats of YWings, the small x's show where 'X' could also exist but can be ruled out because of the XWing. 
+        /// Type2                                                                                        | Type1
+        ///     1   2   3   4   5   6   7   8   9      -|-       1   2   3   4   5   6   7   8   9      -|-       1   2   3   4   5   6   7   8   9     -|-       1   2   3   4   5   6   7   8   9  
+        ///   _____________________________________    -|-     _____________________________________    -|-     _____________________________________   -|-     _____________________________________
+        /// A |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   A |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   A |   ¦   ¦   |   ¦XYZ¦   |   ¦   ¦   |   -|-   A |   ¦   ¦   |   ¦YZ ¦   |   ¦   ¦   |
+        /// B |XYZ¦XYZ¦   |   ¦XYZ¦XYZ|XYZ¦XYZ¦XYZ|    -|-   B |YZ ¦XYZ¦   |   ¦XYZ¦YZ |YZ ¦YZ ¦YZ |    -|-   B |   ¦XYZ¦   |   ¦XYZ¦   |   ¦   ¦   |   -|-   B |   ¦XYZ¦   |   ¦XYZ¦   |   ¦   ¦   |
+        /// C |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   C |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   C |   ¦XYZ¦   |   ¦   ¦   |   ¦   ¦   |   -|-   C |   ¦YZ ¦   |   ¦   ¦   |   ¦   ¦   |
+        ///   |___________|___________|___________|    -|-     |___________|___________|___________|    -|-     |___________|___________|___________|   -|-     |___________|___________|___________|
+        /// D |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   D |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   D |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |   -|-   D |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// E |   ¦XYZ¦XYZ|XYZ¦XYZ¦   |XYZ¦   ¦XYZ|    -|-   E |   ¦XYZ¦YZ |YZ ¦XYZ¦   |YZ ¦   ¦YZ |    -|-   E |   ¦XYZ¦   |   ¦XYZ¦   |   ¦   ¦   |   -|-   E |   ¦XYZ¦   |   ¦XYZ¦   |   ¦   ¦   |
+        /// F |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   F |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   F |   ¦   ¦   |   ¦XYZ¦   |   ¦   ¦   |   -|-   F |   ¦   ¦   |   ¦YZ ¦   |   ¦   ¦   |
+        /// G |___________________________________|    -|-   G |___________________________________|    -|-   G |___________________________________|   -|-   G |___________________________________|
+        /// A |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   A |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   A |   ¦XYZ¦   |   ¦   ¦   |   ¦   ¦   |   -|-   A |   ¦YZ ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// B |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   B |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   B |   ¦XYZ¦   |   ¦   ¦   |   ¦   ¦   |   -|-   B |   ¦YZ ¦   |   ¦   ¦   |   ¦   ¦   |
+        /// C |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   C |   ¦   ¦   |   ¦   ¦   |   ¦   ¦   |    -|-   C |   ¦XYZ¦   |   ¦   ¦   |   ¦   ¦   |   -|-   C |   ¦YZ ¦   |   ¦   ¦   |   ¦   ¦   |
+        ///   |___________|___________|___________|    -|-     |___________|___________|___________|    -|-     |___________|___________|___________|   -|-     |___________|___________|___________|
+        /// Focus on the cells B2, B5, E2, and E5 in Type2. 
+        /// If X is placed in B2, then X has to be placed in E5. This is because either cell B5 or E5 has to contain X, and if X is placed in B2 then X cannot be placed in B5 or E2.
+        /// Consequently, E5 has to contain X.
+        /// The excess X's from rows B and E can be removed.
+        /// 
+        ///  Focus on the cells B2, B5, E2, and E5 in Type1. 
+        /// If X is placed in E2, then X has to be placed in B5. This is because either cell B2 or B5 has to contain X, and if X is placed in E2 then X cannot be placed in E5 or B2.
+        /// Consequently, E5 has to contain X.
+        /// The excess X's from columns 2 and 5 can be removed.
         /// </summary>
         /// <param name="grid">Passing through the SudokuGrid to examine for Xwings</param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
@@ -1102,7 +1139,7 @@ namespace SudokuSolverSetter
         /// -Very similar to a Y-Wing in the regards of a hinge and two cells named the wings.
         /// -The difference between the two is that a Y-Wing can only contain cells with 2 candidates, and each cell only has one candidate in common.
         /// -The hinge and wing system is still the same in the sense that the hinge can see the other two cells where as the other two cells can't see each other.
-        /// The diagrams below show two different formats of XWings, the astericks(*) show where 'X' cannot exist. 
+        /// The diagrams below show two different formats of XYZWings, the astericks(*) show where 'X' cannot exist. 
         ///     1   2   3   4   5   6   7   8   9      -|-        1   2   3   4   5   6   7   8   9 
         ///   _____________________________________    -|-     _____________________________________
         /// A |   ¦   ¦   |   ¦ * ¦   |   ¦   ¦   |    -|-   A |XZ ¦   ¦   |   ¦   ¦   |   ¦   ¦   |
@@ -1277,13 +1314,21 @@ namespace SudokuSolverSetter
                                     }
                                 }
                                 if (changeMade)
+                                {
+                                    g_SolvePath.Add("Chain: [" + chain[0].XLocation + ", " + chain[0].YLocation + "]");
+                                    for (int z = 1; z < chain.Count; z++)
+                                    {
+                                        g_SolvePath[g_SolvePath.Count-1] += " - ["+chain[z].XLocation+","+ chain[z].YLocation + "]";
+                                    }
+                                    g_Rating += chain.Count * 100;
                                     return true;
+                                }
                                 else
                                 {
                                     bool? contradiction = null;
                                     for (int c1 = 0; c1 < chain.Count && contradiction == null; c1++)//iterate through all cells in chain (cellA), also whilst a contradiction hasn't been found
                                     {
-                                        for (int c2 = c1+1; c2 < chain.Count && contradiction == null; c2++)//start iterating one cell ahead of 'cellA' (cellB), also whilst a contradiction hasn't been found
+                                        for (int c2 = c1 + 1; c2 < chain.Count && contradiction == null; c2++)//start iterating one cell ahead of 'cellA' (cellB), also whilst a contradiction hasn't been found
                                         {
                                             if (indicatorForCell[c1] == indicatorForCell[c2])//if cellA and cellB are coloured the same...
                                             {
@@ -1309,7 +1354,10 @@ namespace SudokuSolverSetter
                                     }
                                 }
                                 if (changeMade)
+                                {
+                                    g_Rating += chain.Count * 100;
                                     return true;
+                                }
                             }
                             
                         }
