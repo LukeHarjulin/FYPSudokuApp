@@ -9,7 +9,7 @@ namespace SudokuSolverSetter
         //Initialising global objects/variables
         private readonly Random rand = new Random();
         private readonly int g_MaxRemoves = 63;
-        private readonly int g_MinRemoves = 41;
+        private readonly int g_MinRemoves = 43;
         /// <summary>
         /// 
         /// </summary>
