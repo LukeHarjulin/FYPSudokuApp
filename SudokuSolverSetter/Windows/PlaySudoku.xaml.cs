@@ -573,6 +573,10 @@ namespace SudokuSolverSetter
                                new XElement("Date", DateTime.Today.Date.ToShortDateString())
                                )
                            );
+                var childNode = doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty)
+                            .Elements("puzzle")
+                            .First(n => n.Element("OriginalSudokuString").Value == g_originalPuzzleString);
+                childNode.Remove();
             }
 
             doc.Save(filename);

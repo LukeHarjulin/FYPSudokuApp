@@ -128,7 +128,7 @@ namespace SudokuSolverSetter
                         g_advanced = true;
                         g_StrategyCount[11]++;
                     }
-                    else if (FindSingleChains(grid))//A successful Single Chain contributes +700 to the rating.
+                    else if (FindSingleChains(grid))//A successful Single Chain contributes +100*(chain length) to the rating.
                     {
                         g_changeMade = true;
                         g_SolvePath.Add(separator);
@@ -1252,7 +1252,7 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-        
+
         /// <summary>
         /// Find Single Chains(aka Simple Colouring):
         /// A chain is a collection of cells that are linked together because of common a candidate(s).
@@ -1262,6 +1262,11 @@ namespace SudokuSolverSetter
         /// it would cause a CHAIN reaction of preventing and forcing certain cells to be the candidate number.
         /// Within the code below, if two cells are linked, one cell is labelled as true and the other as false.
         /// This method replicates the colouring technique, true representing one colour, false representing another.
+        /// Type 1:
+        /// If a cell, outside of the chain, containing the common candidate is 'seen' by two differently coloured cells in the chain, remove that candidate from that cell.
+        /// Type 2:qq
+        /// If a cell within the chain can 'see' another cell within the chain that is of the same colour, a contradiction has been found; 
+        /// thus, all cells in the chain coloured the same can remove the common candidate from their list.
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
@@ -1303,7 +1308,7 @@ namespace SudokuSolverSetter
                                                                 {
                                                                     neighbour.Candidates.Remove(candidate);//...the candidate can be removed from that cell
                                                                     changeMade = true;
-                                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - RULE 1");
+                                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - Type 1");
                                                                 }
                                                             }
                                                         }
@@ -1315,10 +1320,12 @@ namespace SudokuSolverSetter
                                 }
                                 if (changeMade)
                                 {
-                                    g_SolvePath.Add("Chain: [" + chain[0].XLocation + ", " + chain[0].YLocation + "]");
+                                    g_SolvePath.Add("Chain: Blue[" + chain[0].XLocation + "," + chain[0].YLocation + "]");
+                                    string colour = "";
                                     for (int z = 1; z < chain.Count; z++)
                                     {
-                                        g_SolvePath[g_SolvePath.Count-1] += " - ["+chain[z].XLocation+","+ chain[z].YLocation + "]";
+                                        colour = indicatorForCell[z] ? "Blue" : "Red";
+                                        g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
                                     }
                                     g_Rating += chain.Count * 100;
                                     return true;
@@ -1335,6 +1342,7 @@ namespace SudokuSolverSetter
                                                 if (chain[c1].XLocation == chain[c2].XLocation || chain[c1].YLocation == chain[c2].YLocation || chain[c1].BlockLoc == chain[c2].BlockLoc)//if c2 shares a group (row/column/block) with c1, contradiction occurs.
                                                 {
                                                     contradiction = indicatorForCell[c1];
+                                                    g_SolvePath.Add("Contradiction in " + (indicatorForCell[c1] ? "Blue" : "Red") + " between cells [" + chain[c1].XLocation + "," + chain[c1].YLocation + "] and [" + chain[c2].XLocation + "," + chain[c2].YLocation + "]");
                                                     break;
                                                 }
                                             }
@@ -1348,13 +1356,20 @@ namespace SudokuSolverSetter
                                             {
                                                 chain[d].Candidates.Remove(candidate);
                                                 changeMade = true;
-                                                g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + chain[d].XLocation + "," + chain[d].YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - RULE 2");
+                                                g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + chain[d].XLocation + "," + chain[d].YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - Type 2");
                                             }
                                         }
                                     }
                                 }
                                 if (changeMade)
                                 {
+                                    g_SolvePath.Add("Chain: Blue[" + chain[0].XLocation + "," + chain[0].YLocation + "]");
+                                    string colour = "";
+                                    for (int z = 1; z < chain.Count; z++)
+                                    {
+                                        colour = indicatorForCell[z] ? "Blue" : "Red";
+                                        g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
+                                    }
                                     g_Rating += chain.Count * 100;
                                     return true;
                                 }
