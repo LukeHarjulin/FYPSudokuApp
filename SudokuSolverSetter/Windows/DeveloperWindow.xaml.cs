@@ -289,6 +289,7 @@ namespace SudokuSolverSetter
             TestAllThree.IsEnabled = false;
             Import_Puzzle.IsEnabled = false;
             Create_Store_Puzzles_btn.IsEnabled = false;
+            b_Solve1by1.IsEnabled = false;
         }
         /// <summary>
         /// Stops the timer when the backtracking solver display is finished or a certain button is click
@@ -303,6 +304,7 @@ namespace SudokuSolverSetter
             TestAllThree.IsEnabled = true;
             Import_Puzzle.IsEnabled = true;
             Create_Store_Puzzles_btn.IsEnabled = true;
+            b_Solve1by1.IsEnabled = true;
             g_PathCounter = 0;
             g_BacktrackingSolvePath.Clear();
         }
@@ -953,6 +955,13 @@ namespace SudokuSolverSetter
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
+            if (G_Timer != null)
+            {
+                if (G_Timer.IsRunning)
+                {
+                    StopTimer();
+                }
+            }
             g_solve = new PuzzleSolverObjDS();
             PopulateGridString(g_PuzzleString);
         }

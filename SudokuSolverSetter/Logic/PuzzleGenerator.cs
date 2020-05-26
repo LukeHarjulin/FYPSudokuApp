@@ -19,7 +19,7 @@ namespace SudokuSolverSetter
             PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
             SudokuGrid grid = ConstructGrid();
             //Using BacktrackingSolver to fill in a blank grid to get a starting solution - possibly the part of the generator that causes performance issues
-            bool testing = true;
+            bool testing = false;
             if (!testing)
             {
                 try
@@ -147,12 +147,11 @@ namespace SudokuSolverSetter
             
             bool changeMade = false;
             int removed = 0;
-            
+            List<string> cellsChecked = new List<string>(81);
             List<int> rowList = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
             List<int> colList = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
             do
             {
-                List<string> cellsChecked = new List<string>();
                 changeMade = false;
                 rowList = Shuffler_intList(rowList);
                 colList = Shuffler_intList(colList);
@@ -217,7 +216,10 @@ namespace SudokuSolverSetter
                                                 grid.Rows[row][col].Num = '0';
                                                 grid.Rows[altRow][altCol].Num = '0';
                                                 changeMade = true;
-                                                removed += 2;
+                                                if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
+                                                    removed++;
+                                                else
+                                                    removed += 2;
                                             }
                                             else//Multiple solutions
                                             {
@@ -230,18 +232,29 @@ namespace SudokuSolverSetter
                                         grid = RestartPuzzle(grid, sudokuArray);
                                     }
                                 }
-                                cellsChecked.Add(row.ToString() + col.ToString());
-                                cellsChecked.Add(altRow.ToString() + altCol.ToString());
+                                if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
+                                    cellsChecked.Add(row.ToString() + col.ToString());
+                                else
+                                {
+                                    cellsChecked.Add(row.ToString() + col.ToString());
+                                    cellsChecked.Add(altRow.ToString() + altCol.ToString());
+                                }
+                                
                             }
                         }
 
                     }
                 }
                 
-                #region Asymmetrical : Symmetry not essential to the puzzle
-                if (!symmetry)
+            } while (removed <= g_MaxRemoves && changeMade);
+
+            if (!symmetry)
+            {
+                cellsChecked = new List<string>();
+                do
                 {
-                    cellsChecked = new List<string>();
+                    #region Asymmetrical : Symmetry not essential to the puzzle
+                    changeMade = false;
                     foreach (int row in rowList)
                     {
                         if (removed > g_MaxRemoves)
@@ -315,11 +328,12 @@ namespace SudokuSolverSetter
                             }
                         }
                     }
-                }
-                #endregion
-
-
-            } while (removed <= g_MaxRemoves && changeMade);
+                    
+                    #endregion
+                } while (removed <= g_MaxRemoves && changeMade);
+            }
+            
+            
         }
         /// <summary>
         /// Reassigns the values in the puzzle to what they were prior to being solved
