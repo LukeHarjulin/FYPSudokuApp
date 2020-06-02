@@ -12,6 +12,8 @@ using System.Xml.Linq;
 using System.IO;
 using System.Xml;
 using System.Windows.Ink;
+using System.Runtime.InteropServices.ComTypes;
+using System.Windows.Shapes;
 
 namespace SudokuSolverSetter
 {
@@ -133,7 +135,7 @@ namespace SudokuSolverSetter
                         g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
                     }
                 }
-                else if (puzzleString.Contains('_'))
+                else if (puzzleString.Contains('_'))//puzzle that's been started
                 {
                     Sudoku_Title.Content = difficulty + " Sudoku Puzzle";
                     XmlNode startedPuzzles = sudokuPuzzles.SelectSingleNode("Started");
@@ -160,7 +162,7 @@ namespace SudokuSolverSetter
                         }
                     }
                 }
-                else 
+                else//puzzles that have not been started, or have been completed and are being restarted
                 {
                     Sudoku_Title.Content = difficulty + " Sudoku Puzzle";
                     XmlNode startedPuzzles;
@@ -181,7 +183,7 @@ namespace SudokuSolverSetter
                     }
                 }
                 ///Populate grid with puzzle from xml doc
-                if (puzzleString.Contains('_'))
+                if (puzzleString.Contains('_'))//puzzle that's been started
                 {
                     for (int i = 0, counter = 0; counter < puzzleString.Length; counter++)
                     {
@@ -222,10 +224,11 @@ namespace SudokuSolverSetter
                         {
                             g_Cells[i].Text = "";
                         }
-                        
                     }
+                    g_grid = gen.ConstructGrid();
+                    gen.StringToGrid(g_grid, g_originalPuzzleString);
                 }
-                else
+                else//populating grid with puzzle that has not been started, or has been completed and is being restarted
                 {
                     if (puzzleString.Contains('.'))
                     {
@@ -241,6 +244,8 @@ namespace SudokuSolverSetter
                         }
                     }
                     g_originalPuzzleString = puzzleString;
+                    g_grid = gen.ConstructGrid();
+                    gen.StringToGrid(g_grid, g_originalPuzzleString);
                 }
                 
             }
@@ -285,8 +290,7 @@ namespace SudokuSolverSetter
                 
                 Timer.Stop();
                 DT.Stop();
-                
-                if (type == 1)
+                if (type == 1 || type == 2)
                 {
                     RTB_LargeText.Inlines.Clear();
                     RTB_HelpText.Inlines.Clear();
@@ -295,21 +299,17 @@ namespace SudokuSolverSetter
                         PauseBlock.Background = pauseBlockBckGrd;
                     else
                         PauseBlock.Background = darkerColour;
+                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
+                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false;
+                }
+                if (type == 1)
+                {
                     RTB_LargeText.Inlines.Add("PAUSED");
                     RTB_LargeText.FontSize = 64;
                     RTB_LargeText.Padding = new Thickness(120, 250, 120, 0);
-                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
-                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Helper_btn.IsEnabled = false;
                 }
                 else if (type == 2)
                 {
-                    RTB_LargeText.Inlines.Clear();
-                    RTB_HelpText.Inlines.Clear();
-                    PauseBlock.Visibility = Visibility.Visible;
-                    if (nightmode_chkbx.IsChecked == false)
-                        PauseBlock.Background = pauseBlockBckGrd;
-                    else
-                        PauseBlock.Background = darkerColour;
                     RTB_LargeText.Padding = new Thickness(0);
                     RTB_LargeText.Inlines.Add("HELP");
                     RTB_HelpText.Inlines.Add("Objective:\r\n\r\nFill in all the empty cells with a single number from 1-9 till the entire grid is full.\r\n" +
@@ -334,13 +334,11 @@ namespace SudokuSolverSetter
                         "The \"Show Clue\" button is currently non-functional.\r\n\r\n");
                     RTB_LargeText.FontSize = 42;
                     RTB_HelpText.FontSize = 18;
-                    btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
-                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Helper_btn.IsEnabled = false;
                 }
                 else if (type == 3)
                 {
                     btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
-                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Pause_btn.IsEnabled = false; Help_btn.IsEnabled = false; nightmode_chkbx.IsEnabled = false; Helper_btn.IsEnabled = false;
+                    del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Pause_btn.IsEnabled = false; Help_btn.IsEnabled = false; nightmode_chkbx.IsEnabled = false;
                     SudokuGrid.IsEnabled = false;
                     for (int i = 0; i < 81; i++)
                     {
@@ -365,7 +363,7 @@ namespace SudokuSolverSetter
                 DT.Start();
                 PauseBlock.Visibility = Visibility.Hidden;
                 btn1.IsEnabled = true; btn2.IsEnabled = true; btn3.IsEnabled = true; btn4.IsEnabled = true; btn5.IsEnabled = true; btn6.IsEnabled = true; btn7.IsEnabled = true; btn8.IsEnabled = true; btn9.IsEnabled = true;
-                del_btn.IsEnabled = true; TogglePencil.IsEnabled = true; ToggleDrawing.IsEnabled = true; Helper_btn.IsEnabled = true;
+                del_btn.IsEnabled = true; TogglePencil.IsEnabled = true; ToggleDrawing.IsEnabled = true;
             }
         }
         /// <summary>
@@ -573,14 +571,104 @@ namespace SudokuSolverSetter
                                new XElement("Date", DateTime.Today.Date.ToShortDateString())
                                )
                            );
-                var childNode = doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty)
+                try
+                {
+                    var childNode = doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty)
                             .Elements("puzzle")
                             .First(n => n.Element("OriginalSudokuString").Value == g_originalPuzzleString);
-                childNode.Remove();
+                    childNode.Remove();
+                }
+                catch (Exception)
+                {
+
+                }
+                
             }
 
             doc.Save(filename);
             MessageBox.Show("Successfully saved puzzle.");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        private void DarkModeChange(Grid grid)
+        {
+            for (int i = 0; i < grid.Children.Count; i++)
+            {
+                switch (grid.Children[i].GetType().Name)
+                {
+                    case "Label":
+                        ((Label)grid.Children[i]).Foreground = darkTextColour;
+                        break;
+                    case "TextBox":
+                        ((TextBox)grid.Children[i]).Foreground = darkTextColour;
+                        break;
+                    case "CheckBox":
+                        ((CheckBox)grid.Children[i]).Foreground = darkTextColour;
+                        break;
+                    case "Button":
+                        ((Button)grid.Children[i]).Foreground = darkTextColour; ((Button)grid.Children[i]).Background = darkButtonColour;
+                        break;
+                    case "ToggleButton":
+                        ((ToggleButton)grid.Children[i]).Foreground = darkTextColour; ((ToggleButton)grid.Children[i]).Background = darkButtonColour;
+                        break;
+                    case "RadioButton":
+                        ((RadioButton)grid.Children[i]).Foreground = darkTextColour;
+                        break;
+                    case "Rectangle":
+                        ((Rectangle)grid.Children[i]).Stroke = darkTextColour;
+                        break;
+                    case "Grid":
+                        DarkModeChange((Grid)grid.Children[i]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="grid"></param>
+        private void LightModeChange(Grid grid)
+        {
+            for (int i = 0; i < grid.Children.Count; i++)
+            {
+                switch (grid.Children[i].GetType().Name)
+                {
+                    case "Label":
+                        ((Label)grid.Children[i]).Foreground = Brushes.Black;
+                        break;
+                    case "TextBox":
+                        ((TextBox)grid.Children[i]).Foreground = Brushes.Black;
+                        break;
+                    case "CheckBox":
+                        ((CheckBox)grid.Children[i]).Foreground = Brushes.Black;
+                        break;
+                    case "Button":
+                        ((Button)grid.Children[i]).Foreground = Brushes.Black; ((Button)grid.Children[i]).Background = buttonColour;
+                        break;
+                    case "ToggleButton":
+                        ((ToggleButton)grid.Children[i]).Foreground = Brushes.Black; ((ToggleButton)grid.Children[i]).Background = buttonColour;
+                        break;
+                    case "RadioButton":
+                        ((RadioButton)grid.Children[i]).Foreground = Brushes.Black;
+                        break;
+                    case "Rectangle":
+                        ((Rectangle)grid.Children[i]).Stroke = Brushes.Black;
+                        break;
+                    case "RichTextBox":
+                        ((RichTextBox)grid.Children[i]).Background = backgroundCol;
+                        ((RichTextBox)grid.Children[i]).Foreground = Brushes.Black;
+                        break;
+                    case "Grid":
+                        LightModeChange((Grid)grid.Children[i]);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
         #endregion
         #region Event Handlers
@@ -769,6 +857,94 @@ namespace SudokuSolverSetter
         private void ClearDrawings_Button_Click(object sender, RoutedEventArgs e)
         {
             ColourCanvas.Strokes.Clear();
+        }
+        /// <summary>
+        /// Presents the possible numbers that can go into the cells
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Show_Cands_btn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SudokuGrid grid = new SudokuGrid
+                {
+                    Rows = new Cell[9][]
+                };
+                int cellNum = 0;
+
+                //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
+                for (int r = 0; r < grid.Rows.Length; r++)
+                {
+                    grid.Rows[r] = new Cell[9];
+                    for (int c = 0; c < grid.Rows[r].Length; c++)
+                    {
+                        if (g_Cells[cellNum].Text == "" || g_Cells[cellNum].Text.Length > 1 || g_Cells[cellNum].FontSize == 16)
+                        {
+                            List<char> candis = new List<char> { };
+                            if (g_Cells[cellNum].Text.Length > 1)
+                            {
+
+                                candis.AddRange(g_Cells[cellNum].Text.ToCharArray());
+                            }
+                            else
+                            {
+                                candis = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                            }
+                            grid.Rows[r][c] = new Cell()
+                            {
+                                Candidates = candis,
+                                Num = '0',
+                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
+                                XLocation = r,
+                                YLocation = c,
+                                ReadOnly = false
+                            };
+                        }
+                        else
+                        {
+                            grid.Rows[r][c] = new Cell()
+                            {
+                                Candidates = new List<char> { },
+                                Num = g_Cells[cellNum].Text[0],
+                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
+                                XLocation = r,
+                                YLocation = c,
+                                ReadOnly = true
+                            };
+                        }
+
+                        cellNum++;
+                    }
+                }
+                g_Gen.AddNeighbours(grid);
+                PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
+                if (solver.CleanCandidateLists(grid))
+                {
+                    int index = 0;
+                    for (int i = 0; i < 9; i++)
+                    {
+                        for (int j = 0; j < 9; j++)
+                        {
+                            if (g_Cells[index].Text == "" || g_Cells[index].Text.Length > 1)
+                            {
+                                string candis = "";
+                                for (int k = 0; k < grid.Rows[i][j].Candidates.Count; k++)
+                                {
+                                    candis += grid.Rows[i][j].Candidates[k];
+                                }
+                                g_Cells[index].Text = candis;
+                                g_Cells[index].FontSize = 16;
+                            }
+                            index++;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         private void Helper_btn_Click(object sender, RoutedEventArgs e)
@@ -1018,6 +1194,7 @@ namespace SudokuSolverSetter
                 playSudoku.ShowDialog();
             }
         }
+        
         /// <summary>
         /// Dark mode activated, changes all Controls into a dark version
         /// </summary>
@@ -1039,30 +1216,22 @@ namespace SudokuSolverSetter
                 
             this.Background = darkColour;
             cnvs.Background = darkerColour;
-            Sudoku_Title.Foreground = darkTextColour;
-            time_lbl.Foreground = darkTextColour;
-            clue_lbl.Foreground = darkTextColour;
-            Rating_lbl.Foreground = darkTextColour;
-            selectPen_lbl.Foreground = darkTextColour;
-            timer_txtbx.Foreground = darkTextColour;
-            clue_txtbx.Foreground = darkTextColour;
-            TogglePencil.Foreground = darkTextColour; TogglePencil.Background = darkButtonColour;
-            Back_btn.Foreground = darkTextColour; Back_btn.Background = darkButtonColour;
-            del_btn.Foreground = darkTextColour; del_btn.Background = darkButtonColour;
-            newPuzzle_btn.Foreground = darkTextColour; newPuzzle_btn.Background = darkButtonColour;
-            Help_btn.Foreground = darkTextColour; Help_btn.Background = darkButtonColour;
-            Pause_btn.Foreground = darkTextColour; Pause_btn.Background = darkButtonColour;
-            Helper_btn.Foreground = darkTextColour; Helper_btn.Background = darkButtonColour;
-            nightmode_chkbx.Foreground = darkTextColour;
-            PauseBlock.Background = darkerColour; PauseBlock.Foreground = darkTextColour;
             DrawSelection_grid.Background = darkerColour;
-            changeDA_Button.Background = darkButtonColour; changeDA_Button.Foreground = darkTextColour;
-            clearCanvas_Button.Background = darkButtonColour; clearCanvas_Button.Foreground = darkTextColour;
-            ToggleDrawing.Background = darkButtonColour; ToggleDrawing.Foreground = darkTextColour;
-            btn1.Foreground = darkTextColour; btn2.Foreground = darkTextColour; btn3.Foreground = darkTextColour; btn4.Foreground = darkTextColour;
-            btn5.Foreground = darkTextColour; btn6.Foreground = darkTextColour; btn7.Foreground = darkTextColour; btn8.Foreground = darkTextColour; btn9.Foreground = darkTextColour;
-            btn1.Background = darkButtonColour; btn2.Background = darkButtonColour;btn3.Background = darkButtonColour; btn4.Background = darkButtonColour;
-            btn5.Background = darkButtonColour; btn6.Background = darkButtonColour; btn7.Background = darkButtonColour; btn8.Background = darkButtonColour; btn9.Background = darkButtonColour;
+            for (int i = 0; i < cnvs.Children.Count; i++)
+            {
+                if (cnvs.Children[i].GetType() == typeof(Grid))
+                    DarkModeChange((Grid)cnvs.Children[i]);
+                else if (cnvs.Children[i].GetType() == typeof(RichTextBox))
+                {
+                    ((RichTextBox)cnvs.Children[i]).Background = darkerColour;
+                    ((RichTextBox)cnvs.Children[i]).Foreground = darkTextColour;
+                }
+            }
+            for (int i = 0; i < Numbers_grid.Children.Count; i++)//1-9 button number grid
+            {
+                ((Button)Numbers_grid.Children[i]).Foreground = darkTextColour;
+                ((Button)Numbers_grid.Children[i]).Background = darkButtonColour;
+            }
             for (int i = 0; i < g_Cells.Count; i++)
             {
                 g_Cells[i].Foreground = darkTextColour;
@@ -1087,6 +1256,7 @@ namespace SudokuSolverSetter
                 g_selectedCell.Focus();
             }
         }
+        
         /// <summary>
         /// Dark mode deactivated, changes all Controls back into light version
         /// Needs improving by implementing a function to reduce repeated code.
@@ -1102,35 +1272,25 @@ namespace SudokuSolverSetter
                 buttonColour = new SolidColorBrush(Color.FromArgb(255, 255, 247, 230));
                 backgroundCol = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
             }
-
             this.Background = backgroundCol;
             cnvs.Background = backgroundCol;
-            Sudoku_Title.Foreground = Brushes.Black;
-            time_lbl.Foreground = Brushes.Black;
-            clue_lbl.Foreground = Brushes.Black;
-            Rating_lbl.Foreground = Brushes.Black;
-            selectPen_lbl.Foreground = Brushes.Black;
-            timer_txtbx.Foreground = Brushes.Black;
-            clue_txtbx.Foreground = Brushes.Black;
-            TogglePencil.Foreground = Brushes.Black; TogglePencil.Background = buttonColour;
-            Back_btn.Foreground = Brushes.Black; Back_btn.Background = buttonColour;
-            del_btn.Foreground = Brushes.Black; del_btn.Background = buttonColour;
-            newPuzzle_btn.Foreground = Brushes.Black; newPuzzle_btn.Background = buttonColour;
-            Help_btn.Foreground = Brushes.Black; Help_btn.Background = buttonColour;
-            Pause_btn.Foreground = Brushes.Black; Pause_btn.Background = buttonColour;
-            Helper_btn.Foreground = Brushes.Black; Helper_btn.Background = buttonColour;
-            nightmode_chkbx.Foreground = Brushes.Black;
-            PauseBlock.Background = backgroundCol;
-            PauseBlock.Foreground = Brushes.Black;
             DrawSelection_grid.Background = backgroundCol;
-            changeDA_Button.Background = buttonColour; changeDA_Button.Foreground = Brushes.Black;
-            clearCanvas_Button.Background = buttonColour; clearCanvas_Button.Foreground = Brushes.Black;
-            ToggleDrawing.Background = buttonColour; ToggleDrawing.Foreground = Brushes.Black;
-            btn1.Foreground = Brushes.Black; btn2.Foreground = Brushes.Black; btn3.Foreground = Brushes.Black; btn4.Foreground = Brushes.Black;
-            btn5.Foreground = Brushes.Black; btn6.Foreground = Brushes.Black; btn7.Foreground = Brushes.Black; btn8.Foreground = Brushes.Black; btn9.Foreground = Brushes.Black;
-            btn1.Background = buttonColour; btn2.Background = buttonColour; btn3.Background = buttonColour; btn4.Background = buttonColour;
-            btn5.Background = buttonColour; btn6.Background = buttonColour; btn7.Background = buttonColour; btn8.Background = buttonColour; btn9.Background = buttonColour;
-            for (int i = 0; i < g_Cells.Count; i++)
+            for (int i = 0; i < cnvs.Children.Count; i++)
+            {
+                if (cnvs.Children[i].GetType() == typeof(Grid))
+                    LightModeChange((Grid)cnvs.Children[i]);
+                else if (cnvs.Children[i].GetType() == typeof(RichTextBox))
+                {
+                    ((RichTextBox)cnvs.Children[i]).Background = backgroundCol;
+                    ((RichTextBox)cnvs.Children[i]).Foreground = Brushes.Black;
+                }
+            }
+            for (int i = 0; i < Numbers_grid.Children.Count; i++)//1-9 button number grid
+            {
+                ((Button)Numbers_grid.Children[i]).Foreground = Brushes.Black; 
+                ((Button)Numbers_grid.Children[i]).Background = buttonColour;
+            }
+            for (int i = 0; i < g_Cells.Count; i++)//sudoku grid
             {                
                 g_Cells[i].Foreground = Brushes.Black;
                 g_Cells[i].BorderBrush = Brushes.Black;

@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="Play Sudoku" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" Closing="Window_Closing" BorderBrush="Black" BorderThickness="3">
+        Title="Play Sudoku" Height="900" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" Closing="Window_Closing" BorderBrush="Black" BorderThickness="3">
 
     <Border Padding="3">
         <Canvas x:Name="cnvs" Background="#FFEEF1FF">
-            <UniformGrid x:Name="SudokuGrid" Height="650" Width="650" Canvas.Top="100" Canvas.Left="10">
+            <UniformGrid x:Name="SudokuGrid" Height="650" Width="650" Canvas.Top="200" Canvas.Left="45">
                 <TextBox x:Name="bx1"  TextChanged="Cell_TextChanged"  Cursor="Arrow" LostFocus="Cell_LostFocus" PreviewKeyDown="Cell_PreviewKeyDown" MouseEnter="MouseEnter_Cell" MouseLeave="MouseLeave_Cell" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="4,4,0.75,0.75" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0" GotFocus="Cell_Selected" TextWrapping="Wrap"/>
                 <TextBox x:Name="bx2"  TextChanged="Cell_TextChanged"  Cursor="Arrow" LostFocus="Cell_LostFocus" PreviewKeyDown="Cell_PreviewKeyDown" MouseEnter="MouseEnter_Cell" MouseLeave="MouseLeave_Cell" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,4,0.75,0.75" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="Cell_Selected" />
                 <TextBox x:Name="bx3"  TextChanged="Cell_TextChanged"  Cursor="Arrow" LostFocus="Cell_LostFocus" PreviewKeyDown="Cell_PreviewKeyDown" MouseEnter="MouseEnter_Cell" MouseLeave="MouseLeave_Cell" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,4,2,0.75" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="Cell_Selected" />
@@ -92,70 +92,130 @@
                 <TextBox x:Name="bx80" TextChanged="Cell_TextChanged"  Cursor="Arrow" LostFocus="Cell_LostFocus" PreviewKeyDown="Cell_PreviewKeyDown" MouseEnter="MouseEnter_Cell" MouseLeave="MouseLeave_Cell" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,0.75,0.75,4" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="Cell_Selected"/>
                 <TextBox x:Name="bx81" TextChanged="Cell_TextChanged"  Cursor="Arrow" LostFocus="Cell_LostFocus" PreviewKeyDown="Cell_PreviewKeyDown" MouseEnter="MouseEnter_Cell" MouseLeave="MouseLeave_Cell" Background="#FFDDC0" Foreground="Black" BorderBrush="Black" BorderThickness="0.75,0.75,4,4" Text="" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" GotFocus="Cell_Selected"/>
             </UniformGrid>
-            <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3" Height="480" Width="261" Canvas.Left="704" Canvas.Top="112"/>
-            <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3" Height="150" Width="215" Canvas.Left="730" Canvas.Top="607"/>
-            <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3" Height="95" Width="589" Canvas.Left="377" Canvas.Top="-1"/>
-            <UniformGrid Width="250" Height="250" Canvas.Left="710" Canvas.Top="117">
-                <Button x:Name="btn1" Content="1" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '1' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn2" Content="2" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '2' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn3" Content="3" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '3' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn4" Content="4" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '4' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn5" Content="5" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '5' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn6" Content="6" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '6' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn7" Content="7" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '7' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn8" Content="8" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '8' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-                <Button x:Name="btn9" Content="9" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '9' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
-            </UniformGrid>
-            <ToggleButton x:Name="TogglePencil" Cursor="Hand" Height="70" Width="248" Background="#FFF7E6" Canvas.Left="710" Canvas.Top="447" Content="Notes are OFF (N)" FontSize="24" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Toggles note/pencil marks" FontFamily="Verdana"/>
-            <Label x:Name="Sudoku_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Width="361" Height="44" FontSize="24" Content="&lt;Difficulty&gt; Sudoku Puzzle" Canvas.Left="11" Canvas.Top="7" FontFamily="Verdana"/>
-            <InkCanvas x:Name="ColourCanvas" Canvas.Left="11" Canvas.Top="100" Height="650" Width="649" Background="#19A7BBFF" Visibility="Hidden"/>
-            <Button x:Name="Back_btn" Cursor="Hand" Content="Save &amp; Quit" HorizontalAlignment="Left" Click="SaveQuit_Button_Click" Width="200" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Height="65" Canvas.Left="738" Canvas.Top="685" FontSize="22" ToolTip="Saves and exits to the Main Menu" Background="#FFF7E6" FontFamily="Verdana"/>
-            <Button x:Name="del_btn" Cursor="Hand" Content="Clear Cell (Del)" FontSize="24" FontFamily="Verdana" Click="Delete_Button_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Height="65" Canvas.Left="710" Canvas.Top="522" Width="248" ToolTip="Deletes a number from the selected cell" Background="#FFF7E6"/>
-            <Button x:Name="newPuzzle_btn" Cursor="Hand" Content="New Puzzle" Canvas.Left="738" Canvas.Top="615" Width="200" Height="65" FontSize="22" Click="New_Btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Starts a new Sudoku game" Background="#FFF7E6" FontFamily="Verdana"/>
-            <Button x:Name="Help_btn" Cursor="Hand" Content="Help Menu" Canvas.Left="597" Canvas.Top="47" Width="195" Height="40" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6" FontFamily="Verdana"/>
-            <Label x:Name="time_lbl" Content="Time: " Canvas.Left="797" Canvas.Top="8" Width="72" FontSize="20" FontFamily="Verdana"/>
-            <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" Canvas.Left="867" Canvas.Top="12" Width="90" FontSize="20" IsReadOnly="True" BorderBrush="{x:Null}" FontFamily="Verdana"/>
-            <Button x:Name="Pause_btn" Cursor="Hand" Content="Pause (P)" Canvas.Left="797" Canvas.Top="47" Width="160" Height="40" FontSize="22" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Pauses the stopwatch" Background="#FFF7E6" FontFamily="Verdana"/>
-            <CheckBox x:Name="nightmode_chkbx" Content="Dark mode" Canvas.Left="617" Canvas.Top="12" Checked="CheckBox_Checked" Height="30" Unchecked="CheckBox_Unchecked" FontSize="22" Width="146" FontFamily="Verdana"/>
-            <RichTextBox x:Name="PauseBlock" Background="#A5EEF1FF" Height="655" Canvas.Top="95" Width="672" IsReadOnly="True" FontSize="72" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Visibility="Hidden" VerticalScrollBarVisibility="Auto">
+            <Grid x:Name="Horizontal_lbls" Height="36" Canvas.Left="45" Canvas.Top="165" Width="650">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                    <ColumnDefinition Width="72" MaxWidth="72"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="0" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="0"/>
+                <Label Content="1" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="1" />
+                <Label Content="2" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="2" />
+                <Label Content="3" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="3"/>
+                <Label Content="4" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="4"/>
+                <Label Content="5" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="5"/>
+                <Label Content="6" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="6"/>
+                <Label Content="7" Width="72" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="7"/>
+                <Label Content="8" Width="72" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Column="8"/>
+            </Grid>
+            <Grid x:Name="Vertical_lbls" Height="645" Canvas.Left="15" Canvas.Top="200" Width="30">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                    <RowDefinition Height="72" />
+                </Grid.RowDefinitions>
+                <Label Content="0" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="0"/>
+                <Label Content="1" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="1"/>
+                <Label Content="2" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="2"/>
+                <Label Content="3" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="3"/>
+                <Label Content="4" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="4"/>
+                <Label Content="5" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="5"/>
+                <Label Content="6" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="6"/>
+                <Label Content="7" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="7"/>
+                <Label Content="8" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="8"/>
+            </Grid>
+            <Grid x:Name="ToolBox_grid" Height="475" Canvas.Left="705" Canvas.Top="177" Width="262">
+                <UniformGrid x:Name="Numbers_grid" Width="250" Height="250" Margin="0,5,0,0" VerticalAlignment="Top">
+                    <Button x:Name="btn1" Content="1" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '1' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn2" Content="2" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '2' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn3" Content="3" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '3' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn4" Content="4" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '4' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn5" Content="5" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '5' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn6" Content="6" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '6' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn7" Content="7" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '7' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn8" Content="8" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '8' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                    <Button x:Name="btn9" Content="9" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '9' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
+                </UniformGrid>
+
+                <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3"/>
+                <ToggleButton x:Name="TogglePencil" Cursor="Hand" Background="#FFF7E6" Content="Notes are OFF (N)" FontSize="24" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Toggles note/pencil marks" FontFamily="Verdana" Margin="5,335,5,75"/>
+                <Button x:Name="del_btn" Cursor="Hand" Content="Clear Cell (Del)" FontSize="24" FontFamily="Verdana" Click="Delete_Button_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Deletes a number from the selected cell" Background="#FFF7E6" Margin="5,410,5,5"/>
+                <ToggleButton x:Name="ToggleDrawing" Cursor="Hand" Background="#FFF7E6" Content="Drawing is OFF" FontSize="24" Checked="ToggleDrawing_Checked" Unchecked="ToggleDrawing_Unchecked" ToolTip="Toggles drawing/colouring over the puzzle" FontFamily="Verdana" Margin="5,260,5,150"/>
+                <Grid x:Name="DrawSelection_grid" Background="#FFEEF1FF" Width="252" Canvas.Left="708" Canvas.Top="117" Visibility="Hidden" Margin="4,4,5,220">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                    </Grid.RowDefinitions>
+                    <Label x:Name="selectPen_lbl" Grid.Row="0" FontSize="14" FontFamily="Verdana">
+                        <Bold>Select Pen/Highlighter Colour:</Bold>
+                    </Label>
+                    <RadioButton x:Name="radio_Red" Foreground="Red" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="1" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
+                        <Bold>Red</Bold>
+                    </RadioButton>
+                    <RadioButton x:Name="radio_Green" Foreground="Green" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="2" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
+                        <Bold>Green</Bold>
+                    </RadioButton>
+                    <RadioButton x:Name="radio_Blue" Foreground="Blue" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="3" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
+                        <Bold>Blue</Bold>
+                    </RadioButton>
+                    <RadioButton x:Name="radio_Orange" Foreground="Gold" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="4" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
+                        <Bold>Orange</Bold>
+                    </RadioButton>
+                    <Button x:Name="changeDA_Button" Width="250" Content="Change To Pen" Cursor="Hand" FontSize="20" FontFamily="Verdana" Background="#FFF7E6" Grid.Row="5" Click="ChangeDA_Button_Click" Margin="2,0,0,0"/>
+                    <Button x:Name="clearCanvas_Button" Width="250" Content="Clear Drawings" Cursor="Hand" FontSize="20" FontFamily="Verdana" Background="#FFF7E6" Grid.Row="6" Click="ClearDrawings_Button_Click" Margin="2,5,0,-5"/>
+                </Grid>
+            </Grid>
+            <Grid x:Name="TitleBox_grid" Height="74" Canvas.Left="11" Canvas.Top="7" Width="361">
+                <Label x:Name="Sudoku_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Width="361" Height="44" FontSize="24" Content="&lt;Difficulty&gt; Sudoku Puzzle" FontFamily="Verdana" Margin="0,0,0,30"/>
+                <Label x:Name="Rating_lbl" Content="Rating: &lt;Rating&gt;" FontSize="18" FontFamily="Verdana" Margin="426,6,-232,36"/>
+            </Grid>
+            <InkCanvas x:Name="ColourCanvas" Canvas.Left="45" Canvas.Top="201" Height="650" Width="649" Background="#19A7BBFF" Visibility="Hidden"/>
+            <Grid x:Name="ExitBox_grid" Height="150" Canvas.Left="727" Canvas.Top="677" Width="215">
+                <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3" Margin="0,-2,0,2"/>
+                <Button x:Name="Back_btn" Cursor="Hand" Content="Save &amp; Quit" HorizontalAlignment="Left" Click="SaveQuit_Button_Click" Width="200" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Saves and exits to the Main Menu" Background="#FFF7E6" FontFamily="Verdana" Margin="8,78,0,7"/>
+                <Button x:Name="newPuzzle_btn" Cursor="Hand" Content="New Puzzle" FontSize="22" Click="New_Btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Starts a new Sudoku game" Background="#FFF7E6" FontFamily="Verdana" Margin="8,8,7,77"/>
+            </Grid>
+
+            <Grid x:Name="TopRightBox_grid" Height="172" Canvas.Left="705" Canvas.Top="0" Width="262">
+                <Grid Height="34" Width="160" VerticalAlignment="Top" HorizontalAlignment="Center">
+                    <Label x:Name="time_lbl" Content="Time: " FontSize="20" FontFamily="Verdana" Margin="0,0,88,0"/>
+                    <TextBox x:Name="timer_txtbx" Text="&lt;time&gt;" Background="{x:Null}" FontSize="20" IsReadOnly="True" BorderBrush="{x:Null}" FontFamily="Verdana" Margin="70,4,0,3"/>
+                </Grid>
+                <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3"/>
+                <Button x:Name="Help_btn" Cursor="Hand" Content="Help Menu" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6" FontFamily="Verdana" Margin="5,70,5,0" VerticalAlignment="Top" Height="45"/>
+                <Button x:Name="Pause_btn" Cursor="Hand" Content="Pause (P)" FontSize="22" Click="Pause_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Pauses the stopwatch" Background="#FFF7E6" FontFamily="Verdana" Margin="5,120,5,0" VerticalAlignment="Top" Height="45"/>
+                <CheckBox x:Name="nightmode_chkbx" Content="Dark mode" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" FontSize="22" FontFamily="Verdana" Margin="0,40,0,0" HorizontalAlignment="Center" Height="30" VerticalAlignment="Top"/>
+            </Grid>
+            <RichTextBox x:Name="PauseBlock" Background="#A5EEF1FF" Height="651" Canvas.Top="200" Width="650" Visibility="Hidden" IsReadOnly="True" FontSize="72" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"  VerticalScrollBarVisibility="Auto" Canvas.Left="45">
                 <FlowDocument>
                     <Paragraph x:Name="RTB_LargeText" TextAlignment="Center" Padding="0"></Paragraph>
                     <Paragraph x:Name="RTB_HelpText" TextAlignment="Center" ></Paragraph>
                 </FlowDocument>
             </RichTextBox>
-            <Label x:Name="Rating_lbl" Content="Rating: &lt;Rating&gt;" Canvas.Left="11" Width="167" FontSize="18" FontFamily="Verdana" Canvas.Top="49"/>
-            <ToggleButton x:Name="ToggleDrawing" Cursor="Hand" Height="70" Width="250" Background="#FFF7E6" Canvas.Left="710" Canvas.Top="372" Content="Drawing is OFF" FontSize="24" Checked="ToggleDrawing_Checked" Unchecked="ToggleDrawing_Unchecked" ToolTip="Toggles drawing/colouring over the puzzle" FontFamily="Verdana"/>
-            <Grid x:Name="DrawSelection_grid" Background="#FFEEF1FF" Height="250" Width="252" Canvas.Left="708" Canvas.Top="117" Visibility="Hidden">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="40" />
-                    <RowDefinition Height="40" />
-                </Grid.RowDefinitions>
-                <Label x:Name="selectPen_lbl" Grid.Row="0" FontSize="14" FontFamily="Verdana">
-                    <Bold>Select Pen/Highlighter Colour:</Bold>
-                </Label>
-                <RadioButton x:Name="radio_Red" Foreground="Red" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="1" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
-                    <Bold>Red</Bold>
-                </RadioButton>
-                <RadioButton x:Name="radio_Green" Foreground="Green" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="2" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
-                    <Bold>Green</Bold>
-                </RadioButton>
-                <RadioButton x:Name="radio_Blue" Foreground="Blue" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="3" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
-                    <Bold>Blue</Bold>
-                </RadioButton>
-                <RadioButton x:Name="radio_Orange" Foreground="Gold" FontSize="18" FontFamily="Verdana" GroupName="Colours" Grid.Row="4" Margin="30,0,0,0" Checked="Radio_Colour_Checked">
-                    <Bold>Orange</Bold>
-                </RadioButton>
-                <Button x:Name="changeDA_Button" Width="250" Content="Change To Pen" Cursor="Hand" FontSize="20" FontFamily="Verdana" Background="#FFF7E6" Grid.Row="5" Click="ChangeDA_Button_Click" Margin="2,0,0,0"/>
-                <Button x:Name="clearCanvas_Button" Width="250" Content="Clear Drawings" Cursor="Hand" FontSize="20" FontFamily="Verdana" Background="#FFF7E6" Grid.Row="6" Click="ClearDrawings_Button_Click" Margin="2,5,0,-5"/>
+            <Grid x:Name="HelpBox_grid" Height="118" Width="650" Canvas.Left="45" Canvas.Top="47">
+                <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3" Margin="0"/>
+                <Button x:Name="Show_Cands_btn" Cursor="Hand" Content="Update Candidates" Click="Show_Cands_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Shows possible numbers in empty cells" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="True" Margin="10,10,0,0" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Width="220" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button x:Name="Helper_btn" Cursor="Hand" Content="Show Clue (WIP)" Click="Helper_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Reveals a clue" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="False" Margin="10,60,0,13" HorizontalAlignment="Left" Width="220"/>
+                <Label x:Name="clue_lbl" Content="Clue:" FontSize="20" FontFamily="Verdana" IsEnabled="False" Margin="235,10,10,77" HorizontalContentAlignment="Center" TextOptions.TextFormattingMode="Display" FontWeight="Bold"/>
+                <TextBox x:Name="clue_txtbx" Text="&lt;clue&gt;" Background="{x:Null}" FontSize="20" IsReadOnly="True" BorderBrush="Black" FontFamily="Verdana" IsEnabled="False" Margin="235,41,10,0" Height="67" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextOptions.TextFormattingMode="Display"/>
             </Grid>
-            <Button x:Name="Helper_btn" Cursor="Hand" Content="Show Clue (WIP)" Canvas.Left="392" Canvas.Top="47" Width="200" Height="40" Click="Helper_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Help menu" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="False"/>
-            <Label x:Name="clue_lbl" Content="Clue:" Canvas.Left="415" Canvas.Top="8" Width="72" FontSize="20" FontFamily="Verdana" IsEnabled="False"/>
-            <TextBox x:Name="clue_txtbx" Text="&lt;clue&gt;" Background="{x:Null}" Canvas.Left="487" Width="90" FontSize="20" IsReadOnly="True" BorderBrush="{x:Null}" FontFamily="Verdana" Height="30" Canvas.Top="12" IsEnabled="False"/>
         </Canvas>
     </Border>
 </Window>

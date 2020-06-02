@@ -43,8 +43,8 @@ namespace SudokuSolverSetter
             RemoveNumbers(grid, solve, symmetry);
             return grid;
         }
-        #region Private Functions
-        private SudokuGrid ConstructGrid()
+        #region Public Functions
+        public SudokuGrid ConstructGrid()
         {
             SudokuGrid grid = new SudokuGrid
             {
@@ -69,7 +69,7 @@ namespace SudokuSolverSetter
             AddNeighbours(grid);
             return grid;
         }
-        private void StringToGrid(SudokuGrid puzzleGrid, string puzzleString)
+        public void StringToGrid(SudokuGrid puzzleGrid, string puzzleString)
         {
             int counter = 0;
             for (int x = 0; x < 9; x++)
@@ -93,7 +93,7 @@ namespace SudokuSolverSetter
         /// For each cell, add all neighbouring cells to the list of cells property
         /// </summary>
         /// <param name="grid"></param>
-        private void AddNeighbours(SudokuGrid grid)
+        public void AddNeighbours(SudokuGrid grid)
         {
             
             for (int i = 0; i < 9; i++)
@@ -141,7 +141,7 @@ namespace SudokuSolverSetter
                 }
             }
         }
-        private void RemoveNumbers(SudokuGrid grid, PuzzleSolverObjDS solve, bool symmetry)
+        public void RemoveNumbers(SudokuGrid grid, PuzzleSolverObjDS solve, bool symmetry)
         {
             ///This section consists of constantly removing parallel numbers, e.g. [0,0] and [8,8] or [2,5] and [5,2], and checking if the puzzle is still valid (i.e. still has only one solution)
             
@@ -341,7 +341,7 @@ namespace SudokuSolverSetter
         /// <param name="grid"></param>
         /// <param name="sudokuArray">contains the original puzzle prior to solve</param>
         /// <returns></returns>
-        private SudokuGrid RestartPuzzle(SudokuGrid grid, char[][] sudokuArray)
+        public SudokuGrid RestartPuzzle(SudokuGrid grid, char[][] sudokuArray)
         {
             for (int x = 0; x < 9; x++)//O(n^2)
             {
@@ -352,8 +352,7 @@ namespace SudokuSolverSetter
             }
             return grid;
         }
-        #endregion
-        #region Public Functions
+        
         /// <summary>
         /// Shuffles the candidate values, used in Backtracking solvers
         /// </summary>

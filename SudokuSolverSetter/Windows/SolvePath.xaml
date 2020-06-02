@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolverSetter"
         mc:Ignorable="d"
-        Title="SolvePath" Height="500" Width="800" ResizeMode="CanMinimize">
+        Title="SolvePath" Height="900" Width="800" ResizeMode="CanMinimize">
     <Grid>
 
-        <TextBox x:Name="solvePathBlock" HorizontalAlignment="Left" Margin="10,60,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="400" Width="775" Background="WhiteSmoke" FontFamily="Consolas" FontSize="11" VerticalScrollBarVisibility="Auto" IsReadOnly="True"></TextBox>
+        <TextBox x:Name="solvePathBlock" HorizontalAlignment="Left" Margin="10,60,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="801" Width="775" Background="WhiteSmoke" FontFamily="Consolas" FontSize="11" VerticalScrollBarVisibility="Auto" IsReadOnly="True"></TextBox>
 
         <Label Content="Solve Path" Margin="170,-1,429,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Center" FontSize="36" Height="55" Width="195" FontWeight="SemiBold"/>
-        <Rectangle HorizontalAlignment="Left" Height="402" Margin="9,59,0,0" Stroke="Black" VerticalAlignment="Top" Width="777" IsEnabled="False"/>
-        <Button x:Name="Close_btn" Content="Back" HorizontalAlignment="Left" Click="Close_Button_Click" Width="100" FontSize="16" Margin="10,10,0,414"/>
+        <Rectangle HorizontalAlignment="Left" Height="802" Margin="9,59,0,0" Stroke="Black" VerticalAlignment="Top" Width="777" IsEnabled="False"/>
+        <Button x:Name="Close_btn" Content="Back" HorizontalAlignment="Left" Click="Close_Button_Click" Width="100" FontSize="16" Margin="10,10,0,817"/>
         <TextBlock x:Name="AdditionalInfo" HorizontalAlignment="Left" Height="44" Margin="395,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="305"/>
 
     </Grid>

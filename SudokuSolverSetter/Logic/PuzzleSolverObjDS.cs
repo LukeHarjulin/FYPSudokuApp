@@ -170,14 +170,14 @@ namespace SudokuSolverSetter
                 g_Difficulty = "Advanced";
             return g_Gen.CheckIfSolved(grid);
         }
+
+        #region Strategy-Usage Solver method
         /// <summary>
         /// Looks at all cells and removes numbers from candidate lists that can't exist in that cell. 
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
-#region Strategy-Usage Solver method
-        
-        private bool CleanCandidateLists(SudokuGrid grid)
+        public bool CleanCandidateLists(SudokuGrid grid)
         {
             bool changeMade = false;
             for (int i = 0; i < 9; i++)
@@ -1506,7 +1506,7 @@ namespace SudokuSolverSetter
             return changeMade;
         }
 #endregion
-#region Backtracking Solver
+        #region Backtracking Solver
         /// <summary>
         /// Removes all values from the current cell's candidate list that are also found within neighbouring cells
         /// I.e. Cells that are in the same groups as the cell in question.
@@ -1677,10 +1677,7 @@ namespace SudokuSolverSetter
             return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
         }
 #endregion
-
-
-        //Non-functional/Incomplete - IGNORE REGION "SOLVER FOR SOLVING CELL BY CELL BUTTON"
-#region Solver for Solving Cell by Cell button
+        #region Solver for Solving Cell by Cell button
         public bool SolveNextStep(SudokuGrid grid)
         {
             if (g_Gen.CheckIfSolved(grid))

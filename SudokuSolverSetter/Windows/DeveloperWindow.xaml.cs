@@ -260,7 +260,7 @@ namespace SudokuSolverSetter
             if (rating != 0)
             {
                 times[2] = 4 + "," + (averageTime / iterations / 1000).ToString();
-                string outputStr = "After " + iterations + " iteration(s), average times taken to solve\r\nDifficulty (WIP): " + rating + "\r\n";
+                string outputStr = "After " + iterations + " iteration(s), average times taken to solve\r\nMeasured Puzzle Difficulty Level(experimental): " + puzzleSolver.g_Difficulty + "\r\nMeasured Rating (experimental): " + rating + "\r\n";
                 times[0] = times[0].Remove(0, 2);
                 outputStr += solved ? "Strategy Solver using Objects: " + times[0] + "\r\n" : "Strategy Solver using Objects(trial-and-error required): " + times[0] + "\r\n";
                 times[1] = times[1].Remove(0, 2);
@@ -411,51 +411,7 @@ namespace SudokuSolverSetter
                     cellNum++;
                 }
             }
-
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    int nbCounter = 0;//nbCounter is neighbourcounter
-                    grid.Rows[i][j].NeighbourCells = new List<List<Cell>>(3)
-                    {
-                        new List<Cell>(8),
-                        new List<Cell>(8),
-                        new List<Cell>(8)
-                    };
-                    for (int k = 0; k < 9; k++)
-                    {
-                        if (j != k)
-                        {
-                            grid.Rows[i][j].NeighbourCells[0].Add(grid.Rows[i][k]);//add neighbour in i
-                            nbCounter++;
-                        }
-                    }
-                    nbCounter = 0;
-                    for (int l = 0; l < 9; l++)
-                    {
-                        if (l != i)
-                        {
-                            grid.Rows[i][j].NeighbourCells[1].Add(grid.Rows[l][j]);//add neighbour in column
-                            nbCounter++;
-                        }
-                    }
-                    nbCounter = 0;
-                    int[] blockIndexes = gen.BlockIndexGetter(grid.Rows[i][j].BlockLoc);
-
-                    for (int x = blockIndexes[0]; x < blockIndexes[0] + 3; x++)
-                    {
-                        for (int y = blockIndexes[1]; y < blockIndexes[1] + 3; y++)
-                        {
-                            if (grid.Rows[x][y] != grid.Rows[i][j])
-                            {
-                                grid.Rows[i][j].NeighbourCells[2].Add(grid.Rows[x][y]);//add neighbour in block
-                                nbCounter++;
-                            }
-                        }
-                    }
-                }
-            }
+            gen.AddNeighbours(grid);
             int method = 1;
             if ((Button)sender == Backtracking_Solve_Obj)
             {
@@ -505,11 +461,11 @@ namespace SudokuSolverSetter
                         PopulateGrid(grid, g_txtBxList);
                         if (solved && !puzzleSolver.g_BacktrackingReq)
                         {
-                            MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Rating(experimental): " + rating);
+                            MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Difficulty Level(experimental): " + puzzleSolver.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + rating);
                         }
                         else if (puzzleSolver.g_BacktrackingReq)
                         {
-                            MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with trial and error, unable to finish using implemented strategies.\r\nMeasured Puzzle Rating(experimental): " + rating);
+                            MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with trial and error, unable to finish using implemented strategies." + "\r\nMeasured Puzzle Difficulty Level(experimental): " + puzzleSolver.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + rating);
                         }
                         SolvePath path = new SolvePath();
                         path.PopulateTextBlock(rating, g_currentTime, puzzleSolver);
@@ -657,27 +613,30 @@ namespace SudokuSolverSetter
                         }
                     }
                 }
-
-                if (g_solve.SolveNextStep(grid))
+                if (!gen.CheckIfSolved(grid))
                 {
-                    if (g_solve.g_Rating != 0)
+                    if (g_solve.SolveNextStep(grid))
                     {
-                        PopulateGrid(grid, g_txtBxList);
-                        if (!g_solve.g_BacktrackingReq)
+                        if (g_solve.g_Rating != 0)
                         {
-                            MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Rating(experimental): " + g_solve.g_Difficulty);
+                            PopulateGrid(grid, g_txtBxList);
+                            if (!g_solve.g_BacktrackingReq)
+                            {
+                                MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + g_solve.g_Rating);
+                            }
+                            else if (g_solve.g_BacktrackingReq)
+                            {
+                                MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with trial and error, unable to finish using implemented strategies." + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + g_solve.g_Rating);
+                            }
+                            SolvePath path = new SolvePath();
+                            path.PopulateTextBlock(g_solve.g_Rating, g_currentTime, g_solve);
+                            g_solve.g_Rating = 0;
                         }
-                        else if (g_solve.g_BacktrackingReq)
-                        {
-                            MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with trial and error, unable to finish using implemented strategies.\r\nMeasured Puzzle Rating(experimental): " + g_solve.g_Difficulty);
-                        }
-                        SolvePath path = new SolvePath();
-                        path.PopulateTextBlock(g_solve.g_Rating, g_currentTime, g_solve);
                     }
-                    
+                    PopulateGrid(grid, txtBxList);
+                    strategy_lbl.Content = "Strategy just used:\r\n" + g_solve.g_strategy;
                 }
-                PopulateGrid(grid, txtBxList);
-                strategy_lbl.Content = "Strategy: " + g_solve.g_strategy;
+                
             }
             catch (Exception ex)
             {
@@ -743,6 +702,7 @@ namespace SudokuSolverSetter
                 PopulateGridString(importPuzzle.puzzleStr);
                 difficulty_lbl.Content = "Difficulty: Unknown";
                 g_solve = new PuzzleSolverObjDS();
+                strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
             }
             
         }
@@ -776,6 +736,7 @@ namespace SudokuSolverSetter
             }
             givenNums_lbl.Content = "Given Numbers: " + givensCounter;
             difficulty_lbl.Content = "Difficulty: Unknown";
+            strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
             g_txtBxList = PopulateGrid(grid, g_txtBxList);
             g_PuzzleString = g_gen.SudokuToString(grid);
             Clipboard.SetText(g_PuzzleString);
@@ -908,6 +869,7 @@ namespace SudokuSolverSetter
                 givenNums_lbl.Content = "Given Numbers: " + givensCounter;
                 difficulty_lbl.Content = "Difficulty: " + ((ComboBoxItem)PuzzleDifficulty_combo.SelectedItem).Content.ToString();
                 g_solve = new PuzzleSolverObjDS();
+                strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
             }
         }
         private void Symmetry_checkbox_Checked(object sender, RoutedEventArgs e)
@@ -964,6 +926,7 @@ namespace SudokuSolverSetter
             }
             g_solve = new PuzzleSolverObjDS();
             PopulateGridString(g_PuzzleString);
+            strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
         }
     }
 }

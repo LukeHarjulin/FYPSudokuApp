@@ -65,6 +65,7 @@ namespace SudokuSolverSetter
                     XmlNodeList difficulties = label.ChildNodes;
                     foreach (XmlNode difficulty in difficulties)
                     {
+                        int counter = 0;
                         List<List<string>> allPuzzles = new List<List<string>>();
                         foreach (XmlNode puzzle in difficulty)
                         {
@@ -93,6 +94,8 @@ namespace SudokuSolverSetter
                             }
                             else
                                 allPuzzles.Add(pzle);
+                            if (++counter == 500)
+                                break;
                         }
                         for (int n = 0; n < allPuzzles.Count; n++)
                         {
@@ -338,8 +341,6 @@ namespace SudokuSolverSetter
         {
             ReactToSelectedPuzzle((TextBox)sender);
         }
-        #endregion
-
         private void Expander_Expanded(object sender, RoutedEventArgs e)
         {
             if (((StackPanel)((ScrollViewer)((Expander)sender).Content).Content).Children.Count > 0)
@@ -374,5 +375,6 @@ namespace SudokuSolverSetter
                 Completed_Expander.IsExpanded = false;
             }
         }
+        #endregion
     }
 }
