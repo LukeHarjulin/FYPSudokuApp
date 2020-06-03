@@ -339,7 +339,7 @@ namespace SudokuSolverSetter
                 {
                     btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
                     del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false; Pause_btn.IsEnabled = false; Help_btn.IsEnabled = false; nightmode_chkbx.IsEnabled = false;
-                    SudokuGrid.IsEnabled = false;
+                    SudokuGrid.IsEnabled = false; Update_Cands_btn.IsEnabled = false; Reset_Cands_btn.IsEnabled = false;
                     for (int i = 0; i < 81; i++)
                     {
                         g_Cells[i].IsReadOnly = true;
@@ -613,9 +613,6 @@ namespace SudokuSolverSetter
                     case "ToggleButton":
                         ((ToggleButton)grid.Children[i]).Foreground = darkTextColour; ((ToggleButton)grid.Children[i]).Background = darkButtonColour;
                         break;
-                    case "RadioButton":
-                        ((RadioButton)grid.Children[i]).Foreground = darkTextColour;
-                        break;
                     case "Rectangle":
                         ((Rectangle)grid.Children[i]).Stroke = darkTextColour;
                         break;
@@ -652,9 +649,6 @@ namespace SudokuSolverSetter
                     case "ToggleButton":
                         ((ToggleButton)grid.Children[i]).Foreground = Brushes.Black; ((ToggleButton)grid.Children[i]).Background = buttonColour;
                         break;
-                    case "RadioButton":
-                        ((RadioButton)grid.Children[i]).Foreground = Brushes.Black;
-                        break;
                     case "Rectangle":
                         ((Rectangle)grid.Children[i]).Stroke = Brushes.Black;
                         break;
@@ -682,20 +676,26 @@ namespace SudokuSolverSetter
             if (Timer.IsRunning)
             {
                 TimeSpan ts = Timer.Elapsed.Add(g_StartingTS);
-                if (ts.Seconds < 10)
-                {
-                    g_currentTime = ts.Minutes + ":0" + ts.Seconds;
-                    if (ts.Hours > 0)
-                        g_currentTime = ts.Hours + ":" + ts.Minutes + ":0" + ts.Seconds;
-                }
-                else if (ts.Hours > 0)
-                {
-                    g_currentTime = ts.Hours + ":" + ts.Minutes + ":" + ts.Seconds;
-                }
+                g_currentTime = "";
+                if (ts.Hours < 1)
+                    g_currentTime += "0:";
                 else
-                {
-                    g_currentTime = ts.Minutes + ":" + ts.Seconds;
-                }
+                    g_currentTime += ts.Hours + ":";
+
+                if (ts.Minutes < 1)
+                    g_currentTime += "00:";
+                else if (ts.Minutes < 10)
+                    g_currentTime += "0" + ts.Minutes + ":";
+                else
+                    g_currentTime += ts.Minutes + ":";
+
+                if (ts.Seconds < 1)
+                    g_currentTime += "00";
+                else if (ts.Seconds < 10)
+                    g_currentTime += "0" + ts.Seconds;
+                else
+                    g_currentTime += ts.Seconds;
+
                 timer_txtbx.Text = g_currentTime;
             }
         }
@@ -858,12 +858,7 @@ namespace SudokuSolverSetter
         {
             ColourCanvas.Strokes.Clear();
         }
-        /// <summary>
-        /// Presents the possible numbers that can go into the cells
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Show_Cands_btn_Click(object sender, RoutedEventArgs e)
+        private void Update_Cands_btn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -894,6 +889,80 @@ namespace SudokuSolverSetter
                             grid.Rows[r][c] = new Cell()
                             {
                                 Candidates = candis,
+                                Num = '0',
+                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
+                                XLocation = r,
+                                YLocation = c,
+                                ReadOnly = false
+                            };
+                        }
+                        else
+                        {
+                            grid.Rows[r][c] = new Cell()
+                            {
+                                Candidates = new List<char> { },
+                                Num = g_Cells[cellNum].Text[0],
+                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
+                                XLocation = r,
+                                YLocation = c,
+                                ReadOnly = true
+                            };
+                        }
+
+                        cellNum++;
+                    }
+                }
+                g_Gen.AddNeighbours(grid);
+                PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
+                if (solver.CleanCandidateLists(grid))
+                {
+                    int index = 0;
+                    for (int i = 0; i < 9; i++)
+                    {
+                        for (int j = 0; j < 9; j++)
+                        {
+                            if (g_Cells[index].Text == "" || g_Cells[index].Text.Length > 1)
+                            {
+                                string candis = "";
+                                for (int k = 0; k < grid.Rows[i][j].Candidates.Count; k++)
+                                {
+                                    candis += grid.Rows[i][j].Candidates[k];
+                                }
+                                g_Cells[index].Text = candis;
+                                g_Cells[index].FontSize = 16;
+                            }
+                            index++;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void Reset_Cands_btn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SudokuGrid grid = new SudokuGrid
+                {
+                    Rows = new Cell[9][]
+                };
+                int cellNum = 0;
+
+                //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
+                for (int r = 0; r < grid.Rows.Length; r++)
+                {
+                    grid.Rows[r] = new Cell[9];
+                    for (int c = 0; c < grid.Rows[r].Length; c++)
+                    {
+                        if (g_Cells[cellNum].Text == "" || g_Cells[cellNum].Text.Length > 1 || g_Cells[cellNum].FontSize == 16)
+                        {
+                            grid.Rows[r][c] = new Cell()
+                            {
+                                Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' },
                                 Num = '0',
                                 BlockLoc = (r / 3) * 3 + (c / 3) + 1,
                                 XLocation = r,

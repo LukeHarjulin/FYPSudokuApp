@@ -137,6 +137,7 @@
                 <Label Content="8" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontStyle="Italic" Grid.Row="8"/>
             </Grid>
             <Grid x:Name="ToolBox_grid" Height="475" Canvas.Left="705" Canvas.Top="177" Width="262">
+                <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3"/>
                 <UniformGrid x:Name="Numbers_grid" Width="250" Height="250" Margin="0,5,0,0" VerticalAlignment="Top">
                     <Button x:Name="btn1" Content="1" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '1' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
                     <Button x:Name="btn2" Content="2" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '2' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
@@ -149,7 +150,7 @@
                     <Button x:Name="btn9" Content="9" FontSize="36" FontFamily="Verdana" FontStyle="Italic" Click="Num_Button_Click" ToolTip="Enters '9' into the selected cell" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" Background="#FFF7E6"/>
                 </UniformGrid>
 
-                <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3"/>
+                
                 <ToggleButton x:Name="TogglePencil" Cursor="Hand" Background="#FFF7E6" Content="Notes are OFF (N)" FontSize="24" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Toggles note/pencil marks" FontFamily="Verdana" Margin="5,335,5,75"/>
                 <Button x:Name="del_btn" Cursor="Hand" Content="Clear Cell (Del)" FontSize="24" FontFamily="Verdana" Click="Delete_Button_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" ToolTip="Deletes a number from the selected cell" Background="#FFF7E6" Margin="5,410,5,5"/>
                 <ToggleButton x:Name="ToggleDrawing" Cursor="Hand" Background="#FFF7E6" Content="Drawing is OFF" FontSize="24" Checked="ToggleDrawing_Checked" Unchecked="ToggleDrawing_Unchecked" ToolTip="Toggles drawing/colouring over the puzzle" FontFamily="Verdana" Margin="5,260,5,150"/>
@@ -211,10 +212,10 @@
             </RichTextBox>
             <Grid x:Name="HelpBox_grid" Height="118" Width="650" Canvas.Left="45" Canvas.Top="47">
                 <Rectangle Fill="Transparent" Stroke="Black" StrokeThickness="3" Margin="0"/>
-                <Button x:Name="Show_Cands_btn" Cursor="Hand" Content="Update Candidates" Click="Show_Cands_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Shows possible numbers in empty cells" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="True" Margin="10,10,0,0" Height="45" VerticalAlignment="Top" HorizontalAlignment="Left" Width="220" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                <Button x:Name="Helper_btn" Cursor="Hand" Content="Show Clue (WIP)" Click="Helper_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Reveals a clue" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="False" Margin="10,60,0,13" HorizontalAlignment="Left" Width="220"/>
-                <Label x:Name="clue_lbl" Content="Clue:" FontSize="20" FontFamily="Verdana" IsEnabled="False" Margin="235,10,10,77" HorizontalContentAlignment="Center" TextOptions.TextFormattingMode="Display" FontWeight="Bold"/>
-                <TextBox x:Name="clue_txtbx" Text="&lt;clue&gt;" Background="{x:Null}" FontSize="20" IsReadOnly="True" BorderBrush="Black" FontFamily="Verdana" IsEnabled="False" Margin="235,41,10,0" Height="67" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextOptions.TextFormattingMode="Display"/>
+                <Button x:Name="Update_Cands_btn" Cursor="Hand" Content="Update Candidates" Click="Update_Cands_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Updates candidate numbers in empty cells" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="True" Margin="10,9,0,0" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="220" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button x:Name="Reset_Cands_btn" Cursor="Hand" Content="Reset Candidates" Click="Reset_Cands_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Resets and fills candidate numbers in empty cells" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="True" Margin="10,62,0,0" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="220" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button x:Name="Helper_btn" Cursor="Hand" Content="Show Clue (WIP)" Click="Helper_btn_Click" MouseEnter="Button_Mouse_Enter" MouseLeave="Button_Mouse_Leave" FontSize="22" ToolTip="Reveals a clue" Background="#FFF7E6" FontFamily="Verdana" IsEnabled="False" Margin="307,10,0,75" HorizontalAlignment="Left" Width="260"/>
+                <TextBox x:Name="clue_txtbx" Text="&lt;clue&gt;" Background="{x:Null}" FontSize="18" IsReadOnly="True" BorderBrush="Black" FontFamily="Verdana" IsEnabled="False" Margin="235,48,10,0" Height="64" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextOptions.TextFormattingMode="Display"/>
             </Grid>
         </Canvas>
     </Border>

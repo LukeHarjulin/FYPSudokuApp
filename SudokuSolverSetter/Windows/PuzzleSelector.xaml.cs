@@ -115,6 +115,23 @@ namespace SudokuSolverSetter
                                     Started_STKPNL.Children.Add(border);
                                 else
                                     Completed_STKPNL.Children.Add(border);
+                                switch (difficulty.Name)
+                                {
+                                    case "Beginner":
+                                        difficulty_Num = 0;
+                                        break;
+                                    case "Moderate":
+                                        difficulty_Num = 1;
+                                        break;
+                                    case "Advanced":
+                                        difficulty_Num = 2;
+                                        break;
+                                    case "Extreme":
+                                        difficulty_Num = 3;
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
                             else
                             {

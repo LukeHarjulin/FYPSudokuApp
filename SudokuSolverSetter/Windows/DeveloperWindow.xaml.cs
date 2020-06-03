@@ -381,7 +381,6 @@ namespace SudokuSolverSetter
                 grid.Rows[r] = new Cell[9];
                 for (int c = 0; c < grid.Rows[r].Length; c++)
                 {
-                    string blockLoc = g_txtBxList[cellNum].Name[5].ToString();
                     if (g_txtBxList[cellNum].Text.Length > 1)
                     {
                         g_txtBxList[cellNum].Text = "0";
@@ -389,7 +388,7 @@ namespace SudokuSolverSetter
                         {
                             Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' },
                             Num = '0',
-                            BlockLoc = Convert.ToInt32(blockLoc),
+                            BlockLoc = (r / 3) * 3 + (c / 3) + 1,
                             XLocation = r,
                             YLocation = c,
                             ReadOnly = false
@@ -401,7 +400,7 @@ namespace SudokuSolverSetter
                         {
                             Candidates = new List<char> { },
                             Num = g_txtBxList[cellNum].Text[0],
-                            BlockLoc = Convert.ToInt32(blockLoc),
+                            BlockLoc = (r / 3) * 3 + (c / 3) + 1,
                             XLocation = r,
                             YLocation = c,
                             ReadOnly = true
@@ -530,7 +529,6 @@ namespace SudokuSolverSetter
                     grid.Rows[r] = new Cell[9];
                     for (int c = 0; c < grid.Rows[r].Length; c++)
                     {
-                        string blockLoc = g_txtBxList[cellNum].Name[5].ToString();
                         if (g_txtBxList[cellNum].Text.Length > 1)
                         {
                             List<char> candiList = new List<char>(g_txtBxList[cellNum].Text.Length);
@@ -546,7 +544,7 @@ namespace SudokuSolverSetter
                             {
                                 Candidates = candiList,
                                 Num = '0',
-                                BlockLoc = Convert.ToInt32(blockLoc),
+                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
                                 XLocation = r,
                                 YLocation = c,
                                 ReadOnly = false
@@ -558,7 +556,7 @@ namespace SudokuSolverSetter
                             {
                                 Candidates = new List<char> { },
                                 Num = g_txtBxList[cellNum].Text[0],
-                                BlockLoc = Convert.ToInt32(blockLoc),
+                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
                                 XLocation = r,
                                 YLocation = c,
                                 ReadOnly = true
