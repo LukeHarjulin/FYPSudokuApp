@@ -313,7 +313,7 @@ namespace SudokuSolverSetter
                         "Therefore, each group must contain every number from 1 - 9.\r\n" +
                         "A pop up will occur to notify you if you have completed the puzzle.\r\n\r\n\r\n" +
                         "Tips on How to Play:\r\n\r\n" +
-                         "The most basic strategy is to look at any empty cell within the puzzle and then look at all the groups that it belongs to. Then, make a note of all the numbers that can go into that cell.\r\n" +
+                        "The most basic strategy is to look at any empty cell within the puzzle and then look at all the groups that it belongs to. Then, make a note of all the numbers that can go into that cell.\r\n" +
                         "To make note of what numbers can exist within a cell, toggle the \"Notes\" button by either clicking it or by pressing ‘N’ on your keyboard.\r\n\r\n" +
                         "Another basic strategy is to look at a group and identify which numbers are left to be placed in that group.\r\n" +
                         "Then, for each number that doesn't exist in that group, look at each cell within that group and check whether that possible number can be placed in that cell by looking at the other groups that the cell belongs to.\r\n\r\n" +
@@ -327,7 +327,11 @@ namespace SudokuSolverSetter
                         "\"What does the rating mean?\"\r\n\r\n" +
                         "The rating of the puzzle is based off the weighting and frequency of simplest strategies required to solve the puzzle.\r\n\r\n" +
                         "Dark Mode is available above the 'Help Menu' button, for those who prefer a darker colour scheme.\r\n\r\n\r\n" +
-                        "The \"Show Clue\" button is currently non-functional.\r\n\r\n");
+                        "Help Whilst Playing:\r\n\r\n" +
+                        "If you enter a number into a cell that already exists in a corresponding row/column/block, the cell will be highlighted red to inform you of your mistake.\r\n\r\n" +
+                        "The Update Candidates button is a helper tool that uses the current state of the puzzle to display, in each empty cell, the possible digits that can go into a cell - based off of the numbers missing from the row/column/block that the cell shares.\r\n\r\n" +
+                        "The Reset Candidates button does the same as the Update Candidates button, however it ignores any updates to the candidate numbers that you have applied.\r\n\r\n" +
+                        "The \"Show Clue\" button is another helper tool that is currently unimplemented.\r\n\r\n");
                     RTB_LargeText.FontSize = 42;
                     RTB_HelpText.FontSize = 18;
                 }

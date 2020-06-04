@@ -401,8 +401,12 @@ namespace SudokuSolverSetter
                 List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                 for (int col = 0; col < 9; col++)
                 {
-                    if (grid.Rows[row][col].Num == 0)
+                    if (grid.Rows[row][col].Num == '0')
                     {
+                        if (grid.Rows[row][col].Candidates.Count == 0)
+                        {                            
+                            MessageBox.Show("A strategy has malfunctioned and caused a contradiction");//Catches if a strategy makes a mistake by causing a cell to have no candidates
+                        }
                         return false;
                     }
                     else if (numberList.Contains(grid.Rows[row][col].Num))

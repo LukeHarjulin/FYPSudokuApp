@@ -926,5 +926,49 @@ namespace SudokuSolverSetter
             PopulateGridString(g_PuzzleString);
             strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
         }
+
+        private void ReGradePuzzles_btn_Click(object sender, RoutedEventArgs e)
+        {
+            string fileName = "";
+            fileName += Symmetry_checkbox.IsChecked == true ? @"Symmetric/SudokuPuzzles.xml" : @"NonSymmetric/SudokuPuzzles.xml";
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                Stopwatch Timer = new Stopwatch();
+                Timer.Start();
+                doc.Load(fileName);
+                XmlNode sudokuPuzzles = doc.DocumentElement.SelectSingleNode("/SudokuPuzzles");
+                XmlNodeList puzzleLabels = sudokuPuzzles.ChildNodes;
+                string sudokuString = "";
+                int counter = 0;
+                foreach (XmlNode label in puzzleLabels)
+                {
+                    XmlNodeList difficulties = label.ChildNodes;
+                    foreach (XmlNode difficulty in difficulties)
+                    {
+                        List<List<string>> allPuzzles = new List<List<string>>();
+                        foreach (XmlNode puzzle in difficulty)
+                        {
+                            counter++;
+                            if (label.Name == "Started")
+                                sudokuString = puzzle["OriginalSudokuString"].InnerText;
+                            else
+                                sudokuString = puzzle["SudokuString"].InnerText;
+                            SudokuGrid grid = g_gen.ConstructGrid();
+                            g_gen.StringToGrid(grid, sudokuString);
+                            g_solve.Solver(grid, 3);
+                            puzzle["DifficultyRating"].InnerText = g_solve.g_Rating.ToString();
+                        }
+                    }
+                }
+                doc.Save(fileName);
+                Timer.Stop();
+                MessageBox.Show("Successfully re-graded all Symmetric/Non-Symmetric puzzles in storage\r\n" + "Elapsed Time: " + Timer.Elapsed + "\r\nNumber of puzzles re-graded: " + counter);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Warning! No existing puzzles found in folder.");
+            }
+        }
     }
 }

@@ -8,8 +8,9 @@ namespace SudokuSolverSetter
     /// </summary>
     public class PuzzleSolverObjDS
     {
-        //backtracking required?                change made?            moderate?           advanced?
-        public bool g_BacktrackingReq = false, g_changeMade = false, g_moderate = false, g_advanced = false;
+        #region Initialisation
+        //backtracking required?                change made?            moderate?           advanced?           add to solve path?
+        public bool g_BacktrackingReq = false, g_changeMade = false, g_moderate = false, g_advanced = false, g_PathTracking = false;
         public int g_Rating = 0;//puzzle rating score
         public int g_StepCounter = 0;//number of steps to solve the puzzle
         public string g_Difficulty = "Beginner", g_strategy = "";//puzzle difficulty
@@ -17,19 +18,24 @@ namespace SudokuSolverSetter
         public List<string> g_SolvePath = new List<string>();//solve path using strategies
         public List<string> g_BacktrackingPath = new List<string>();//solve path using backtracker
         public int[] g_StrategyCount = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        
+        #endregion
+        #region Solver Decisions Method
         /// <summary>
-        /// 
+        /// Once called, the solver will attempt to entirely solve the puzzle, making decisions based off of the current state of the puzzle.
+        /// A strictly ordered list of strategies are established. If a strategy fails, the next strategy is attempted
         /// </summary>
         /// <param name="grid"></param>
-        /// <param name="method">method '1' is human-strategy solver. '2' is Backtracking solver. </param>
+        /// <param name="method">method '1' and '3' are human-strategy solver. '2' is Backtracking solver. '3' doesn't require solvepath additions</param>
         /// <returns>returns true if the puzzle is solved, false if not</returns>
-        public bool Solver(SudokuGrid grid, int method)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off of the current state of the puzzle.
+        public bool Solver(SudokuGrid grid, int method)
         {
             g_Rating = 0;
             g_StepCounter = 0;
-            g_SolvePath = new List<string>();
-            g_BacktrackingPath = new List<string>();
+            if (method == 1)
+            {
+                g_SolvePath = new List<string>();
+                g_PathTracking = true;
+            }
             g_changeMade = false; g_moderate = false; g_advanced = false;
             g_BacktrackingReq = false;
             /*
@@ -37,27 +43,34 @@ namespace SudokuSolverSetter
              *  The if and elses are to make the process faster of solving faster, 
                 as it ensures that it tries the easiest less computationally heavy methods first before the more complex methods.
             */
-            if (method == 1)
+            if (method == 1 || method == 3)
             {
+
                 string separator = "|>---------------------------------------------------------------------------------------------------------------------->|";
-                int index;
+                int index = 0;
                 do
                 {
                     if (CleanCandidateLists(grid))
                     {
-                        g_SolvePath.Add(separator);
+                        if (method == 1) 
+                            g_SolvePath.Add(separator);
                     }
-                    g_SolvePath.Add("STEP "+ ++g_StepCounter+": ");
-                    index = g_SolvePath.Count-1;
+                    if (method == 1)
+                    {
+                        g_SolvePath.Add("STEP " + ++g_StepCounter + ": ");
+                        index = g_SolvePath.Count - 1;
+                    }
                     if (FindNakedSingles(grid))//Naked singles contributes +10 to the rating for each naked single found
                     {
                         g_changeMade = true;
-                        g_SolvePath[index] += "Naked Single(s)";
+                        if (method == 1)
+                            g_SolvePath[index] += "Naked Single(s)";
                     }
                     else if (FindHiddenSingles(grid))//Naked singles contributes +15 to the rating for each hidden single found
                     {
                         g_changeMade = true;
-                        g_SolvePath[index] += "Hidden Single(s)";
+                        if (method == 1)
+                            g_SolvePath[index] += "Hidden Single(s)";
                     }
                     else if (FindNakedPair(grid))//A Naked Pair contributes +100 to the rating.
                     {
@@ -65,7 +78,8 @@ namespace SudokuSolverSetter
                         g_Rating += 100;
                         g_moderate = true;
                         g_StrategyCount[3]++;
-                        g_SolvePath[index] += "Naked Pair";
+                        if (method == 1)
+                            g_SolvePath[index] += "Naked Pair";
                     }
                     else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
                     {
@@ -73,7 +87,8 @@ namespace SudokuSolverSetter
                         g_Rating += 150;
                         g_moderate = true;
                         g_StrategyCount[4]++;
-                        g_SolvePath[index] += "Hidden Pair";
+                        if (method == 1)
+                            g_SolvePath[index] += "Hidden Pair";
                     }
                     else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
                     {
@@ -81,7 +96,8 @@ namespace SudokuSolverSetter
                         g_Rating += 250;
                         g_moderate = true;
                         g_StrategyCount[5]++;
-                        g_SolvePath[index] += "Pointing Line";
+                        if (method == 1)
+                            g_SolvePath[index] += "Pointing Line";
                     }
                     else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
                     {
@@ -89,7 +105,8 @@ namespace SudokuSolverSetter
                         g_Rating += 300;
                         g_moderate = true;
                         g_StrategyCount[6]++;
-                        g_SolvePath[index] += "Block-Line Reduction";
+                        if (method == 1)
+                            g_SolvePath[index] += "Block-Line Reduction";
                     }
                     else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
                     {
@@ -97,8 +114,8 @@ namespace SudokuSolverSetter
                         g_Rating += 400;
                         g_moderate = true;
                         g_StrategyCount[7]++;
-                        g_SolvePath[index] += "Naked Triple";
-
+                        if (method == 1)
+                            g_SolvePath[index] += "Naked Triple";
                     }
                     else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
                     {
@@ -106,7 +123,8 @@ namespace SudokuSolverSetter
                         g_Rating += 450;
                         g_moderate = true;
                         g_StrategyCount[8]++;
-                        g_SolvePath[index] += "Hidden Triple";
+                        if (method == 1)
+                            g_SolvePath[index] += "Hidden Triple";
                     }
                     else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
                     {
@@ -114,7 +132,8 @@ namespace SudokuSolverSetter
                         g_Rating += 550;
                         g_advanced = true;
                         g_StrategyCount[9]++;
-                        g_SolvePath[index] += "X-Wing";
+                        if (method == 1)
+                            g_SolvePath[index] += "X-Wing";
                     }
                     else if (FindYWing(grid))//A Y-Wing contributes +600 to the rating.
                     {
@@ -122,7 +141,8 @@ namespace SudokuSolverSetter
                         g_Rating += 600;
                         g_advanced = true;
                         g_StrategyCount[10]++;
-                        g_SolvePath[index] += "Y-Wing";
+                        if (method == 1)
+                            g_SolvePath[index] += "Y-Wing";
                     }
                     else if (FindXYZWing(grid))//An XYZ-Wing contributes +650 to the rating.
                     {
@@ -130,14 +150,16 @@ namespace SudokuSolverSetter
                         g_Rating += 650;
                         g_advanced = true;
                         g_StrategyCount[11]++;
-                        g_SolvePath[index] += "XYZ-Wing";
+                        if (method == 1)
+                            g_SolvePath[index] += "XYZ-Wing";
                     }
                     else if (FindSingleChains(grid))//A successful Single Chain contributes +100*(chain length) to the rating.
                     {
                         g_changeMade = true;
                         g_advanced = true;
                         g_StrategyCount[12]++;
-                        g_SolvePath[index] += "Single Chains / Simple Colouring";
+                        if (method == 1)
+                            g_SolvePath[index] += "Single Chains / Simple Colouring";
                     }
                     else if (FindUniqueRectangleType1(grid))//A Unique Rectangle contributes +750 to the rating.
                     {
@@ -145,14 +167,19 @@ namespace SudokuSolverSetter
                         g_Rating += 750;
                         g_advanced = true;
                         g_StrategyCount[13]++;
-                        g_SolvePath[index] += "Unique Rectangle Type 1";
+                        if (method == 1)
+                            g_SolvePath[index] += "Unique Rectangle Type 1";
                     }
                     //More methods to add
                     else
                     {
-                        g_SolvePath.RemoveAt(g_SolvePath.Count - 1);
+                        if (method == 1)
+                        {
+                            g_StepCounter--;
+                            g_SolvePath.RemoveAt(g_SolvePath.Count - 1);
+                        }
                         g_changeMade = false;
-                        g_StepCounter--;
+                        
                     }
                     if (g_changeMade)
                     {
@@ -163,6 +190,7 @@ namespace SudokuSolverSetter
             }
             else if (method == 2)
             {
+                g_BacktrackingPath = new List<string>();
                 BacktrackingSolver(grid, 0, 0, 3);
             }
             if (!g_Gen.CheckIfSolved(grid))
@@ -174,17 +202,15 @@ namespace SudokuSolverSetter
                 g_StrategyCount[0]++;
                 return false;
             }
-            else
-            {
+            else if (method == 1)
                 g_SolvePath.Add("|--------------------------------FINISHED--------------------------------|");
-            }
             if (g_moderate)
                 g_Difficulty = "Moderate";
             if (g_advanced)
                 g_Difficulty = "Advanced";
             return g_Gen.CheckIfSolved(grid);
         }
-
+        #endregion
         #region Strategy-Usage Solver method
         /// <summary>
         /// Looks at all cells and removes numbers from candidate lists that can't exist in that cell. 
@@ -205,19 +231,22 @@ namespace SudokuSolverSetter
                             if (grid.Rows[i][j].Candidates.Contains(grid.Rows[i][j].NeighbourCells[0][n].Num))
                             {
                                 grid.Rows[i][j].Candidates.Remove(grid.Rows[i][j].NeighbourCells[0][n].Num);
-                                g_SolvePath.Add("---Candidate number " + grid.Rows[i][j].NeighbourCells[0][n].Num + " removed from cell [" + i + "," + j + "] - NUMBER EXISTS IN ROW");
+                                if (g_PathTracking)
+                                    g_SolvePath.Add("---Candidate number " + grid.Rows[i][j].NeighbourCells[0][n].Num + " removed from cell [" + i + "," + j + "] - NUMBER EXISTS IN ROW");
                                 changeMade = true;
                             }
                             if (grid.Rows[i][j].Candidates.Contains(grid.Rows[i][j].NeighbourCells[1][n].Num))
                             {
                                 grid.Rows[i][j].Candidates.Remove(grid.Rows[i][j].NeighbourCells[1][n].Num);
-                                g_SolvePath.Add("---Candidate number " + grid.Rows[i][j].NeighbourCells[1][n].Num + " removed from cell [" + i + "," + j + "] - NUMBER EXISTS IN COLUMN");
+                                if (g_PathTracking)
+                                    g_SolvePath.Add("---Candidate number " + grid.Rows[i][j].NeighbourCells[1][n].Num + " removed from cell [" + i + "," + j + "] - NUMBER EXISTS IN COLUMN");
                                 changeMade = true;
                             }
                             if (grid.Rows[i][j].Candidates.Contains(grid.Rows[i][j].NeighbourCells[2][n].Num))
                             {
                                 grid.Rows[i][j].Candidates.Remove(grid.Rows[i][j].NeighbourCells[2][n].Num);
-                                g_SolvePath.Add("---Candidate number " + grid.Rows[i][j].NeighbourCells[2][n].Num + " removed from cell [" + i + "," + j + "] - NUMBER EXISTS IN BLOCK");
+                                if (g_PathTracking)
+                                    g_SolvePath.Add("---Candidate number " + grid.Rows[i][j].NeighbourCells[2][n].Num + " removed from cell [" + i + "," + j + "] - NUMBER EXISTS IN BLOCK");
                                 changeMade = true;
                             }
                         }
@@ -242,10 +271,11 @@ namespace SudokuSolverSetter
                     {
                         grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
                         grid.Rows[i][j].Candidates.Clear();
-                        if (!changeMade)
+                        if (!changeMade && g_PathTracking)
                             g_SolvePath.Add("(IMMEDIATE SOLUTIONS ACQUIRED FROM STRATEGY)");
                         changeMade = true;
-                        g_SolvePath.Add("-Last candidate number in cell [" + i + ", " + j + "] is "  + grid.Rows[i][j].Num);
+                        if (g_PathTracking)
+                            g_SolvePath.Add("-Last candidate number in cell [" + i + ", " + j + "] is " + grid.Rows[i][j].Num);
                         g_StrategyCount[1]++;
                     }
                 }
@@ -273,7 +303,8 @@ namespace SudokuSolverSetter
                         grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
                         grid.Rows[i][j].Candidates.Clear();
                         changeMade = true;
-                        g_SolvePath.Add("Number " + grid.Rows[i][j].Num + " placed in cell [" + i + "," + j + "] - NAKED SINGLE");
+                        if (g_PathTracking)
+                            g_SolvePath.Add("Number " + grid.Rows[i][j].Num + " placed in cell [" + i + "," + j + "] - NAKED SINGLE");
                         g_Rating += 10;
                         g_StrategyCount[1]++;
                     }
@@ -321,7 +352,8 @@ namespace SudokuSolverSetter
                                     changeMade = true;
                                     g_Rating += 15;
                                     g_StrategyCount[2]++;
-                                    g_SolvePath.Add("Number " + candidate + " placed in cell [" + i + "," + j + "] - HIDDEN SINGLE");
+                                    if (g_PathTracking)
+                                        g_SolvePath.Add("Number " + candidate + " placed in cell [" + i + "," + j + "] - HIDDEN SINGLE");
                                     return true;
                                 }
                             }
@@ -362,13 +394,15 @@ namespace SudokuSolverSetter
                                         {
                                             cell.Candidates.Remove(neighbour.Candidates[0]);
                                             changeMade = true;
-                                            g_SolvePath.Add("Candidate number " + neighbour.Candidates[0] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR");
+                                            if (g_PathTracking)
+                                                g_SolvePath.Add("Candidate number " + neighbour.Candidates[0] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + " " + neighbour.Candidates[1]);
                                         }
                                         if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[1]) && cell.Num == '0')
                                         {
                                             cell.Candidates.Remove(neighbour.Candidates[1]);
                                             changeMade = true;
-                                            g_SolvePath.Add("Candidate number " + neighbour.Candidates[1] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR");
+                                            if (g_PathTracking)
+                                                g_SolvePath.Add("Candidate number " + neighbour.Candidates[1] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + " " + neighbour.Candidates[1]);
                                         }
                                     }
                                     if (changeMade)
@@ -445,16 +479,18 @@ namespace SudokuSolverSetter
 
                                             grid.Rows[i][j].Candidates.RemoveAll(candidate => candidate != candis[a] && candidate != candis[b]);//Removes all candidates but the common candidates
                                             cellList[b].Candidates.RemoveAll(candidate => candidate != candis[a] && candidate != candis[b]);
-                                            
+
                                             if (removeList1.Count != 0)
                                             {
                                                 changeMade = true;
-                                                g_SolvePath.Add("Candidate numbers " + new string(removeList1.ToArray()) + " removed from cell [" + i + "," + j + "] - HIDDEN PAIR");
+                                                if (g_PathTracking)
+                                                    g_SolvePath.Add("Candidate numbers " + new string(removeList1.ToArray()) + " removed from cell [" + i + "," + j + "] - HIDDEN PAIR - " + candis[a] + " " + candis[b]);
                                             }
                                             if (removeList2.Count != 0)
                                             {
                                                 changeMade = true;
-                                                g_SolvePath.Add("Candidate numbers " + new string(removeList2.ToArray()) + " removed from cell [" + cellList[b].XLocation + "," + cellList[b].YLocation + "] - HIDDEN PAIR");
+                                                if (g_PathTracking)
+                                                    g_SolvePath.Add("Candidate numbers " + new string(removeList2.ToArray()) + " removed from cell [" + cellList[b].XLocation + "," + cellList[b].YLocation + "] - HIDDEN PAIR - " + candis[a] + " " + candis[b]);
                                             }
                                             if (changeMade)
                                             {
@@ -468,7 +504,7 @@ namespace SudokuSolverSetter
                     }
                 }
             }
-            
+
             return changeMade;
         }
         /// <summary>
@@ -522,10 +558,11 @@ namespace SudokuSolverSetter
                                         triples.Add(neighbour);
                                     }
                                 }
-                                
+
                                 if (triples.Count > 3)
                                 {
-                                    g_SolvePath.Add("Something has gone terribly wrong with naked triple...");//emergency eject - should never occur
+                                    if (g_PathTracking)
+                                        g_SolvePath.Add("Something has gone terribly wrong with naked triple...");//emergency eject - should never occur
                                     return false;
                                 }
                             }
@@ -553,7 +590,8 @@ namespace SudokuSolverSetter
                                         }
                                         if (removed.Length > 0)
                                         {
-                                            g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE");
+                                            if (g_PathTracking)
+                                                g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE - " + triples[0].Candidates[0] + " " + triples[0].Candidates[1] + " " + triples[0].Candidates[2]);
                                         }
                                     }
                                 }
@@ -567,7 +605,7 @@ namespace SudokuSolverSetter
                             bool foundTriple = false;
                             foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
                             {
-                                if (neighbour.Num == '0' && neighbour.Candidates.Count == 2 
+                                if (neighbour.Num == '0' && neighbour.Candidates.Count == 2
                                     && (neighbour.Candidates.Contains(grid.Rows[i][j].Candidates[0]) || neighbour.Candidates.Contains(grid.Rows[i][j].Candidates[1])))//Try find cellC with this cellB to make a triple
                                 {
                                     char candidateA = neighbour.Candidates.Contains(grid.Rows[i][j].Candidates[0]) ? grid.Rows[i][j].Candidates[1] : grid.Rows[i][j].Candidates[0];
@@ -575,13 +613,13 @@ namespace SudokuSolverSetter
                                     char candidateC = grid.Rows[i][j].Candidates.Contains(neighbour.Candidates[0]) ? neighbour.Candidates[0] : neighbour.Candidates[1];
                                     foreach (Cell neighbourB in grid.Rows[i][j].NeighbourCells[index])
                                     {
-                                        if (neighbourB.Num == '0' && neighbourB.Candidates.Count == 2 && neighbourB.Candidates.Contains(candidateA) 
+                                        if (neighbourB.Num == '0' && neighbourB.Candidates.Count == 2 && neighbourB.Candidates.Contains(candidateA)
                                             && neighbourB.Candidates.Contains(candidateB))//Found 2/2/2 naked triple
                                         {
                                             foundTriple = true;
                                             for (int n = 0; n < grid.Rows[i][j].NeighbourCells[index].Count; n++)
                                             {
-                                                if (grid.Rows[i][j].NeighbourCells[index][n].Num == '0' && grid.Rows[i][j].NeighbourCells[index][n] != neighbour 
+                                                if (grid.Rows[i][j].NeighbourCells[index][n].Num == '0' && grid.Rows[i][j].NeighbourCells[index][n] != neighbour
                                                     && grid.Rows[i][j].NeighbourCells[index][n] != neighbourB)//Finds next empty cell in group that isn't apart of the triple
                                                 {
                                                     string removed = "";
@@ -600,9 +638,9 @@ namespace SudokuSolverSetter
                                                         changeMade = true;
                                                         removed += candidateC;
                                                     }
-                                                    if (removed.Length > 0)
+                                                    if (removed.Length > 0 && g_PathTracking)
                                                     {
-                                                        g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE");
+                                                        g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
                                                     }
                                                 }
                                             }
@@ -691,7 +729,7 @@ namespace SudokuSolverSetter
                                         {
                                             foreach (char candidateB in candidateFreq.Keys)
                                             {
-                                                if (cellB.Candidates.Contains(candidateB) && candidateB != candidateA && (candidateFreq[candidateB] == 3 && !cellA.Candidates.Contains(candidateB))==false)
+                                                if (cellB.Candidates.Contains(candidateB) && candidateB != candidateA && (candidateFreq[candidateB] == 3 && !cellA.Candidates.Contains(candidateB)) == false)
                                                 {
                                                     foreach (Cell cellC in cellB.NeighbourCells[index])
                                                     {
@@ -709,8 +747,9 @@ namespace SudokuSolverSetter
                                                                         removeList.RemoveAll(candidate => candidate == candidateA || candidate == candidateB || candidate == candidateC);
                                                                         if (removeList.Count != 0)
                                                                         {
-                                                                            g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellA.XLocation + "," + cellA.YLocation + "] - HIDDEN TRIPLE");
-                                                                            
+                                                                            if (g_PathTracking)
+                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellA.XLocation + "," + cellA.YLocation + "] - HIDDEN TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
+
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -721,7 +760,8 @@ namespace SudokuSolverSetter
                                                                         removeList.RemoveAll(candidate => candidate == candidateA || candidate == candidateB || candidate == candidateC);
                                                                         if (removeList.Count != 0)
                                                                         {
-                                                                            g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellB.XLocation + "," + cellB.YLocation + "] - HIDDEN TRIPLE");
+                                                                            if (g_PathTracking)
+                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellB.XLocation + "," + cellB.YLocation + "] - HIDDEN TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -732,7 +772,8 @@ namespace SudokuSolverSetter
                                                                         removeList.RemoveAll(candidate => candidate == candidateA || candidate == candidateB || candidate == candidateC);
                                                                         if (removeList.Count != 0)
                                                                         {
-                                                                            g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellC.XLocation + "," + cellC.YLocation + "] - HIDDEN TRIPLE");
+                                                                            if (g_PathTracking)
+                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellC.XLocation + "," + cellC.YLocation + "] - HIDDEN TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -794,7 +835,7 @@ namespace SudokuSolverSetter
                                     {
                                         break;
                                     }
-                                    
+
                                 }
                             }
                             if (cellSave.Count == 1 && (cellSave[0].XLocation == i || cellSave[0].YLocation == j))
@@ -806,7 +847,8 @@ namespace SudokuSolverSetter
                                     {
                                         grid.Rows[i][j].NeighbourCells[index][n].Candidates.Remove(candidate);
                                         changeMade = true;
-                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - POINTING PAIR");
+                                        if (g_PathTracking)
+                                            g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - POINTING PAIR");
                                     }
                                 }
                             }
@@ -821,7 +863,8 @@ namespace SudokuSolverSetter
                                         {
                                             grid.Rows[i][j].NeighbourCells[index][n].Candidates.Remove(candidate);
                                             changeMade = true;
-                                            g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - POINTING TRIPLE");
+                                            if (g_PathTracking)
+                                                g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - POINTING TRIPLE");
                                         }
                                     }
                                 }
@@ -829,7 +872,7 @@ namespace SudokuSolverSetter
                             if (changeMade)
                                 return true;
                         }
-                        
+
                     }
                 }
             }
@@ -852,7 +895,7 @@ namespace SudokuSolverSetter
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
-        private bool FindBlockLineReduce(SudokuGrid grid) 
+        private bool FindBlockLineReduce(SudokuGrid grid)
         {
             bool changeMade = false;
             for (int i = 0; i < 9; i++)
@@ -892,7 +935,8 @@ namespace SudokuSolverSetter
                                     {
                                         blockNB.Candidates.Remove(candidate);
                                         changeMade = true;
-                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + blockNB.XLocation + "," + blockNB.YLocation + "] - BOX-LINE REDUCTION");
+                                        if (g_PathTracking)
+                                            g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + blockNB.XLocation + "," + blockNB.YLocation + "] - BOX-LINE REDUCTION");
                                     }
                                 }
                             }
@@ -904,7 +948,8 @@ namespace SudokuSolverSetter
                                     {
                                         blockNB.Candidates.Remove(candidate);
                                         changeMade = true;
-                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + blockNB.XLocation + "," + blockNB.YLocation + "] - BOX-LINE REDUCTION");
+                                        if (g_PathTracking)
+                                            g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + blockNB.XLocation + "," + blockNB.YLocation + "] - BOX-LINE REDUCTION");
                                     }
                                 }
                             }
@@ -992,10 +1037,11 @@ namespace SudokuSolverSetter
                                                             {
                                                                 grid.Rows[row][col].Candidates.Remove(thirdCandi);
                                                                 changeMade = true;
-                                                                g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + row + "," + col + "] - Y-WING, ROW-COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
+                                                                if (g_PathTracking)
+                                                                    g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + row + "," + col + "] - Y-WING, ROW-COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
                                                             }
                                                         }
-                                                        else if (index_n == 2 && cellC.XLocation != cellA.XLocation && cellC.YLocation != cellA.YLocation )//block-column/row y-wing
+                                                        else if (index_n == 2 && cellC.XLocation != cellA.XLocation && cellC.YLocation != cellA.YLocation)//block-column/row y-wing
                                                         {
                                                             for (int n = 0; n < 8; n++)
                                                             {
@@ -1003,13 +1049,15 @@ namespace SudokuSolverSetter
                                                                 {
                                                                     cellC.NeighbourCells[index][n].Candidates.Remove(thirdCandi);
                                                                     changeMade = true;
-                                                                    g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + cellC.NeighbourCells[index][n].XLocation + "," + cellC.NeighbourCells[index][n].YLocation + "] - Y-WING, BLOCK-ROW/COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
+                                                                    if (g_PathTracking)
+                                                                        g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + cellC.NeighbourCells[index][n].XLocation + "," + cellC.NeighbourCells[index][n].YLocation + "] - Y-WING, BLOCK-ROW/COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
                                                                 }
                                                                 if (cellB.NeighbourCells[index][n].Candidates.Contains(thirdCandi) && cellB.NeighbourCells[index][n].BlockLoc == cellC.BlockLoc)
                                                                 {
                                                                     cellB.NeighbourCells[index][n].Candidates.Remove(thirdCandi);
                                                                     changeMade = true;
-                                                                    g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + cellC.NeighbourCells[index][n].XLocation + "," + cellC.NeighbourCells[index][n].YLocation + "] - Y-WING, BLOCK-ROW/COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
+                                                                    if (g_PathTracking)
+                                                                        g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + cellC.NeighbourCells[index][n].XLocation + "," + cellC.NeighbourCells[index][n].YLocation + "] - Y-WING, BLOCK-ROW/COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
                                                                 }
                                                             }
                                                         }
@@ -1124,13 +1172,15 @@ namespace SudokuSolverSetter
                                                 {
                                                     cellC.NeighbourCells[axis][n].Candidates.Remove(candidate);
                                                     changeMade = true;
-                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellC.NeighbourCells[axis][n].XLocation + "," + cellC.NeighbourCells[axis][n].YLocation + "] - X-WING " + type + " formed in [" + cellA.XLocation+","+cellA.YLocation+ "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] ["+cellD.XLocation+","+cellD.YLocation+"]");
+                                                    if (g_PathTracking)
+                                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellC.NeighbourCells[axis][n].XLocation + "," + cellC.NeighbourCells[axis][n].YLocation + "] - X-WING " + type + " formed in [" + cellA.XLocation + "," + cellA.YLocation + "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] [" + cellD.XLocation + "," + cellD.YLocation + "]");
                                                 }
                                                 if (cellD.NeighbourCells[axis][n].Candidates.Contains(candidate) && cellC.NeighbourCells[axis][n] != cellA && cellC.NeighbourCells[axis][n] != cellB)
                                                 {
                                                     cellD.NeighbourCells[axis][n].Candidates.Remove(candidate);
                                                     changeMade = true;
-                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellD.NeighbourCells[axis][n].XLocation + "," + cellD.NeighbourCells[axis][n].YLocation + "] - X-WING " + type + " formed in [" + cellA.XLocation + "," + cellA.YLocation + "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] [" + cellD.XLocation + "," + cellD.YLocation + "]");
+                                                    if (g_PathTracking)
+                                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + cellD.NeighbourCells[axis][n].XLocation + "," + cellD.NeighbourCells[axis][n].YLocation + "] - X-WING " + type + " formed in [" + cellA.XLocation + "," + cellA.YLocation + "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "] [" + cellD.XLocation + "," + cellD.YLocation + "]");
                                                 }
                                             }
                                             if (changeMade)
@@ -1232,7 +1282,7 @@ namespace SudokuSolverSetter
                                 if (candiCount == 2)
                                 {
                                     XYZWing.Add(neighbour);
-                                    for (int index2 = index+1; index2 < 3; index2++)
+                                    for (int index2 = index + 1; index2 < 3; index2++)
                                     {
                                         foreach (Cell neighbour2 in XYZWing[0].NeighbourCells[index2])//Foreach neighbour to first cell, find out how many candidates they have in common
                                         {
@@ -1267,8 +1317,9 @@ namespace SudokuSolverSetter
                                                     if (neighbour3.Candidates.Remove(commonCandidate))
                                                     {
                                                         changeMade = true;
-                                                        g_SolvePath.Add("Candidate number " + commonCandidate + " removed from cell [" + neighbour3.XLocation + "," + neighbour3.YLocation + "] - XYZ-WING - HINGE [" + XYZWing[0].XLocation + "," + XYZWing[0].YLocation + "] - WINGS [" + XYZWing[1].XLocation + "," + XYZWing[1].YLocation + "] [" + XYZWing[2].XLocation + "," + XYZWing[2].YLocation + "]");
-                                                        
+                                                        if (g_PathTracking)
+                                                            g_SolvePath.Add("Candidate number " + commonCandidate + " removed from cell [" + neighbour3.XLocation + "," + neighbour3.YLocation + "] - XYZ-WING - HINGE [" + XYZWing[0].XLocation + "," + XYZWing[0].YLocation + "] - WINGS [" + XYZWing[1].XLocation + "," + XYZWing[1].YLocation + "] [" + XYZWing[2].XLocation + "," + XYZWing[2].YLocation + "]");
+
                                                     }
                                                 }
                                             }
@@ -1282,17 +1333,16 @@ namespace SudokuSolverSetter
                                         XYZWing.RemoveAt(2);
                                     XYZWing.RemoveAt(1);
                                 }
-                                
+
                             }
                         }
-                        
+
                     }
                 }
             }
 
             return changeMade;
         }
-
         /// <summary>
         /// Find Single Chains(aka Simple Colouring):
         /// A chain is a collection of cells that are linked together because of common a candidate(s).
@@ -1323,9 +1373,9 @@ namespace SudokuSolverSetter
                         foreach (char candidate in grid.Rows[i][j].Candidates)
                         {
                             List<Cell> chain = new List<Cell>(8) { grid.Rows[i][j] };
-                            List<bool> indicatorForCell= new List<bool>(8) { true };
+                            List<bool> indicatorForCell = new List<bool>(8) { true };
                             int c = 0;//Iterator for cellsContainingCandi for recursion
-                            
+
                             if (ChainRecursion(grid, candidate, c, chain, indicatorForCell))//If true, chain has been built
                             {
                                 for (int l = 0; l < chain.Count; l++)//Iterate through cells in chain (cellA)
@@ -1348,7 +1398,8 @@ namespace SudokuSolverSetter
                                                                 {
                                                                     neighbour.Candidates.Remove(candidate);//...the candidate can be removed from that cell
                                                                     changeMade = true;
-                                                                    g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - Type 1");
+                                                                    if (g_PathTracking)
+                                                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - Type 1");
                                                                 }
                                                             }
                                                         }
@@ -1360,12 +1411,14 @@ namespace SudokuSolverSetter
                                 }
                                 if (changeMade)
                                 {
-                                    g_SolvePath.Add("Chain: Blue[" + chain[0].XLocation + "," + chain[0].YLocation + "]");
+                                    if (g_PathTracking)
+                                        g_SolvePath.Add("Chain: Blue[" + chain[0].XLocation + "," + chain[0].YLocation + "]");
                                     string colour = "";
                                     for (int z = 1; z < chain.Count; z++)
                                     {
                                         colour = indicatorForCell[z] ? "Blue" : "Red";
-                                        g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
+                                        if (g_PathTracking)
+                                            g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
                                     }
                                     g_Rating += chain.Count * 100;
                                     return true;
@@ -1382,7 +1435,8 @@ namespace SudokuSolverSetter
                                                 if (chain[c1].XLocation == chain[c2].XLocation || chain[c1].YLocation == chain[c2].YLocation || chain[c1].BlockLoc == chain[c2].BlockLoc)//if c2 shares a group (row/column/block) with c1, contradiction occurs.
                                                 {
                                                     contradiction = indicatorForCell[c1];
-                                                    g_SolvePath.Add("SINGLE CHAINS / SIMPLE COLOURING - Type 2\r\n\r\nContradiction in cells coloured " + (indicatorForCell[c1] ? "Blue" : "Red") + " between cells [" + chain[c1].XLocation + "," + chain[c1].YLocation + "] and [" + chain[c2].XLocation + "," + chain[c2].YLocation + "]");
+                                                    if (g_PathTracking)
+                                                        g_SolvePath.Add("SINGLE CHAINS / SIMPLE COLOURING - Type 2\r\n\r\nContradiction in cells coloured " + (indicatorForCell[c1] ? "Blue" : "Red") + " between cells [" + chain[c1].XLocation + "," + chain[c1].YLocation + "] and [" + chain[c2].XLocation + "," + chain[c2].YLocation + "]");
                                                     break;
                                                 }
                                             }
@@ -1396,25 +1450,28 @@ namespace SudokuSolverSetter
                                             {
                                                 chain[d].Candidates.Remove(candidate);
                                                 changeMade = true;
-                                                g_SolvePath.Add("-Candidate number " + candidate + " removed from cell [" + chain[d].XLocation + "," + chain[d].YLocation + "]");
+                                                if (g_PathTracking)
+                                                    g_SolvePath.Add("-Candidate number " + candidate + " removed from cell [" + chain[d].XLocation + "," + chain[d].YLocation + "]");
                                             }
                                         }
                                     }
                                 }
                                 if (changeMade)
                                 {
-                                    g_SolvePath.Add("Chain: Blue[" + chain[0].XLocation + "," + chain[0].YLocation + "]");
+                                    if (g_PathTracking)
+                                        g_SolvePath.Add("Chain: Blue[" + chain[0].XLocation + "," + chain[0].YLocation + "]");
                                     string colour = "";
                                     for (int z = 1; z < chain.Count; z++)
                                     {
                                         colour = indicatorForCell[z] ? "Blue" : "Red";
-                                        g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
+                                        if (g_PathTracking)
+                                            g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
                                     }
                                     g_Rating += chain.Count * 100;
                                     return true;
                                 }
                             }
-                            
+
                         }
                     }
                 }
@@ -1453,7 +1510,7 @@ namespace SudokuSolverSetter
                             break;
                         }
                         saveCell = neighbour;
-                        
+
                     }
                 }
                 if (counter == 1 && saveCell.Candidates != null)
@@ -1469,7 +1526,6 @@ namespace SudokuSolverSetter
                 return true;
             return false;
         }
-        
         /// <summary>
         /// Rule for Type1 Unique Rectangle:
         /// -There must four pairs in a rectangle that spans two blocks.
@@ -1533,7 +1589,8 @@ namespace SudokuSolverSetter
                                             cellD.Candidates.Remove(cellC.Candidates[0]);
                                             cellD.Candidates.Remove(cellC.Candidates[1]);
                                             changeMade = true;
-                                            g_SolvePath.Add("Candidate number " + cellC.Candidates[0] + " and " + cellC.Candidates[1] + " removed from cell [" + cellD.XLocation + "," + cellD.YLocation + "] - UNIQUE RECTANGLE - OTHER CORNERS [" + cellA.XLocation + "," + cellA.YLocation + "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
+                                            if (g_PathTracking)
+                                                g_SolvePath.Add("Candidate number " + cellC.Candidates[0] + " and " + cellC.Candidates[1] + " removed from cell [" + cellD.XLocation + "," + cellD.YLocation + "] - UNIQUE RECTANGLE - OTHER CORNERS [" + cellA.XLocation + "," + cellA.YLocation + "] [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
                                             return true;
                                         }
                                     }
@@ -1545,7 +1602,7 @@ namespace SudokuSolverSetter
             }
             return changeMade;
         }
-#endregion
+        #endregion
         #region Backtracking Solver
         /// <summary>
         /// Removes all values from the current cell's candidate list that are also found within neighbouring cells
@@ -1716,8 +1773,8 @@ namespace SudokuSolverSetter
                 g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
             return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
         }
-#endregion
-        #region Solver method for Solving Cell by Cell button
+        #endregion
+        #region Solver Decisions Method for Solving Cell by Cell button
         public bool SolveNextStep(SudokuGrid grid)
         {
             if (g_Gen.CheckIfSolved(grid))
@@ -1840,7 +1897,7 @@ namespace SudokuSolverSetter
                 g_SolvePath.Add(separator);
                 g_strategy = "Trial-and-error/Brute-force";
             }
-            
+
             g_SolvePath.Add(separator);
             if (g_Gen.CheckIfSolved(grid))
             {
@@ -1853,6 +1910,6 @@ namespace SudokuSolverSetter
                 g_Difficulty = "Advanced";
             return false;
         }
-#endregion
+        #endregion
     }
 }

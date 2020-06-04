@@ -94,7 +94,7 @@ namespace SudokuSolverSetter
                             }
                             else
                                 allPuzzles.Add(pzle);
-                            if (++counter == 500)
+                            if (++counter == 150)
                                 break;
                         }
                         for (int n = 0; n < allPuzzles.Count; n++)
