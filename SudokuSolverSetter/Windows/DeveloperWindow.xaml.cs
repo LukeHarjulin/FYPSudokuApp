@@ -632,7 +632,7 @@ namespace SudokuSolverSetter
                         }
                     }
                     PopulateGrid(grid, txtBxList);
-                    strategy_lbl.Content = "Strategy just used:\r\n" + g_solve.g_strategy;
+                    strategy_lbl.Content = "Strategy/cleaning just used:\r\n" + g_solve.g_strategy;
                 }
                 
             }

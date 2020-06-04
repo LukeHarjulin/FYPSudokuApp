@@ -19,7 +19,7 @@ namespace SudokuSolverSetter
         public void PopulateTextBlock(int difficultyRating, string timeString, PuzzleSolverObjDS puzzleSolver)
         {
             Show();
-            AdditionalInfo.Text = "Difficulty Rating (WIP): " + difficultyRating + "\r\n" + timeString;
+            AdditionalInfo.Text = "Difficulty Rating: " + difficultyRating + "\r\n" + timeString + "\r\nNumber of Steps: " + puzzleSolver.g_StepCounter;
             string solvePath = "";
             for (int i = 0; i < puzzleSolver.g_SolvePath.Count; i++)
             {

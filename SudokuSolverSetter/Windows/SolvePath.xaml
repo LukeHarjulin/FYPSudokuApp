@@ -13,7 +13,7 @@
         <Label Content="Solve Path" Margin="170,-1,429,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Center" FontSize="36" Height="55" Width="195" FontWeight="SemiBold"/>
         <Rectangle HorizontalAlignment="Left" Height="802" Margin="9,59,0,0" Stroke="Black" VerticalAlignment="Top" Width="777" IsEnabled="False"/>
         <Button x:Name="Close_btn" Content="Back" HorizontalAlignment="Left" Click="Close_Button_Click" Width="100" FontSize="16" Margin="10,10,0,817"/>
-        <TextBlock x:Name="AdditionalInfo" HorizontalAlignment="Left" Height="44" Margin="395,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="305"/>
+        <TextBlock x:Name="AdditionalInfo" HorizontalAlignment="Left" Height="49" Margin="395,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="305" FontSize="11"/>
 
     </Grid>
 </Window>

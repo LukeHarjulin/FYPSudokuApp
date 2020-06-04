@@ -31,7 +31,6 @@ namespace SudokuSolverSetter
         private SudokuGrid g_grid = new SudokuGrid();
         private string g_cellContents = "", g_currentTime = "", g_rating, g_difficulty, g_originalPuzzleString;
         private bool g_pencilMarker = false, g_toggleRecursion = true, penType = false, g_solved = false;
-
         private SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
         private SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
@@ -295,10 +294,7 @@ namespace SudokuSolverSetter
                     RTB_LargeText.Inlines.Clear();
                     RTB_HelpText.Inlines.Clear();
                     PauseBlock.Visibility = Visibility.Visible;
-                    if (nightmode_chkbx.IsChecked == false)
-                        PauseBlock.Background = pauseBlockBckGrd;
-                    else
-                        PauseBlock.Background = darkerColour;
+                    PauseBlock.Background = nightmode_chkbx.IsChecked == true ? darkerColour : pauseBlockBckGrd;
                     btn1.IsEnabled = false; btn2.IsEnabled = false; btn3.IsEnabled = false; btn4.IsEnabled = false; btn5.IsEnabled = false; btn6.IsEnabled = false; btn7.IsEnabled = false; btn8.IsEnabled = false; btn9.IsEnabled = false;
                     del_btn.IsEnabled = false; TogglePencil.IsEnabled = false; ToggleDrawing.IsEnabled = false;
                 }
@@ -347,10 +343,9 @@ namespace SudokuSolverSetter
                     RTB_LargeText.Inlines.Clear();
                     RTB_HelpText.Inlines.Clear();
                     PauseBlock.Visibility = Visibility.Visible;
-                    if (nightmode_chkbx.IsChecked == false)
-                        PauseBlock.Background = new SolidColorBrush(Color.FromArgb(150, 238, 241, 255));
-                    else
-                        PauseBlock.Background = new SolidColorBrush(Color.FromArgb(150, 45, 45, 45));
+                    PauseBlock.Background = nightmode_chkbx.IsChecked == true
+                        ? new SolidColorBrush(Color.FromArgb(150, 45, 45, 45))
+                        : new SolidColorBrush(Color.FromArgb(150, 238, 241, 255));
                     RTB_LargeText.Inlines.Add("Congratulations! Sudoku Complete!");
                     RTB_LargeText.FontSize = 48;
                     RTB_LargeText.Padding = new Thickness(120,250,120,0);
@@ -664,6 +659,131 @@ namespace SudokuSolverSetter
                 }
             }
         }
+        /// <summary>
+        /// checks if recent input is valid within rules of placement
+        /// </summary>
+        private bool ValidateInput()
+        {
+            //construct grid array to work with
+            if (g_selectedCell.Text == "" || g_selectedCell.Text.Length > 1 || g_selectedCell.FontSize == 16)
+                return true;
+            string puzzleString = "";
+            int row = 0, col = 0;
+            for (int i = 0, r = 0, c = 0; i < 81; i++, c++)
+            {
+                if (g_Cells[i].Text.Length == 1)
+                    puzzleString += g_Cells[i].Text[0];
+                else
+                    puzzleString += '0';
+                if (g_Cells[i] == g_selectedCell)
+                {
+                    row = r;
+                    col = c;
+                }
+                if (c == 8)
+                {
+                    c = -1;
+                    r++;
+                }
+            }
+            SudokuGrid grid = g_Gen.ConstructGrid();
+            g_Gen.StringToGrid(grid, puzzleString);
+            bool valid = true;
+            for (int n = 0; n < 8; n++)
+            {
+                if (grid.Rows[row][col].Num == grid.Rows[row][col].NeighbourCells[0][n].Num )
+                {
+                    int index = grid.Rows[row][col].NeighbourCells[0][n].XLocation * 9 + grid.Rows[row][col].NeighbourCells[0][n].YLocation;
+                    if (g_Cells[index].Background != Brushes.Red)
+                    {
+                        valid = false; break;
+                    }
+                }
+                if (grid.Rows[row][col].Num == grid.Rows[row][col].NeighbourCells[1][n].Num)
+                {
+                    int index = grid.Rows[row][col].NeighbourCells[1][n].XLocation * 9 + grid.Rows[row][col].NeighbourCells[1][n].YLocation;
+                    if (g_Cells[index].Background != Brushes.Red)
+                    {
+                        valid = false; break;
+                    }
+                }
+                if (grid.Rows[row][col].Num == grid.Rows[row][col].NeighbourCells[2][n].Num)
+                {
+                    int index = grid.Rows[row][col].NeighbourCells[2][n].XLocation * 9 + grid.Rows[row][col].NeighbourCells[2][n].YLocation;
+                    if (g_Cells[index].Background != Brushes.Red)
+                    {
+                        valid = false; break;
+                    }
+                }
+            }
+            if (valid)
+            {
+                if (nightmode_chkbx.IsChecked == true)
+                    RecolourACell(true, g_selectedCell);
+                else
+                    RecolourACell(false, g_selectedCell);
+                return true;
+            }
+            else
+            {
+                g_selectedCell.Background = Brushes.Red;
+                return false;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="darkMode"></param>
+        private void RecolourACell(bool darkMode, TextBox cell)
+        {
+            for (int i = 0; i < g_Cells.Count; i++)
+            {
+                if (g_Cells[i] == cell)
+                {
+                    g_Cells[i].Foreground = darkMode ? darkTextColour : Brushes.Black;
+                    g_Cells[i].BorderBrush = darkMode ? darkTextColour : Brushes.Black;
+                    g_Cells[i].SelectionBrush = darkMode ? darkTextColour : Brushes.Black;
+                    g_Cells[i].CaretBrush = darkMode ? Brushes.White : Brushes.Black;
+                }
+                if (g_Cells[i] == cell && (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
+                    || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
+                    || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
+                    || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
+                    || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
+                    || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77))
+                {
+                    g_Cells[i].Background = darkMode ? altDarkCellColour : altCellColour;
+                }
+                else if (g_Cells[i] == cell)
+                {
+                    g_Cells[i].Background = darkMode ? darkColour : cellColour;
+                }
+            }
+        }
+        private void RecolourAllCells(bool darkMode)
+        {
+            for (int i = 0; i < g_Cells.Count; i++)
+            {
+                g_Cells[i].Foreground = darkMode ? darkTextColour : Brushes.Black;
+                g_Cells[i].BorderBrush = darkMode ? darkTextColour : Brushes.Black;
+                g_Cells[i].SelectionBrush = darkMode ? darkTextColour : Brushes.Black;
+                g_Cells[i].CaretBrush = darkMode ? Brushes.White : Brushes.Black;
+
+                if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
+                    || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
+                    || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
+                    || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
+                    || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
+                    || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77)
+                {
+                    g_Cells[i].Background = darkMode ? altDarkCellColour : altCellColour;
+                }
+                else
+                {
+                    g_Cells[i].Background = darkMode ? darkColour : cellColour;
+                }
+            }
+        }
         #endregion
         #region Event Handlers
         /// <summary>
@@ -756,47 +876,33 @@ namespace SudokuSolverSetter
         {
             if (g_selectedCell != null)//sets previously focused cell to default colour
             {
-                for (int i = 0; i < g_Cells.Count; i++)
+                if (g_selectedCell.Text == "" || ValidateInput())
                 {
-                    if (g_selectedCell == g_Cells[i] && (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
-                        || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
-                        || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
-                        || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
-                        || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
-                        || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77))
+                    bool darkMode = nightmode_chkbx.IsChecked == true ? true : false;
+                    for (int i = 0; i < g_Cells.Count; i++)
                     {
-                        if (nightmode_chkbx.IsChecked == false)
+                        if (g_selectedCell == g_Cells[i] && (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
+                            || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
+                            || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
+                            || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
+                            || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
+                            || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77))
                         {
-                            g_selectedCell.Background = altCellColour;
+                            g_selectedCell.Background = darkMode ? altDarkCellColour : altCellColour;
+                            break;
                         }
-                        else
+                        else if (g_selectedCell == g_Cells[i])
                         {
-                            g_selectedCell.Background = altDarkCellColour;
-                        }
-                    }
-                    else if (g_selectedCell == g_Cells[i])
-                    {
-                        if (nightmode_chkbx.IsChecked == false)
-                        {
-                            g_selectedCell.Background = cellColour;
-                        }
-                        else
-                        {
-                            g_selectedCell.Background = darkColour;
+                            g_selectedCell.Background = darkMode ? darkColour : cellColour;
+                            break;
                         }
                     }
                 }
             }
             
             g_selectedCell = (TextBox)sender;
-            if (nightmode_chkbx.IsChecked == false)//sets the current focused cell to a more prominent colour
-            {
-                ((TextBox)sender).Background = focusCell;
-            }
-            else
-            {
-                ((TextBox)sender).Background = darkFocusCell;
-            }
+            if (((TextBox)sender).Background != Brushes.Red)
+                ((TextBox)sender).Background = nightmode_chkbx.IsChecked == false ? focusCell : darkFocusCell;//sets the current focused cell to a more prominent colour
             g_cellContents = g_selectedCell.Text;
         }
         /// <summary>
@@ -874,7 +980,7 @@ namespace SudokuSolverSetter
                     grid.Rows[r] = new Cell[9];
                     for (int c = 0; c < grid.Rows[r].Length; c++)
                     {
-                        if (g_Cells[cellNum].Text == "" || g_Cells[cellNum].Text.Length > 1 || g_Cells[cellNum].FontSize == 16)
+                        if (g_Cells[cellNum].Text == "" || g_Cells[cellNum].Text.Length > 1 || g_Cells[cellNum].FontSize == 16 || g_Cells[cellNum].Background == Brushes.Red)
                         {
                             List<char> candis = new List<char> { };
                             if (g_Cells[cellNum].Text.Length > 1)
@@ -958,7 +1064,7 @@ namespace SudokuSolverSetter
                     grid.Rows[r] = new Cell[9];
                     for (int c = 0; c < grid.Rows[r].Length; c++)
                     {
-                        if (g_Cells[cellNum].Text == "" || g_Cells[cellNum].Text.Length > 1 || g_Cells[cellNum].FontSize == 16)
+                        if (g_Cells[cellNum].Text == "" || g_Cells[cellNum].Text.Length > 1 || g_Cells[cellNum].FontSize == 16 || g_Cells[cellNum].Background == Brushes.Red)
                         {
                             grid.Rows[r][c] = new Cell()
                             {
@@ -1123,15 +1229,26 @@ namespace SudokuSolverSetter
                             g_selectedCell.Text = numbers;
                         }
                     }
+                    else if (g_selectedCell.Text == "")
+                    {
+                        if (nightmode_chkbx.IsChecked == true && g_selectedCell.Background == Brushes.Red)
+                            RecolourACell(true, g_selectedCell);
+                        else if (nightmode_chkbx.IsChecked == false && g_selectedCell.Background == Brushes.Red)
+                            RecolourACell(false, g_selectedCell);
+                    }
                     g_cellContents = g_selectedCell.Text;
                     if (!g_pencilMarker)
                     {
                         g_selectedCell.FontSize = 36;
-
+                        ValidateInput();
                     }
                     else
                     {
                         g_selectedCell.FontSize = 16;
+                        if (nightmode_chkbx.IsChecked == true && g_selectedCell.Background == Brushes.Red)
+                            RecolourACell(true, g_selectedCell);
+                        else if (nightmode_chkbx.IsChecked == false && g_selectedCell.Background == Brushes.Red)
+                            RecolourACell(false, g_selectedCell);
                     }
                 }
                 if (g_selectedCell.Text.Length < 2 && !g_pencilMarker)
@@ -1171,6 +1288,7 @@ namespace SudokuSolverSetter
             }
             
         }
+        
         /// <summary>
         /// Handles keydown events so that the user can: navigate through the grid with arrow keys, delete number(s) from a cell, 
         /// pause/unpause the puzzle, and activate/deactive notes
@@ -1208,6 +1326,11 @@ namespace SudokuSolverSetter
                 case Key.Delete:
                     if (!g_selectedCell.IsReadOnly && g_selectedCell.Text.Length > 0)
                     {
+                        if (g_selectedCell.Background == Brushes.Red)
+                        {
+                            bool darkMode = nightmode_chkbx.IsChecked == true ? true : false;
+                            RecolourACell(darkMode, g_selectedCell);
+                        }
                         g_selectedCell.Text = "";
                     }
                     break;
@@ -1301,25 +1424,7 @@ namespace SudokuSolverSetter
                 ((Button)Numbers_grid.Children[i]).Foreground = darkTextColour;
                 ((Button)Numbers_grid.Children[i]).Background = darkButtonColour;
             }
-            for (int i = 0; i < g_Cells.Count; i++)
-            {
-                g_Cells[i].Foreground = darkTextColour;
-                g_Cells[i].BorderBrush = darkTextColour;
-                g_Cells[i].SelectionBrush = darkTextColour;
-                if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
-                    || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
-                    || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
-                    || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
-                    || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
-                    || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77)
-                {
-                    g_Cells[i].Background = altDarkCellColour;
-                }
-                else
-                {
-                    g_Cells[i].Background = darkColour;
-                }
-            }
+            RecolourAllCells(true);
             if (g_selectedCell != null)
             {
                 g_selectedCell.Focus();
@@ -1359,25 +1464,7 @@ namespace SudokuSolverSetter
                 ((Button)Numbers_grid.Children[i]).Foreground = Brushes.Black; 
                 ((Button)Numbers_grid.Children[i]).Background = buttonColour;
             }
-            for (int i = 0; i < g_Cells.Count; i++)//sudoku grid
-            {                
-                g_Cells[i].Foreground = Brushes.Black;
-                g_Cells[i].BorderBrush = Brushes.Black;
-                g_Cells[i].SelectionBrush = Brushes.Black;
-                if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14 
-                    || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29 
-                    || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38 
-                    || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47 
-                    || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59 
-                    || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77)
-                {
-                    g_Cells[i].Background = altCellColour;
-                }
-                else
-                {
-                    g_Cells[i].Background = cellColour;
-                }
-            }
+            RecolourAllCells(false);
             if (g_selectedCell != null)
             {
                 g_selectedCell.Focus();
@@ -1428,7 +1515,7 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void MouseEnter_Cell(object sender, MouseEventArgs e)
         {
-            if (g_selectedCell != (TextBox)sender)
+            if (g_selectedCell != (TextBox)sender && ((TextBox)sender).Background != Brushes.Red)
             {
                 if (nightmode_chkbx.IsChecked == false)
                 {
@@ -1447,7 +1534,7 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void MouseLeave_Cell(object sender, MouseEventArgs e)
         {
-            if (g_selectedCell != (TextBox)sender)
+            if (g_selectedCell != (TextBox)sender && ((TextBox)sender).Background != Brushes.Red)
             {
                 for (int i = 0; i < g_Cells.Count; i++)
                 {
@@ -1458,25 +1545,11 @@ namespace SudokuSolverSetter
                         || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
                         || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77))
                     {
-                        if (nightmode_chkbx.IsChecked == false)
-                        {
-                            ((TextBox)sender).Background = altCellColour;
-                        }
-                        else
-                        {
-                            ((TextBox)sender).Background = altDarkCellColour;
-                        }
+                        ((TextBox)sender).Background = nightmode_chkbx.IsChecked == true ? altDarkCellColour : altCellColour;
                     }
                     else if ((TextBox)sender == g_Cells[i])
                     {
-                        if (nightmode_chkbx.IsChecked == false)
-                        {
-                            ((TextBox)sender).Background = cellColour;
-                        }
-                        else
-                        {
-                            ((TextBox)sender).Background = darkColour;
-                        }
+                        ((TextBox)sender).Background = nightmode_chkbx.IsChecked == true ? darkColour : cellColour;
                     }
                 }
             }

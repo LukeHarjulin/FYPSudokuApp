@@ -9,12 +9,12 @@
         Title="Devloper Window" Height="800" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterOwner" Closing="Window_Closing">
     <Border Padding="10">
         <Canvas Background="#FFEEF1FF">
-            <Rectangle Height="91" Canvas.Left="505" Stroke="Black" Canvas.Top="10" Width="440"/>
+            <Rectangle Height="91" Canvas.Left="465" Stroke="Black" Canvas.Top="10" Width="480"/>
             <Button x:Name="Back_btn" Cursor="Hand" Content="Back" HorizontalAlignment="Left" Click="Back_Button_Click" Width="100" Height="45" FontSize="16" Canvas.Left="10" Canvas.Top="10"/>
             <Button x:Name="b_Solve" Cursor="Hand" Content="Strategy Solver &#xD;&#xA;using Objects" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="98" Height="65" FontSize="18"/>
             <Button x:Name="b_Solve1by1" Cursor="Hand" Content="Solve Next Step (WIP)" Click="B_Solve1by1_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="378" Height="65" FontSize="18"/>
-            <Button x:Name="Generate_Puzzle" Cursor="Hand" Content="Generate &amp;&#xD;&#xA;Display" Click="GeneratePuzzle_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="530" Canvas.Top="48" Height="45" FontSize="14"/>
-            <Button x:Name="Import_Puzzle" Cursor="Hand" Content="Import Puzzle" Click="Import_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="315" Canvas.Top="10" Height="45" FontSize="14"/>
+            <Button x:Name="Generate_Puzzle" Cursor="Hand" Content="Generate &amp;&#xD;&#xA;Display" Click="GeneratePuzzle_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="470" Canvas.Top="48" Height="45" FontSize="14"/>
+            <Button x:Name="Import_Puzzle" Cursor="Hand" Content="Import Puzzle" Click="Import_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Canvas.Left="140" Canvas.Top="10" Height="45" FontSize="14"/>
             <Button x:Name="Reset_Puzzle" Cursor="Hand" Content="Reset Puzzle" Click="Reset_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="510" Height="65" FontSize="18"/>
 
             <UniformGrid x:Name="SudokuGrid" Background="White" Height="610" Width="610" Canvas.Left="335" Canvas.Top="130" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -100,14 +100,14 @@
                 <TextBox x:Name="x9y8g9"  IsReadOnly="True" FontWeight="SemiBold" BorderBrush="Black" TextWrapping="Wrap" Cursor="Arrow" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <TextBox x:Name="x9y9g9"  IsReadOnly="True" FontWeight="SemiBold" BorderBrush="Black" TextWrapping="Wrap" Cursor="Arrow" BorderThickness="0.75" Text="0" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             </UniformGrid>
-            <Button x:Name="Create_Store_Puzzles_btn" Cursor="Hand" Content="Generate &amp; Store&#xD;&#xA;Puzzles" Canvas.Left="670" Canvas.Top="48" Width="120" Height="45" Click="Create_Store_Puzzles_btn_Click" FontSize="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button x:Name="Create_Store_Puzzles_btn" Cursor="Hand" Content="Generate &amp; Store&#xD;&#xA;Puzzles" Canvas.Left="595" Canvas.Top="48" Width="120" Height="45" Click="Create_Store_Puzzles_btn_Click" FontSize="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Label Content="" Canvas.Left="15" Canvas.Top="37"/>
             <Button x:Name="Backtracking_Solve_char" Cursor="Hand" Content="Backtracking Solver&#xD;&#xA; using char[][]" Click="BacktrackingSolve_char_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="238" Height="65" FontSize="18"/>
             <Button x:Name="Backtracking_Solve_Obj" Cursor="Hand" Content="Backtracking Solver &#xD;&#xA;using Objects" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="168" Height="65" FontSize="18"/>
             <ComboBox x:Name="Number_List_combo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="91" Height="25" BorderThickness="1" SelectedIndex="0" FontSize="16" Canvas.Left="169" Canvas.Top="68"/>
             <Label Content="Number of solves:" Canvas.Left="10" Canvas.Top="67" FontSize="18"/>
             <Button x:Name="TestAllThree" Cursor="Hand" Content="Test All Three Solvers" Click="B_Solve_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Canvas.Left="10" Canvas.Top="308" Height="65" FontSize="18"/>
-            <Label Content="Select existing puzzle:" Canvas.Left="655" Canvas.Top="12" FontSize="16" HorizontalContentAlignment="Right"/>
+            <Label Content="Select existing puzzle:" Canvas.Left="767" Canvas.Top="10" FontSize="16" HorizontalContentAlignment="Right"/>
             <ComboBox x:Name="PuzzleDifficulty_combo" Canvas.Left="835" Canvas.Top="37" MaxDropDownHeight="700" Width="95" Height="25" FontSize="14" SelectionChanged="DifficultyCombo_SelectionChanged">
                 <ComboBoxItem Content="Beginner"/>
                 <ComboBoxItem Content="Moderate"/>
@@ -115,7 +115,7 @@
                 <ComboBoxItem Content="Extreme"/>
             </ComboBox>
             <ComboBox x:Name="PuzzlesByRating_combo" Canvas.Left="835" Canvas.Top="67" MaxDropDownHeight="700" Width="95" Height="25" FontSize="16" SelectionChanged="RatingCombo_SelectionChanged"/>
-            <CheckBox x:Name="Symmetry_checkbox" Content="Symmetry?" Canvas.Left="530" Canvas.Top="17" FontSize="16" Width="143" Checked="Symmetry_checkbox_Checked" Unchecked="Symmetry_checkbox_Unchecked"/>
+            <CheckBox x:Name="Symmetry_checkbox" Content="Symmetry?" Canvas.Left="477" Canvas.Top="18" FontSize="16" Width="143" Checked="Symmetry_checkbox_Checked" Unchecked="Symmetry_checkbox_Unchecked"/>
             <Label x:Name="givenNums_lbl" Content="Given Numbers: " Canvas.Left="315" Canvas.Top="53" FontSize="16" Width="150"/>
             <Label x:Name="difficulty_lbl" Content="Difficulty: Unknown" Canvas.Left="315" Canvas.Top="79" FontSize="16" Width="185"/>
             <Label x:Name="strategy_lbl" Content="Strategy just used: &lt;Strategy&gt;" Canvas.Left="10" Canvas.Top="449" Width="280" FontSize="14" HorizontalContentAlignment="Center" BorderBrush="Black" BorderThickness="1"/>

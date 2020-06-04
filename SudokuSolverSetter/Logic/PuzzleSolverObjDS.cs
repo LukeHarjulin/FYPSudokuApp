@@ -11,6 +11,7 @@ namespace SudokuSolverSetter
         //backtracking required?                change made?            moderate?           advanced?
         public bool g_BacktrackingReq = false, g_changeMade = false, g_moderate = false, g_advanced = false;
         public int g_Rating = 0;//puzzle rating score
+        public int g_StepCounter = 0;//number of steps to solve the puzzle
         public string g_Difficulty = "Beginner", g_strategy = "";//puzzle difficulty
         private readonly PuzzleGenerator g_Gen = new PuzzleGenerator();
         public List<string> g_SolvePath = new List<string>();//solve path using strategies
@@ -26,6 +27,7 @@ namespace SudokuSolverSetter
         public bool Solver(SudokuGrid grid, int method)//Once called, the solver will attempt to entirely solve the puzzle, making decisions based off of the current state of the puzzle.
         {
             g_Rating = 0;
+            g_StepCounter = 0;
             g_SolvePath = new List<string>();
             g_BacktrackingPath = new List<string>();
             g_changeMade = false; g_moderate = false; g_advanced = false;
@@ -38,117 +40,125 @@ namespace SudokuSolverSetter
             if (method == 1)
             {
                 string separator = "|>---------------------------------------------------------------------------------------------------------------------->|";
+                int index;
                 do
                 {
                     if (CleanCandidateLists(grid))
                     {
                         g_SolvePath.Add(separator);
                     }
+                    g_SolvePath.Add("STEP "+ ++g_StepCounter+": ");
+                    index = g_SolvePath.Count-1;
                     if (FindNakedSingles(grid))//Naked singles contributes +10 to the rating for each naked single found
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
-                        
+                        g_SolvePath[index] += "Naked Single(s)";
                     }
                     else if (FindHiddenSingles(grid))//Naked singles contributes +15 to the rating for each hidden single found
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
-                       
+                        g_SolvePath[index] += "Hidden Single(s)";
                     }
                     else if (FindNakedPair(grid))//A Naked Pair contributes +100 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 100;
                         g_moderate = true;
                         g_StrategyCount[3]++;
+                        g_SolvePath[index] += "Naked Pair";
                     }
                     else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 150;
                         g_moderate = true;
                         g_StrategyCount[4]++;
+                        g_SolvePath[index] += "Hidden Pair";
                     }
                     else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 250;
                         g_moderate = true;
                         g_StrategyCount[5]++;
+                        g_SolvePath[index] += "Pointing Line";
                     }
                     else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 300;
                         g_moderate = true;
                         g_StrategyCount[6]++;
+                        g_SolvePath[index] += "Block-Line Reduction";
                     }
                     else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 400;
                         g_moderate = true;
                         g_StrategyCount[7]++;
+                        g_SolvePath[index] += "Naked Triple";
+
                     }
                     else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 450;
                         g_moderate = true;
                         g_StrategyCount[8]++;
+                        g_SolvePath[index] += "Hidden Triple";
                     }
                     else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 550;
                         g_advanced = true;
                         g_StrategyCount[9]++;
+                        g_SolvePath[index] += "X-Wing";
                     }
                     else if (FindYWing(grid))//A Y-Wing contributes +600 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 600;
                         g_advanced = true;
                         g_StrategyCount[10]++;
+                        g_SolvePath[index] += "Y-Wing";
                     }
                     else if (FindXYZWing(grid))//An XYZ-Wing contributes +650 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 650;
                         g_advanced = true;
                         g_StrategyCount[11]++;
+                        g_SolvePath[index] += "XYZ-Wing";
                     }
                     else if (FindSingleChains(grid))//A successful Single Chain contributes +100*(chain length) to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_advanced = true;
                         g_StrategyCount[12]++;
+                        g_SolvePath[index] += "Single Chains / Simple Colouring";
                     }
                     else if (FindUniqueRectangleType1(grid))//A Unique Rectangle contributes +750 to the rating.
                     {
                         g_changeMade = true;
-                        g_SolvePath.Add(separator);
                         g_Rating += 750;
                         g_advanced = true;
                         g_StrategyCount[13]++;
+                        g_SolvePath[index] += "Unique Rectangle Type 1";
                     }
                     //More methods to add
                     else
                     {
+                        g_SolvePath.RemoveAt(g_SolvePath.Count - 1);
                         g_changeMade = false;
-                        g_SolvePath.Add(separator);
+                        g_StepCounter--;
                     }
+                    if (g_changeMade)
+                    {
+                        LastCandidates(grid);
+                    }
+                    g_SolvePath.Add(separator);
                 } while (g_changeMade);
             }
             else if (method == 2)
@@ -163,6 +173,10 @@ namespace SudokuSolverSetter
                 g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
                 g_StrategyCount[0]++;
                 return false;
+            }
+            else
+            {
+                g_SolvePath.Add("|--------------------------------FINISHED--------------------------------|");
             }
             if (g_moderate)
                 g_Difficulty = "Moderate";
@@ -207,6 +221,32 @@ namespace SudokuSolverSetter
                                 changeMade = true;
                             }
                         }
+                    }
+                }
+            }
+            return changeMade;
+        }
+        /// <summary>
+        /// Cleans last candidates in cells to define the value of the cell after a strategy has made changes
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private bool LastCandidates(SudokuGrid grid)
+        {
+            bool changeMade = false;
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count == 1)
+                    {
+                        grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
+                        grid.Rows[i][j].Candidates.Clear();
+                        if (!changeMade)
+                            g_SolvePath.Add("(IMMEDIATE SOLUTIONS ACQUIRED FROM STRATEGY)");
+                        changeMade = true;
+                        g_SolvePath.Add("-Last candidate number in cell [" + i + ", " + j + "] is "  + grid.Rows[i][j].Num);
+                        g_StrategyCount[1]++;
                     }
                 }
             }
@@ -1342,7 +1382,7 @@ namespace SudokuSolverSetter
                                                 if (chain[c1].XLocation == chain[c2].XLocation || chain[c1].YLocation == chain[c2].YLocation || chain[c1].BlockLoc == chain[c2].BlockLoc)//if c2 shares a group (row/column/block) with c1, contradiction occurs.
                                                 {
                                                     contradiction = indicatorForCell[c1];
-                                                    g_SolvePath.Add("Contradiction in " + (indicatorForCell[c1] ? "Blue" : "Red") + " between cells [" + chain[c1].XLocation + "," + chain[c1].YLocation + "] and [" + chain[c2].XLocation + "," + chain[c2].YLocation + "]");
+                                                    g_SolvePath.Add("SINGLE CHAINS / SIMPLE COLOURING - Type 2\r\n\r\nContradiction in cells coloured " + (indicatorForCell[c1] ? "Blue" : "Red") + " between cells [" + chain[c1].XLocation + "," + chain[c1].YLocation + "] and [" + chain[c2].XLocation + "," + chain[c2].YLocation + "]");
                                                     break;
                                                 }
                                             }
@@ -1356,7 +1396,7 @@ namespace SudokuSolverSetter
                                             {
                                                 chain[d].Candidates.Remove(candidate);
                                                 changeMade = true;
-                                                g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + chain[d].XLocation + "," + chain[d].YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - Type 2");
+                                                g_SolvePath.Add("-Candidate number " + candidate + " removed from cell [" + chain[d].XLocation + "," + chain[d].YLocation + "]");
                                             }
                                         }
                                     }
@@ -1677,111 +1717,122 @@ namespace SudokuSolverSetter
             return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
         }
 #endregion
-        #region Solver for Solving Cell by Cell button
+        #region Solver method for Solving Cell by Cell button
         public bool SolveNextStep(SudokuGrid grid)
         {
             if (g_Gen.CheckIfSolved(grid))
             {
                 return true;
             }
+            int index;
+
             g_changeMade = false; g_moderate = false; g_advanced = false;
             string separator = "|>---------------------------------------------------------------------------------------------------------------------->|";
-
-            if (CleanCandidateLists(grid))
+            g_SolvePath.Add("STEP " + ++g_StepCounter + ": ");
+            index = g_SolvePath.Count - 1;
+            if (g_strategy != "Clean Candidates" && LastCandidates(grid))
             {
-                g_SolvePath.Add(separator);
+                g_strategy = "Last Candidates filled in";
+                g_SolvePath.RemoveAt(index);
+                g_StepCounter--;
+            }
+            else if (CleanCandidateLists(grid))
+            {
                 g_strategy = "Clean Candidates";
+                g_SolvePath.RemoveAt(index);
+                g_StepCounter--;
             }
             else if (FindNakedSingles(grid))//Naked singles contributes +10 to the rating for each naked single found
             {
-                g_SolvePath.Add(separator);
-                g_strategy = "Naked Singles";
+                g_strategy = "Naked Single(s)";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindHiddenSingles(grid))//Naked singles contributes +15 to the rating for each hidden single found
             {
-                g_SolvePath.Add(separator);
-                g_strategy = "Hidden Singles";
+                g_strategy = "Hidden Single(s)";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindNakedPair(grid))//A Naked Pair contributes +100 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 100;
                 g_moderate = true;
                 g_strategy = "Naked Pair";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 150;
                 g_moderate = true;
                 g_strategy = "Hidden Pair";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 250;
                 g_moderate = true;
-                g_strategy = "Pointing Pair/Triple";
+                g_strategy = "Pointing Line";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 300;
                 g_moderate = true;
                 g_strategy = "Block-Line Reduction";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 400;
                 g_moderate = true;
                 g_strategy = "Naked Triple";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 450;
                 g_moderate = true;
                 g_strategy = "Hidden Triple";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 550;
                 g_advanced = true;
                 g_strategy = "X-Wing";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindYWing(grid))//A Y-Wing contributes +600 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 600;
                 g_advanced = true;
                 g_strategy = "Y-Wing";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindXYZWing(grid))//An XYZ-Wing contributes +650 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 650;
                 g_advanced = true;
                 g_strategy = "XYZ-Wing";
+                g_SolvePath[index] += g_strategy;
             }
-            else if (FindSingleChains(grid))//A successful Single Chain contributes +700 to the rating.
+            else if (FindSingleChains(grid))//A successful Single Chain contributes +100*chain length to the rating.
             {
-                g_SolvePath.Add(separator);
-                g_Rating += 700;
                 g_advanced = true;
                 g_strategy = "Single Chains/Simple Colouring";
+                g_SolvePath[index] += g_strategy;
             }
             else if (FindUniqueRectangleType1(grid))//A Unique Rectangle contributes +750 to the rating.
             {
-                g_SolvePath.Add(separator);
                 g_Rating += 750;
                 g_advanced = true;
                 g_strategy = "Unique Rectangle Type 1";
+                g_SolvePath[index] += g_strategy;
             }
             //More methods to add
             else
             {
+                g_StepCounter--;
+                g_SolvePath.RemoveAt(g_SolvePath.Count - 1);
                 BacktrackingSolver(grid, 0, 0, 0);
                 g_BacktrackingReq = true;
                 g_Difficulty = "Extreme";
@@ -1789,8 +1840,11 @@ namespace SudokuSolverSetter
                 g_SolvePath.Add(separator);
                 g_strategy = "Trial-and-error/Brute-force";
             }
+            
+            g_SolvePath.Add(separator);
             if (g_Gen.CheckIfSolved(grid))
             {
+                g_SolvePath.Add("|--------------------------------FINISHED--------------------------------|");
                 return true;
             }
             if (g_moderate)
