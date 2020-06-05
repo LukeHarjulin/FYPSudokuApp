@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Windows.Media;
+using System.IO;
 
 namespace SudokuSolverSetter
 {
@@ -929,11 +930,33 @@ namespace SudokuSolverSetter
 
         private void ReGradePuzzles_btn_Click(object sender, RoutedEventArgs e)
         {
-            string fileName = "";
-            fileName += Symmetry_checkbox.IsChecked == true ? @"Symmetric/SudokuPuzzles.xml" : @"NonSymmetric/SudokuPuzzles.xml";
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to update the rating of each and every puzzle in storage?", "Confirm", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
+            string symmetric;
+            if (Symmetry_checkbox.IsChecked == true)
+            {
+                symmetric = @"Symmetric";
+            }
+            else
+            {
+                symmetric = @"NonSymmetric";
+            }
+            string fileName = symmetric + "/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
             try
             {
+                StreamWriter ratingWrite = new StreamWriter(symmetric + "/ratings.txt", true);
+                StreamWriter difficWrite = new StreamWriter(symmetric + "/difficulties.txt", true);
+                StreamWriter givensWrite = new StreamWriter(symmetric + "/givens.txt", true);
+                #region Strategy Files
+                StreamWriter NS = new StreamWriter(symmetric + "/StratsCounts/nakedsingles.txt", true), HS = new StreamWriter(symmetric + "/StratsCounts/hiddensingles.txt", true), NP = new StreamWriter(symmetric + "/StratsCounts/nakedpair.txt", true),
+                HP = new StreamWriter(symmetric + "/StratsCounts/hiddenpair.txt", true), PP = new StreamWriter(symmetric + "/StratsCounts/pointline.txt", true), BLR = new StreamWriter(symmetric + "/StratsCounts/blocklinereduc.txt", true), NT = new StreamWriter(symmetric + "/StratsCounts/nakedtriple.txt", true),
+                HT = new StreamWriter(symmetric + "/StratsCounts/hiddentriple.txt", true), XW = new StreamWriter(symmetric + "/StratsCounts/xwing.txt", true), YW = new StreamWriter(symmetric + "/StratsCounts/ywing.txt", true), XYZ = new StreamWriter(symmetric + "/StratsCounts/xyzwing.txt", true),
+                SC = new StreamWriter(symmetric + "/StratsCounts/singlechains.txt", true), UR1 = new StreamWriter(symmetric + "/StratsCounts/uniquerecttyp1.txt", true), BT = new StreamWriter(symmetric + "/StratsCounts/backtrack.txt", true);
+                #endregion
                 Stopwatch Timer = new Stopwatch();
                 Timer.Start();
                 doc.Load(fileName);
@@ -958,6 +981,39 @@ namespace SudokuSolverSetter
                             g_gen.StringToGrid(grid, sudokuString);
                             g_solve.Solver(grid, 3);
                             puzzle["DifficultyRating"].InnerText = g_solve.g_Rating.ToString();
+                            if (label.Name == "NotStarted")
+                            {
+                                int givens = 0;
+                                for (int x = 0; x < sudokuString.Length; x++)
+                                {
+                                    if (sudokuString[x] != '0')
+                                    {
+                                        givens++;
+                                    }
+                                }
+                                ratingWrite.WriteLine(g_solve.g_Rating);
+                                switch (g_solve.g_Difficulty)
+                                {
+                                    case "Beginner":
+                                        difficWrite.WriteLine("1");
+                                        break;
+                                    case "Moderate":
+                                        difficWrite.WriteLine("2");
+                                        break;
+                                    case "Advanced":
+                                        difficWrite.WriteLine("3");
+                                        break;
+                                    default:
+                                        difficWrite.WriteLine("4");
+                                        break;
+                                }
+                                givensWrite.WriteLine(givens);
+                                NS.WriteLine(g_solve.g_StrategyCount[1]); HS.WriteLine(g_solve.g_StrategyCount[2]); NP.WriteLine(g_solve.g_StrategyCount[3]);
+                                HP.WriteLine(g_solve.g_StrategyCount[4]); PP.WriteLine(g_solve.g_StrategyCount[5]); BLR.WriteLine(g_solve.g_StrategyCount[6]);
+                                NT.WriteLine(g_solve.g_StrategyCount[7]); HT.WriteLine(g_solve.g_StrategyCount[8]); XW.WriteLine(g_solve.g_StrategyCount[9]);
+                                YW.WriteLine(g_solve.g_StrategyCount[10]); XYZ.WriteLine(g_solve.g_StrategyCount[11]); SC.WriteLine(g_solve.g_StrategyCount[12]);
+                                UR1.WriteLine(g_solve.g_StrategyCount[13]); BT.WriteLine(g_solve.g_StrategyCount[0]);
+                            }
                         }
                     }
                 }

@@ -194,7 +194,7 @@ namespace SudokuSolverSetter
                         }
                         else if (puzzleString[counter] == '-')
                         {
-                            g_Cells[i].FontSize = 16;
+                            ResizeCellFont(g_Cells[i], 16);
                             counter++;
                         }
                         if (counter == puzzleString.Length)
@@ -212,11 +212,11 @@ namespace SudokuSolverSetter
                             g_Cells[i].Text += puzzleString[counter].ToString();
                             if (g_Cells[i].Text.Length > 1)
                             {
-                                g_Cells[i].FontSize = 16;
+                                ResizeCellFont(g_Cells[i], 16);
                             }
                             else
                             {
-                                g_Cells[i].FontSize = 36;
+                                ResizeCellFont(g_Cells[i], 36);
                             }
                         }
                         else
@@ -329,8 +329,9 @@ namespace SudokuSolverSetter
                         "Dark Mode is available above the 'Help Menu' button, for those who prefer a darker colour scheme.\r\n\r\n\r\n" +
                         "Help Whilst Playing:\r\n\r\n" +
                         "If you enter a number into a cell that already exists in a corresponding row/column/block, the cell will be highlighted red to inform you of your mistake.\r\n\r\n" +
-                        "The Update Candidates button is a helper tool that uses the current state of the puzzle to display, in each empty cell, the possible digits that can go into a cell - based off of the numbers missing from the row/column/block that the cell shares.\r\n\r\n" +
-                        "The Reset Candidates button does the same as the Update Candidates button, however it ignores any updates to the candidate numbers that you have applied.\r\n\r\n" +
+                        "The \"Update Candidates\" button is a helper tool that uses the current state of the puzzle to display, in each empty cell, the possible digits that can go into a cell - based off of the numbers missing from the row/column/block that the cell shares.\r\n\r\n" +
+                        "The \"Reset Candidates\" button does the same as the Update Candidates button, however it ignores any updates to the notes in the cells that you have changed.\r\n\r\n" +
+                        "The \"Clear Candidates\" button removes notes from all empty cells.\r\n\r\n" +
                         "The \"Show Clue\" button is another helper tool that is currently unimplemented.\r\n\r\n");
                     RTB_LargeText.FontSize = 42;
                     RTB_HelpText.FontSize = 18;
@@ -433,7 +434,7 @@ namespace SudokuSolverSetter
             {
                 if (grid.Rows[x][y].Num != '0') //0's are placeholders for when there is no value, so any 0's are turned into textboxes containing the candidate values.
                 {
-                    m_txtBxList[i].FontSize = 36;
+                    ResizeCellFont(m_txtBxList[i], 36);
                     m_txtBxList[i].Text = grid.Rows[x][y].Num.ToString();
                     if (grid.Rows[x][y].ReadOnly == true)//The readonly property ensures that the default given values of the sudoku puzzle remain readonly.
                     {
@@ -675,7 +676,7 @@ namespace SudokuSolverSetter
             int row = 0, col = 0;
             for (int i = 0, r = 0, c = 0; i < 81; i++, c++)
             {
-                if (g_Cells[i].Text.Length == 1)
+                if (g_Cells[i].Text.Length == 1 && g_Cells[i].FontSize == 36)
                     puzzleString += g_Cells[i].Text[0];
                 else
                     puzzleString += '0';
@@ -747,7 +748,6 @@ namespace SudokuSolverSetter
                     g_Cells[i].Foreground = darkMode ? darkTextColour : Brushes.Black;
                     g_Cells[i].BorderBrush = darkMode ? darkTextColour : Brushes.Black;
                     g_Cells[i].SelectionBrush = darkMode ? darkTextColour : Brushes.Black;
-                    g_Cells[i].CaretBrush = darkMode ? Brushes.White : Brushes.Black;
                 }
                 if (g_Cells[i] == cell && (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
                     || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
@@ -771,7 +771,6 @@ namespace SudokuSolverSetter
                 g_Cells[i].Foreground = darkMode ? darkTextColour : Brushes.Black;
                 g_Cells[i].BorderBrush = darkMode ? darkTextColour : Brushes.Black;
                 g_Cells[i].SelectionBrush = darkMode ? darkTextColour : Brushes.Black;
-                g_Cells[i].CaretBrush = darkMode ? Brushes.White : Brushes.Black;
 
                 if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
                     || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
@@ -787,6 +786,11 @@ namespace SudokuSolverSetter
                     g_Cells[i].Background = darkMode ? darkColour : cellColour;
                 }
             }
+        }
+        private void ResizeCellFont(TextBox cell, int fontsize)
+        {
+            cell.FontSize = fontsize;
+            cell.CaretBrush = nightmode_chkbx.IsChecked == true ? (fontsize == 16 ? Brushes.White : Brushes.Transparent) : (fontsize == 16 ? Brushes.Black : Brushes.Transparent);
         }
         #endregion
         #region Event Handlers
@@ -852,7 +856,7 @@ namespace SudokuSolverSetter
                 {
                     if (g_pencilMarker)
                     {
-                        g_selectedCell.FontSize = 16;
+                        ResizeCellFont(g_selectedCell,16);
                         if (!g_selectedCell.Text.Contains(((Button)sender).Content.ToString()))
                         {
                             g_selectedCell.Text += ((Button)sender).Content.ToString();//Previously Selected Cell is given the number of the button
@@ -860,11 +864,10 @@ namespace SudokuSolverSetter
                     }
                     else
                     {
+                        ResizeCellFont(g_selectedCell, 36);
                         g_selectedCell.Text = ((Button)sender).Content.ToString();//Previously Selected Cell is given the number of the button
 
                     }
-
-
                     g_selectedCell.Focus();
                 }
                 
@@ -907,6 +910,8 @@ namespace SudokuSolverSetter
             g_selectedCell = (TextBox)sender;
             if (((TextBox)sender).Background != Brushes.Red)
                 ((TextBox)sender).Background = nightmode_chkbx.IsChecked == false ? focusCell : darkFocusCell;//sets the current focused cell to a more prominent colour
+            g_selectedCell.CaretBrush = nightmode_chkbx.IsChecked == true ? (g_selectedCell.FontSize == 16 ? Brushes.White : Brushes.Transparent) : (g_selectedCell.FontSize == 16 ? Brushes.Black : Brushes.Transparent);
+
             g_cellContents = g_selectedCell.Text;
         }
         /// <summary>
@@ -1039,7 +1044,7 @@ namespace SudokuSolverSetter
                                     candis += grid.Rows[i][j].Candidates[k];
                                 }
                                 g_Cells[index].Text = candis;
-                                g_Cells[index].FontSize = 16;
+                                ResizeCellFont(g_Cells[index], 16);
                             }
                             index++;
                         }
@@ -1113,7 +1118,7 @@ namespace SudokuSolverSetter
                                     candis += grid.Rows[i][j].Candidates[k];
                                 }
                                 g_Cells[index].Text = candis;
-                                g_Cells[index].FontSize = 16;
+                                ResizeCellFont(g_Cells[index], 16);
                             }
                             index++;
                         }
@@ -1123,6 +1128,18 @@ namespace SudokuSolverSetter
             catch (Exception)
             {
 
+            }
+        }
+
+        private void Clear_Cands_btn_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < 81; i++)
+            {
+                if (g_Cells[i].FontSize == 16)
+                {
+                    g_Cells[i].Text = "";
+                    ResizeCellFont(g_Cells[i], 36);
+                }
             }
         }
 
@@ -1243,12 +1260,12 @@ namespace SudokuSolverSetter
                     g_cellContents = g_selectedCell.Text;
                     if (!g_pencilMarker)
                     {
-                        g_selectedCell.FontSize = 36;
+                        ResizeCellFont(g_selectedCell, 36);
                         ValidateInput();
                     }
                     else
                     {
-                        g_selectedCell.FontSize = 16;
+                        ResizeCellFont(g_selectedCell, 16);
                         if (nightmode_chkbx.IsChecked == true && g_selectedCell.Background == Brushes.Red)
                             RecolourACell(true, g_selectedCell);
                         else if (nightmode_chkbx.IsChecked == false && g_selectedCell.Background == Brushes.Red)
@@ -1437,7 +1454,6 @@ namespace SudokuSolverSetter
         
         /// <summary>
         /// Dark mode deactivated, changes all Controls back into light version
-        /// Needs improving by implementing a function to reduce repeated code.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

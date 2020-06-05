@@ -11,18 +11,18 @@
     <Grid FocusManager.FocusedElement="{Binding ElementName=Play_Sudoku_Btn}">
         <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="418" Margin="0,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="486" StrokeThickness="3"/>
         <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="57" Margin="0,15,773,0" Stroke="Black" VerticalAlignment="Top" Width="183" StrokeThickness="3"/>
-        <Button x:Name="Play_Sudoku_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PLAY SUDOKU" Width="420" Click="Play_Sudoku_Click" Height="60" Margin="0,360,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Verdana"/>
-        <ComboBox x:Name="Difficulty_ComboBox" Background="#BFFFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="573,425,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="30" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538" FontFamily="Verdana">
+        <Button x:Name="Play_Sudoku_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PLAY SUDOKU" Width="420" Click="Play_Sudoku_Click" Height="60" Margin="0,375,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" Padding="1" BorderThickness="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Verdana"/>
+        <ComboBox x:Name="Difficulty_ComboBox" Background="#BFFFF7E6" HorizontalAlignment="Left" VerticalAlignment="Top" Width="124" Margin="510,343,0,0" SelectionChanged="ComboBox_SelectionChanged" IsReadOnly="True" BorderBrush="#FFFFF7E6" Height="27" FontSize="16" TextOptions.TextFormattingMode="Display" FontWeight="Medium" RenderTransformOrigin="0.492,0.538" FontFamily="Verdana">
             <ComboBoxItem IsSelected="True" Content="Beginner"/>
             <ComboBoxItem Content="Moderate"/>
             <ComboBoxItem Content="Advanced"/>
             <ComboBoxItem Content="Extreme"/>
         </ComboBox>
-        <Button x:Name="Level_Selector_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PUZZLE SELECTOR" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,460,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
-        <ToggleButton x:Name="Help_btn" Cursor="Hand" Background="#BFFFF7E6" Content="OPEN HELP" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Help_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,560,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <Button x:Name="Level_Selector_Btn" Cursor="Hand" Background="#BFFFF7E6" Content="PUZZLE SELECTOR" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Level_Selector_Click" Height="60" Margin="0,470,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
+        <ToggleButton x:Name="Help_btn" Cursor="Hand" Background="#BFFFF7E6" Content="OPEN HELP" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Help_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,565,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
         <Button x:Name="Quit_btn" Cursor="Hand" Background="#BFFFF7E6" Content="QUIT" Width="420" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Quit_btn_Click" Height="60" UseLayoutRounding="False" Margin="0,660,0,0" FontSize="32" FontWeight="Medium" TextOptions.TextFormattingMode="Display" BorderThickness="3" FontFamily="Verdana"/>
         <Button x:Name="Developer_Mode" Cursor="Hand" Background="#BFFFF7E6" Content="Developer Window" HorizontalAlignment="Left" Margin="25,25,0,0" VerticalAlignment="Top" Width="160" Click="DeveloperMode_Button_Click" Height="38" FontWeight="Medium" TextOptions.TextFormattingMode="Display" FontSize="16" FontFamily="Verdana"/>
-        <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="415,420,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium" FontFamily="Verdana"/>
+        <Label Content="Select Difficulty:" HorizontalAlignment="Left" Margin="347,338,0,0" VerticalAlignment="Top" FontSize="18" TextOptions.TextFormattingMode="Display" FontWeight="Medium" FontFamily="Verdana"/>
         <Rectangle Fill="#E5EEF1FF" HorizontalAlignment="Center" Height="180" Margin="0,80,0,0" Stroke="Black" VerticalAlignment="Top" Width="994" StrokeThickness="3"/>
         <Image HorizontalAlignment="Center" Height="140" Margin="0,100,0,0" VerticalAlignment="Top" Width="810" Source="/Images/Title_designV2.png" OpacityMask="Black"/>
 
@@ -84,12 +84,34 @@
                     However, your drawings will be saved for when you toggle the Drawing tool back 'ON'.
                     _________________________________________________________________________
                     <LineBreak/>
+                    
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
+                    <Underline>Tools To Help You Play</Underline>
+                </Paragraph>
+                <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    If you enter a number into a cell that already exists in a corresponding row/column/block, the cell will be highlighted red to inform you of your mistake.
+                    <LineBreak/>
+                    <LineBreak/>
+                    The "Update Candidates" button is a helper tool that uses the current state of the puzzle to display, in each empty cell, the possible digits that can go into a cell - based off of the numbers missing from the row/column/block that the cell shares.
+                    <LineBreak/>
+                    <LineBreak/>
+                    The "Reset Candidates" button does the same as the Update Candidates button, however it ignores any updates to the notes in the cells that you have changed.
+                    <LineBreak/>
+                    <LineBreak/>
+                    The "Clear Candidates" button removes notes from all empty cells.
+                    <LineBreak/>
+                    <LineBreak/>
+                    The "Show Clue" button is another helper tool that is currently unimplemented.
+                    <LineBreak/>
+                    _________________________________________________________________________
+                    <LineBreak/>
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
                     <Underline>Additional Information</Underline>
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    Dark Mode is available whilst playing sudoku for those who prefer a darker colour scheme. It is located below the 'Help' button.
+                    Dark Mode is available whilst playing sudoku for those who prefer a darker colour scheme. It is located above the 'Help' button.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
                     If it happens that there are no puzzles in storage or that you have completed all of the existing puzzles, click the 'Generate Puzzles' button in the bottom right and select how many puzzles you wish to generate.
@@ -111,7 +133,7 @@
                     - they will also require the Beginner strategies.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    <Bold>Advanced</Bold> puzzles will require strategies such as X-Wings, Y-Wings, XYZ-Wings, and Single Chaining (aka Simple Colouring)
+                    <Bold>Advanced</Bold> puzzles will require strategies such as X-Wings, Y-Wings, XYZ-Wings, Single Chaining (aka Simple Colouring), and Unique Rectangle (Type 1)
                     - they will also require the lower tier strategies.
                     Advanced puzzles should never require Extreme strategies because the difficulty rating system is yet to detect any Extreme strategies.
                     Therefore, when a puzzle's difficulty is measured, if the implemented Strategic Solver cannot solve the puzzle using the strategies at hand, 
@@ -244,6 +266,10 @@
                     <Bold>Generate &amp; Store Puzzles</Bold> " button produces a small window where you can select how many puzzles you wish to generate and store; 
                     these generated puzzles are also in accordance to the state of the "Symmetry?" checkbox. 
                     Puzzles can take a long time to generate so beware of waiting for a significant amount of time if more than 10 puzzles are selected to be generated.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "
+                    <Bold>Re-grade Puzzles Stored</Bold> " is used to update the existing puzzles' grades to correspond with a new version of the puzzle grading system.
                 </Paragraph>
                 <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
                     The "

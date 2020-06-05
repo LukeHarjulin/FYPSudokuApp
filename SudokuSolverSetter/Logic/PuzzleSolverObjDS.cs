@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
+using System.Windows.Input;
 
 namespace SudokuSolverSetter
 {
@@ -212,6 +214,7 @@ namespace SudokuSolverSetter
         }
         #endregion
         #region Strategy-Usage Solver method
+        #region Grid Cleaning Methods
         /// <summary>
         /// Looks at all cells and removes numbers from candidate lists that can't exist in that cell. 
         /// </summary>
@@ -275,13 +278,16 @@ namespace SudokuSolverSetter
                             g_SolvePath.Add("(IMMEDIATE SOLUTIONS ACQUIRED FROM STRATEGY)");
                         changeMade = true;
                         if (g_PathTracking)
-                            g_SolvePath.Add("-Last candidate number in cell [" + i + ", " + j + "] is " + grid.Rows[i][j].Num);
+                            g_SolvePath.Add("-Last candidate number in cell [" + i + "," + j + "] is " + grid.Rows[i][j].Num);
                         g_StrategyCount[1]++;
                     }
                 }
             }
             return changeMade;
         }
+        #endregion
+        #region Singles Strategies
+        #region Naked Singles
         /// <summary>
         /// Naked Singles
         /// Set Theory:
@@ -301,17 +307,66 @@ namespace SudokuSolverSetter
                     if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count == 1)
                     {
                         grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
-                        grid.Rows[i][j].Candidates.Clear();
                         changeMade = true;
                         if (g_PathTracking)
                             g_SolvePath.Add("Number " + grid.Rows[i][j].Num + " placed in cell [" + i + "," + j + "] - NAKED SINGLE");
-                        g_Rating += 10;
+                        g_Rating += FindNakedSingleRC(grid, grid.Rows[i][j]) * 10;
                         g_StrategyCount[1]++;
+                        grid.Rows[i][j].Candidates.Clear();
                     }
                 }
             }
             return changeMade;
         }
+        /// <summary>
+        /// This method grades the complexity of the Naked Single usage by relational complexity
+        /// The Relational Complexity of a strategy is the minimum number of groups that are required to deduce the Naked Single
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="singleCell"></param>
+        /// <returns></returns>
+        private int FindNakedSingleRC(SudokuGrid grid, Cell singleCell) 
+        {
+            char[] numsInRow = new char[8], numsInCol = new char[8], numsInBlk = new char[8];
+            for (int n = 0; n < 8; n++)
+            {
+                numsInRow[n] = singleCell.NeighbourCells[0][n].Num;
+                numsInCol[n] = singleCell.NeighbourCells[1][n].Num;
+                numsInBlk[n] = singleCell.NeighbourCells[2][n].Num;
+            }
+            if (!numsInRow.Contains('0') || !numsInCol.Contains('0') || !numsInBlk.Contains('0'))
+                return 1;
+            List<char> numberList = new List<char>(9) { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            numberList.Remove(singleCell.Candidates[0]);
+            for (int i = 0; i < 8; i++)
+            {
+                numberList.Remove(numsInRow[i]);
+                numberList.Remove(numsInCol[i]);
+            }
+            if (numberList.Count == 0)
+                return 2;
+            numberList = new List<char>(9) { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            numberList.Remove(singleCell.Candidates[0]);
+            for (int i = 0; i < 8; i++)
+            {
+                numberList.Remove(numsInRow[i]);
+                numberList.Remove(numsInBlk[i]);
+            }
+            if (numberList.Count == 0)
+                return 2;
+            numberList = new List<char>(9) { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            numberList.Remove(singleCell.Candidates[0]);
+            for (int i = 0; i < 8; i++)
+            {
+                numberList.Remove(numsInCol[i]);
+                numberList.Remove(numsInBlk[i]);
+            }
+            if (numberList.Count == 0)
+                return 2;
+            return 3;
+        }
+        #endregion
+        #region Hidden Singles
         /// <summary>
         /// Hidden Singles
         /// Searches through all cells, if a cell is empty  - call it cellA, 
@@ -329,14 +384,14 @@ namespace SudokuSolverSetter
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    if (grid.Rows[i][j].Num == '0')
+                    if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count > 1)
                     {
-                        List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                         for (int index = 0; index < 3 && grid.Rows[i][j].Num == '0'; index++)
                         {
                             foreach (char candidate in grid.Rows[i][j].Candidates)
                             {
                                 int counter = 0;
+                                
                                 foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
                                 {
                                     if (neighbour.Num == candidate || neighbour.Num == '0' && neighbour.Candidates.Contains(candidate))
@@ -347,14 +402,51 @@ namespace SudokuSolverSetter
                                 }
                                 if (counter == 0)
                                 {
+                                    Dictionary<Cell,int> constraints = new Dictionary<Cell, int>();//each entry (cell) has a weight that implies the number of cells that it sees in the group
+                                    
+                                    foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
+                                    {
+                                        if (neighbour.Num == '0' & !neighbour.Candidates.Contains(candidate))
+                                        {
+                                            Cell prevCell = new Cell();
+                                            for (int index2 = 0; index2 < 3; index2++)
+                                            {
+                                                if (index2 != index)
+                                                {
+                                                    foreach (Cell neighbour2 in neighbour.NeighbourCells[index2])
+                                                    {
+                                                        if (neighbour2.Num == candidate)
+                                                        {
+                                                            if (!constraints.ContainsKey(neighbour2))
+                                                            {
+                                                                constraints.Add(neighbour2, 1);
+                                                                prevCell = neighbour2;
+                                                            }
+                                                            else if(prevCell != neighbour2)
+                                                            {
+                                                                constraints[neighbour2]++;
+                                                                prevCell = neighbour2;
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    int sum = 0;
+                                    foreach (var item in constraints.Keys)
+                                    {
+                                        sum += constraints[item];
+                                    }
                                     grid.Rows[i][j].Num = candidate;
                                     grid.Rows[i][j].Candidates.Clear();
                                     changeMade = true;
-                                    g_Rating += 15;
+                                    g_Rating += ((1 + sum - constraints.Count) * 10);
                                     g_StrategyCount[2]++;
                                     if (g_PathTracking)
                                         g_SolvePath.Add("Number " + candidate + " placed in cell [" + i + "," + j + "] - HIDDEN SINGLE");
-                                    return true;
+                                    break;
                                 }
                             }
                         }
@@ -363,6 +455,10 @@ namespace SudokuSolverSetter
             }
             return changeMade;
         }
+        #endregion
+        #endregion
+        #region Pair Subset Strategies
+        #region Naked Pair
         /// <summary>
         /// FindNakedPair:
         /// -Find empty cell with two candidates, call it 'Cell'
@@ -395,14 +491,14 @@ namespace SudokuSolverSetter
                                             cell.Candidates.Remove(neighbour.Candidates[0]);
                                             changeMade = true;
                                             if (g_PathTracking)
-                                                g_SolvePath.Add("Candidate number " + neighbour.Candidates[0] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + " " + neighbour.Candidates[1]);
+                                                g_SolvePath.Add("Candidate number " + neighbour.Candidates[0] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + "/" + neighbour.Candidates[1]);
                                         }
                                         if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[1]) && cell.Num == '0')
                                         {
                                             cell.Candidates.Remove(neighbour.Candidates[1]);
                                             changeMade = true;
                                             if (g_PathTracking)
-                                                g_SolvePath.Add("Candidate number " + neighbour.Candidates[1] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + " " + neighbour.Candidates[1]);
+                                                g_SolvePath.Add("Candidate number " + neighbour.Candidates[1] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + "/" + neighbour.Candidates[1]);
                                         }
                                     }
                                     if (changeMade)
@@ -418,6 +514,8 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+        #endregion
+        #region Hidden Pair
         /// <summary>
         /// Hidden Pairs: 
         /// -Iterate through cells till an empty cell with a candidate list count of greater than 2 is found.
@@ -484,13 +582,13 @@ namespace SudokuSolverSetter
                                             {
                                                 changeMade = true;
                                                 if (g_PathTracking)
-                                                    g_SolvePath.Add("Candidate numbers " + new string(removeList1.ToArray()) + " removed from cell [" + i + "," + j + "] - HIDDEN PAIR - " + candis[a] + " " + candis[b]);
+                                                    g_SolvePath.Add("Candidate numbers " + new string(removeList1.ToArray()) + " removed from cell [" + i + "," + j + "] - HIDDEN PAIR - " + candis[a] + "/" + candis[b]);
                                             }
                                             if (removeList2.Count != 0)
                                             {
                                                 changeMade = true;
                                                 if (g_PathTracking)
-                                                    g_SolvePath.Add("Candidate numbers " + new string(removeList2.ToArray()) + " removed from cell [" + cellList[b].XLocation + "," + cellList[b].YLocation + "] - HIDDEN PAIR - " + candis[a] + " " + candis[b]);
+                                                    g_SolvePath.Add("Candidate numbers " + new string(removeList2.ToArray()) + " removed from cell [" + cellList[b].XLocation + "," + cellList[b].YLocation + "] - HIDDEN PAIR - " + candis[a] + "/" + candis[b]);
                                             }
                                             if (changeMade)
                                             {
@@ -507,6 +605,10 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+        #endregion
+        #endregion
+        #region Triples Subset Strategies
+        #region Naked Triple
         /// <summary>
         /// A naked triple is where any three cells that share a group contain, in total, three candidate numbers.
         /// The combinations of candidates for a naked triple are:
@@ -591,7 +693,7 @@ namespace SudokuSolverSetter
                                         if (removed.Length > 0)
                                         {
                                             if (g_PathTracking)
-                                                g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE - " + triples[0].Candidates[0] + " " + triples[0].Candidates[1] + " " + triples[0].Candidates[2]);
+                                                g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE - " + triples[0].Candidates[0] + "/" + triples[0].Candidates[1] + "/" + triples[0].Candidates[2]);
                                         }
                                     }
                                 }
@@ -640,7 +742,7 @@ namespace SudokuSolverSetter
                                                     }
                                                     if (removed.Length > 0 && g_PathTracking)
                                                     {
-                                                        g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
+                                                        g_SolvePath.Add("Candidate number " + removed + " removed from cell [" + grid.Rows[i][j].NeighbourCells[index][n].XLocation + "," + grid.Rows[i][j].NeighbourCells[index][n].YLocation + "] - NAKED TRIPLE - " + candidateA + "/" + candidateB + "/" + candidateC);
                                                     }
                                                 }
                                             }
@@ -659,8 +761,11 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+        #endregion
+        #region Hidden Triple
         /// <summary>
-        /// This is ridiculous and complicated. So no code will be explained :(
+        /// This is ridiculously convoluted. So no code will be explained. :(
+        /// A lot of time was sunk into this strategy to perfect it.
         /// A hidden triple is where the format below is found hidden in a group amongst other candidate numbers
         /// [x,y,z] [x,y,z] [x,y,z]
         /// [x,y,z] [x,y,z] [x,y] 
@@ -748,7 +853,7 @@ namespace SudokuSolverSetter
                                                                         if (removeList.Count != 0)
                                                                         {
                                                                             if (g_PathTracking)
-                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellA.XLocation + "," + cellA.YLocation + "] - HIDDEN TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
+                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellA.XLocation + "," + cellA.YLocation + "] - HIDDEN TRIPLE - " + candidateA + "/" + candidateB + "/" + candidateC);
 
                                                                             changeMade = true;
                                                                         }
@@ -761,7 +866,7 @@ namespace SudokuSolverSetter
                                                                         if (removeList.Count != 0)
                                                                         {
                                                                             if (g_PathTracking)
-                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellB.XLocation + "," + cellB.YLocation + "] - HIDDEN TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
+                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellB.XLocation + "," + cellB.YLocation + "] - HIDDEN TRIPLE - " + candidateA + "/" + candidateB + "/" + candidateC);
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -773,7 +878,7 @@ namespace SudokuSolverSetter
                                                                         if (removeList.Count != 0)
                                                                         {
                                                                             if (g_PathTracking)
-                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellC.XLocation + "," + cellC.YLocation + "] - HIDDEN TRIPLE - " + candidateA + " " + candidateB + " " + candidateC);
+                                                                                g_SolvePath.Add("Candidate numbers " + new string(removeList.ToArray()) + " removed from cell [" + cellC.XLocation + "," + cellC.YLocation + "] - HIDDEN TRIPLE - " + candidateA + "/" + candidateB + "/" + candidateC);
                                                                             changeMade = true;
                                                                         }
                                                                     }
@@ -798,6 +903,10 @@ namespace SudokuSolverSetter
             }
             return changeMade;
         }
+        #endregion
+        #endregion
+        #region Intersection Removal Strategies
+        #region Pointing Numbers
         /// <summary>
         /// Find Pointing Numbers:
         /// -Iterate over cells till an empty cell is found, call that cell 'CellA'
@@ -879,6 +988,8 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+        #endregion
+        #region Block-Line Reduction
         /// <summary>
         /// Find Block Line Reduce:
         /// -Iterate over cells till an empty cell is found, call that cell 'CellA'
@@ -962,6 +1073,10 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+        #endregion
+        #endregion
+        #region Chaining/Linking/Colouring Strategies
+        #region Y-wing
         /// <summary>
         /// Find YWing:
         /// Two types: Block-Row/Column and Row-Column (Remember Groups: Index = 0 = Row, Group Index = 1 = Column, Group Index = 2 = Block)
@@ -1077,7 +1192,8 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
-
+        #endregion
+        #region X-Wing
         /// <summary>
         /// X-Wing Strategy: The X-Wing strategy looks at candidate numbers that in rows and columns. 
         /// The X-Wing strategy focuses on finding a single common candidate in four different cells that do not all share the same block .
@@ -1224,6 +1340,8 @@ namespace SudokuSolverSetter
             }
             return saveCell ?? null;
         }
+        #endregion
+        #region XYZ-Wing
         /// <summary>
         /// Finding an XYZ-Wing
         /// -Very similar to a Y-Wing in the regards of a hinge and two cells named the wings.
@@ -1343,6 +1461,8 @@ namespace SudokuSolverSetter
 
             return changeMade;
         }
+        #endregion
+        #region Single Chains
         /// <summary>
         /// Find Single Chains(aka Simple Colouring):
         /// A chain is a collection of cells that are linked together because of common a candidate(s).
@@ -1376,7 +1496,7 @@ namespace SudokuSolverSetter
                             List<bool> indicatorForCell = new List<bool>(8) { true };
                             int c = 0;//Iterator for cellsContainingCandi for recursion
 
-                            if (ChainRecursion(grid, candidate, c, chain, indicatorForCell))//If true, chain has been built
+                            if (GenerateStrongChain_Recursion(grid, candidate, c, chain, indicatorForCell))//If true, chain has been built
                             {
                                 for (int l = 0; l < chain.Count; l++)//Iterate through cells in chain (cellA)
                                 {
@@ -1386,7 +1506,7 @@ namespace SudokuSolverSetter
                                         {
                                             if (neighbour.Candidates.Contains(candidate) && !chain.Contains(neighbour))//if neighbourA contains the common candidate and isn't in the chain...
                                             {
-                                                for (int k = l + 1; k < chain.Count; k++)//iterate through the cells in the chain, start one cell ahead in the chain list (cellB)
+                                                for (int k = l + 1; k < chain.Count; k++)//iterate through the cells in the chain, start one cell ahead in the chain list (cellB) - because the previous cells in the chain have already looked at chain[l]
                                                 {
                                                     if (indicatorForCell[l] != indicatorForCell[k])//if the indicator (colour) of cellA is different to that of cellB...
                                                     {
@@ -1397,6 +1517,7 @@ namespace SudokuSolverSetter
                                                                 if (neighbour == neighbour2 && neighbour2.Candidates.Contains(candidate))//if two cells in the chain with different colours can see a cell outside of the chain with the common candidate...
                                                                 {
                                                                     neighbour.Candidates.Remove(candidate);//...the candidate can be removed from that cell
+
                                                                     changeMade = true;
                                                                     if (g_PathTracking)
                                                                         g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - Type 1");
@@ -1420,6 +1541,7 @@ namespace SudokuSolverSetter
                                         if (g_PathTracking)
                                             g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
                                     }
+
                                     g_Rating += chain.Count * 100;
                                     return true;
                                 }
@@ -1480,7 +1602,7 @@ namespace SudokuSolverSetter
         }
         /// <summary>
         /// Code breakdown:
-        /// -if the current iteration doesn't exists, end of chain has been met. (iteration is increased within the ChainRecursion method call)
+        /// -if the current iteration doesn't exists, end of chain has been met. (iteration is increased within the GenerateStrongChain_Recursion method call)
         /// -for each group, search through each cell in the group - call the cell 'Neighbour'
         /// -if neighbour contains the candidate and the cell value is empty,
         /// -increment a counter 
@@ -1491,7 +1613,7 @@ namespace SudokuSolverSetter
         /// <param name="chain">cells that have been discovered in the chain</param>
         /// <param name="indicatorForCell">the true/false indicator for each cell discovered</param>
         /// <returns>returns true once a chain is made and cannot go any further, returns false if no chain is made</returns>
-        private bool ChainRecursion(SudokuGrid grid, char candidate, int c, List<Cell> chain, List<bool> indicatorForCell)
+        private bool GenerateStrongChain_Recursion(SudokuGrid grid, char candidate, int c, List<Cell> chain, List<bool> indicatorForCell)
         {
             if (c == chain.Count)
             {
@@ -1522,10 +1644,13 @@ namespace SudokuSolverSetter
                     }
                 }
             }
-            if (ChainRecursion(grid, candidate, ++c, chain, indicatorForCell))
+            if (GenerateStrongChain_Recursion(grid, candidate, ++c, chain, indicatorForCell))
                 return true;
             return false;
         }
+        #endregion
+        #endregion
+        #region Uniqueness Strategies
         /// <summary>
         /// Rule for Type1 Unique Rectangle:
         /// -There must four pairs in a rectangle that spans two blocks.
@@ -1602,6 +1727,7 @@ namespace SudokuSolverSetter
             }
             return changeMade;
         }
+        #endregion
         #endregion
         #region Backtracking Solver
         /// <summary>
@@ -1777,6 +1903,7 @@ namespace SudokuSolverSetter
         #region Solver Decisions Method for Solving Cell by Cell button
         public bool SolveNextStep(SudokuGrid grid)
         {
+            g_PathTracking = true;
             if (g_Gen.CheckIfSolved(grid))
             {
                 return true;
@@ -1785,12 +1912,13 @@ namespace SudokuSolverSetter
 
             g_changeMade = false; g_moderate = false; g_advanced = false;
             string separator = "|>---------------------------------------------------------------------------------------------------------------------->|";
+            
             g_SolvePath.Add("STEP " + ++g_StepCounter + ": ");
             index = g_SolvePath.Count - 1;
             if (g_strategy != "Clean Candidates" && LastCandidates(grid))
             {
                 g_strategy = "Last Candidates filled in";
-                g_SolvePath.RemoveAt(index);
+                g_SolvePath.RemoveRange(index-1,2);
                 g_StepCounter--;
             }
             else if (CleanCandidateLists(grid))
@@ -1897,11 +2025,10 @@ namespace SudokuSolverSetter
                 g_SolvePath.Add(separator);
                 g_strategy = "Trial-and-error/Brute-force";
             }
-
             g_SolvePath.Add(separator);
             if (g_Gen.CheckIfSolved(grid))
             {
-                g_SolvePath.Add("|--------------------------------FINISHED--------------------------------|");
+                g_SolvePath.Add("FINISHED");
                 return true;
             }
             if (g_moderate)

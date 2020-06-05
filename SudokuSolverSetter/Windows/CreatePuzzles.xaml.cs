@@ -95,7 +95,7 @@ namespace SudokuSolverSetter
                 {
                     symmetric = @"NonSymmetric";
                 }
-                string filename = symmetric+"/SudokuPuzzles.xml";
+                string filename = symmetric + "/SudokuPuzzles.xml";
                 if (File.Exists(filename))
                 {
                     doc = XDocument.Load(filename);
