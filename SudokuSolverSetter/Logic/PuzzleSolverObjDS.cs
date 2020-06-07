@@ -62,106 +62,107 @@ namespace SudokuSolverSetter
                         g_SolvePath.Add("STEP " + ++g_StepCounter + ": ");
                         index = g_SolvePath.Count - 1;
                     }
-                    if (FindNakedSingles(grid))//Naked singles contributes +10 to the rating for each naked single found
+                    if (FindNakedSingles(grid))
                     {
                         g_changeMade = true;
                         if (method == 1)
                             g_SolvePath[index] += "Naked Single(s)";
                     }
-                    else if (FindHiddenSingles(grid))//Naked singles contributes +15 to the rating for each hidden single found
+                    else if (FindHiddenSingles(grid))
                     {
                         g_changeMade = true;
                         if (method == 1)
                             g_SolvePath[index] += "Hidden Single(s)";
                     }
-                    else if (FindNakedPair(grid))//A Naked Pair contributes +100 to the rating.
+                    else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +100 to the rating.
                     {
                         g_changeMade = true;
                         g_Rating += 100;
-                        g_moderate = true;
-                        g_StrategyCount[3]++;
-                        if (method == 1)
-                            g_SolvePath[index] += "Naked Pair";
-                    }
-                    else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
-                    {
-                        g_changeMade = true;
-                        g_Rating += 150;
-                        g_moderate = true;
-                        g_StrategyCount[4]++;
-                        if (method == 1)
-                            g_SolvePath[index] += "Hidden Pair";
-                    }
-                    else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
-                    {
-                        g_changeMade = true;
-                        g_Rating += 250;
                         g_moderate = true;
                         g_StrategyCount[5]++;
                         if (method == 1)
                             g_SolvePath[index] += "Pointing Line";
                     }
-                    else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
+                    else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +150 to the rating.
                     {
                         g_changeMade = true;
-                        g_Rating += 300;
+                        g_Rating += 150;
                         g_moderate = true;
                         g_StrategyCount[6]++;
                         if (method == 1)
                             g_SolvePath[index] += "Block-Line Reduction";
                     }
-                    else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
+                    else if (FindNakedPair(grid))//A Naked Pair contributes +175 to the rating.
                     {
                         g_changeMade = true;
-                        g_Rating += 400;
+                        g_Rating += 175;
+                        g_moderate = true;
+                        g_StrategyCount[3]++;
+                        if (method == 1)
+                            g_SolvePath[index] += "Naked Pair";
+                    }
+                    else if (FindHiddenPair(grid))//A Hidden Pair contributes +225 to the rating.
+                    {
+                        g_changeMade = true;
+                        g_Rating += 225;
+                        g_moderate = true;
+                        g_StrategyCount[4]++;
+                        if (method == 1)
+                            g_SolvePath[index] += "Hidden Pair";
+                    }
+                    else if (FindNakedTriple(grid))//A Naked Triple contributes +350 to the rating.
+                    {
+                        g_changeMade = true;
+                        g_Rating += 300;
                         g_moderate = true;
                         g_StrategyCount[7]++;
                         if (method == 1)
                             g_SolvePath[index] += "Naked Triple";
                     }
-                    else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
+                    else if (FindHiddenTriple(grid))//A Hidden Triple contributes +400 to the rating.
                     {
                         g_changeMade = true;
-                        g_Rating += 450;
+                        g_Rating += 400;
                         g_moderate = true;
                         g_StrategyCount[8]++;
                         if (method == 1)
                             g_SolvePath[index] += "Hidden Triple";
                     }
-                    else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
+                    else if (FindXWing(grid))//An X-Wing contributes +500 to the rating.
                     {
                         g_changeMade = true;
-                        g_Rating += 550;
+                        g_Rating += 500;
                         g_advanced = true;
                         g_StrategyCount[9]++;
                         if (method == 1)
                             g_SolvePath[index] += "X-Wing";
                     }
-                    else if (FindYWing(grid))//A Y-Wing contributes +600 to the rating.
+                    else if (FindSingleChains(grid))//A Single Chain contributes + 600 to the rating.
                     {
                         g_changeMade = true;
+                        g_advanced = true;
                         g_Rating += 600;
+                        g_StrategyCount[12]++;
+                        if (method == 1)
+                            g_SolvePath[index] += "Single Chains / Simple Colouring";
+                    }
+                    else if (FindYWing(grid))//A Y-Wing contributes +650 to the rating.
+                    {
+                        g_changeMade = true;
+                        g_Rating += 650;
                         g_advanced = true;
                         g_StrategyCount[10]++;
                         if (method == 1)
                             g_SolvePath[index] += "Y-Wing";
                     }
-                    else if (FindXYZWing(grid))//An XYZ-Wing contributes +650 to the rating.
+                    else if (FindXYZWing(grid))//An XYZ-Wing contributes +700 to the rating.
                     {
                         g_changeMade = true;
-                        g_Rating += 650;
+                        g_Rating += 700;
                         g_advanced = true;
                         g_StrategyCount[11]++;
                         if (method == 1)
                             g_SolvePath[index] += "XYZ-Wing";
-                    }
-                    else if (FindSingleChains(grid))//A successful Single Chain contributes +100*(chain length) to the rating.
-                    {
-                        g_changeMade = true;
-                        g_advanced = true;
-                        g_StrategyCount[12]++;
-                        if (method == 1)
-                            g_SolvePath[index] += "Single Chains / Simple Colouring";
                     }
                     else if (FindUniqueRectangleType1(grid))//A Unique Rectangle contributes +750 to the rating.
                     {
@@ -300,20 +301,29 @@ namespace SudokuSolverSetter
         private bool FindNakedSingles(SudokuGrid grid)
         {
             bool changeMade = false;
+            Dictionary<Cell, char> cellsToChange = new Dictionary<Cell, char>();
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
                     if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count == 1)
                     {
-                        grid.Rows[i][j].Num = grid.Rows[i][j].Candidates[0];
+                        cellsToChange.Add(grid.Rows[i][j], grid.Rows[i][j].Candidates[0]);
                         changeMade = true;
+                        int rcVal = FindNakedSingleRC(grid, grid.Rows[i][j]);
                         if (g_PathTracking)
-                            g_SolvePath.Add("Number " + grid.Rows[i][j].Num + " placed in cell [" + i + "," + j + "] - NAKED SINGLE");
-                        g_Rating += FindNakedSingleRC(grid, grid.Rows[i][j]) * 10;
+                            g_SolvePath.Add("Number " + grid.Rows[i][j].Candidates[0] + " placed in cell [" + i + "," + j + "] - RC value = " + rcVal + " - NAKED SINGLE");
+                        g_Rating += rcVal * 10;
                         g_StrategyCount[1]++;
-                        grid.Rows[i][j].Candidates.Clear();
                     }
+                }
+            }
+            if (changeMade)
+            {
+                foreach (var item in cellsToChange.Keys)
+                {
+                    item.Num = cellsToChange[item];
+                    item.Candidates.Clear();
                 }
             }
             return changeMade;
@@ -380,18 +390,21 @@ namespace SudokuSolverSetter
         private bool FindHiddenSingles(SudokuGrid grid)
         {
             bool changeMade = false;
+            Dictionary<Cell,char> cellsToChange = new Dictionary<Cell,char>();
+            List<int> rcValues = new List<int>();
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
                     if (grid.Rows[i][j].Num == '0' && grid.Rows[i][j].Candidates.Count > 1)
                     {
-                        for (int index = 0; index < 3 && grid.Rows[i][j].Num == '0'; index++)
+                        int[] rcvalues = new int[3] { 0, 0, 0 };
+                        for (int index = 0; index < 3; index++)
                         {
                             foreach (char candidate in grid.Rows[i][j].Candidates)
                             {
                                 int counter = 0;
-                                
+
                                 foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
                                 {
                                     if (neighbour.Num == candidate || neighbour.Num == '0' && neighbour.Candidates.Contains(candidate))
@@ -402,13 +415,13 @@ namespace SudokuSolverSetter
                                 }
                                 if (counter == 0)
                                 {
-                                    Dictionary<Cell,int> constraints = new Dictionary<Cell, int>();//each entry (cell) has a weight that implies the number of cells that it sees in the group
-                                    
+                                    Dictionary<Cell, List<Cell>> constraints = new Dictionary<Cell, List<Cell>>();//each entry (cell) has a weight that implies the number of cells that it sees in the group
+                                    int emptycells = 0;
                                     foreach (Cell neighbour in grid.Rows[i][j].NeighbourCells[index])
                                     {
                                         if (neighbour.Num == '0' & !neighbour.Candidates.Contains(candidate))
                                         {
-                                            Cell prevCell = new Cell();
+                                            emptycells++;
                                             for (int index2 = 0; index2 < 3; index2++)
                                             {
                                                 if (index2 != index)
@@ -419,13 +432,11 @@ namespace SudokuSolverSetter
                                                         {
                                                             if (!constraints.ContainsKey(neighbour2))
                                                             {
-                                                                constraints.Add(neighbour2, 1);
-                                                                prevCell = neighbour2;
+                                                                constraints.Add(neighbour2, new List<Cell>() { neighbour });
                                                             }
-                                                            else if(prevCell != neighbour2)
+                                                            else if (!constraints[neighbour2].Contains(neighbour))
                                                             {
-                                                                constraints[neighbour2]++;
-                                                                prevCell = neighbour2;
+                                                                constraints[neighbour2].Add(neighbour);
                                                             }
                                                             break;
                                                         }
@@ -434,25 +445,93 @@ namespace SudokuSolverSetter
                                             }
                                         }
                                     }
+                                    List<Cell> removables = new List<Cell>();
+                                    foreach (var key in constraints.Keys)
+                                    {
+                                        int t = 0;
+                                        foreach (var constraint in constraints[key])
+                                        {
+                                            foreach (var key2 in constraints.Keys)
+                                            {
+                                                if (key2 != key && !removables.Contains(key2) && constraints[key2].Contains(constraint))
+                                                {
+                                                    t++;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (t == constraints[key].Count)
+                                        {
+                                            removables.Add(key);
+                                        }
+                                    }
+                                    for (int rmv = 0; rmv < removables.Count; rmv++)
+                                    {
+                                        constraints.Remove(removables[rmv]);
+                                    }
                                     int sum = 0;
+                                    foreach (var key in constraints.Keys)
+                                    {
+                                        foreach (var constraint in constraints[key])
+                                        {
+                                            foreach (var key2 in constraints.Keys)
+                                            {
+                                                if (key2 != key && constraints[key2].Contains(constraint))
+                                                {
+                                                    sum--;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (sum < 0)
+                                        sum /= 2;
                                     foreach (var item in constraints.Keys)
                                     {
-                                        sum += constraints[item];
+                                        sum += constraints[item].Count;
                                     }
-                                    grid.Rows[i][j].Num = candidate;
-                                    grid.Rows[i][j].Candidates.Clear();
+                                    if (!cellsToChange.ContainsKey(grid.Rows[i][j]))
+                                    {
+                                        cellsToChange.Add(grid.Rows[i][j], candidate);
+                                    }
                                     changeMade = true;
-                                    g_Rating += ((1 + sum - constraints.Count) * 10);
-                                    g_StrategyCount[2]++;
-                                    if (g_PathTracking)
-                                        g_SolvePath.Add("Number " + candidate + " placed in cell [" + i + "," + j + "] - HIDDEN SINGLE");
+                                    rcvalues[index] = 1 + constraints.Count + (emptycells - sum);
                                     break;
                                 }
                             }
                         }
+                        int lowestRC = 99;
+                        for (int rcIndx = 0; rcIndx < rcvalues.Length; rcIndx++)
+                        {
+                            if (rcvalues[rcIndx] != 0)
+                            {
+                                if (rcvalues[rcIndx] < lowestRC)
+                                {
+                                    lowestRC = rcvalues[rcIndx];
+                                }
+                            }
+                        }
+                        if (lowestRC != 99)
+                        {
+                            g_Rating += lowestRC * 10;
+                            rcValues.Add(lowestRC);
+                        }
                     }
                 }
             }
+            if (changeMade)
+            {
+                int counter = 0;
+                foreach (var item in cellsToChange.Keys)
+                {
+                    item.Num = cellsToChange[item];
+                    item.Candidates.Clear();
+                    g_StrategyCount[2]++;
+                    if (g_PathTracking)
+                        g_SolvePath.Add("Number " + item.Num + " placed in cell [" + item.XLocation + "," + item.YLocation + "] - RC value = " + rcValues[counter++] + " - HIDDEN SINGLE");
+                }
+            }
+            
             return changeMade;
         }
         #endregion
@@ -1018,7 +1097,7 @@ namespace SudokuSolverSetter
                         foreach (char candidate in grid.Rows[i][j].Candidates)
                         {
                             List<Cell> cellSave = new List<Cell>(2);
-                            byte counterRow = 0, validCellRow = 0, counterCol = 0, validCellCol = 0;
+                            byte counterRow = 0, validCellRow = 0, counterCol = 0, validCellCol = 0;//counterRow counts how many 
                             for (int n = 0; n < 8; n++)
                             {
                                 if (grid.Rows[i][j].NeighbourCells[0][n].Num == '0' && grid.Rows[i][j].NeighbourCells[0][n].Candidates.Contains(candidate))
@@ -1474,7 +1553,7 @@ namespace SudokuSolverSetter
         /// This method replicates the colouring technique, true representing one colour, false representing another.
         /// Type 1:
         /// If a cell, outside of the chain, containing the common candidate is 'seen' by two differently coloured cells in the chain, remove that candidate from that cell.
-        /// Type 2:qq
+        /// Type 2:
         /// If a cell within the chain can 'see' another cell within the chain that is of the same colour, a contradiction has been found; 
         /// thus, all cells in the chain coloured the same can remove the common candidate from their list.
         /// </summary>
@@ -1541,8 +1620,6 @@ namespace SudokuSolverSetter
                                         if (g_PathTracking)
                                             g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
                                     }
-
-                                    g_Rating += chain.Count * 100;
                                     return true;
                                 }
                                 else
@@ -1589,7 +1666,6 @@ namespace SudokuSolverSetter
                                         if (g_PathTracking)
                                             g_SolvePath[g_SolvePath.Count - 1] += " - " + colour + "[" + chain[z].XLocation + "," + chain[z].YLocation + "]";
                                     }
-                                    g_Rating += chain.Count * 100;
                                     return true;
                                 }
                             }
@@ -1910,7 +1986,7 @@ namespace SudokuSolverSetter
             }
             int index;
 
-            g_changeMade = false; g_moderate = false; g_advanced = false;
+            g_changeMade = false;
             string separator = "|>---------------------------------------------------------------------------------------------------------------------->|";
             
             g_SolvePath.Add("STEP " + ++g_StepCounter + ": ");
@@ -1927,85 +2003,87 @@ namespace SudokuSolverSetter
                 g_SolvePath.RemoveAt(index);
                 g_StepCounter--;
             }
-            else if (FindNakedSingles(grid))//Naked singles contributes +10 to the rating for each naked single found
+            else if (FindNakedSingles(grid))
             {
                 g_strategy = "Naked Single(s)";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindHiddenSingles(grid))//Naked singles contributes +15 to the rating for each hidden single found
+            else if (FindHiddenSingles(grid))
             {
                 g_strategy = "Hidden Single(s)";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindNakedPair(grid))//A Naked Pair contributes +100 to the rating.
+            else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +100 to the rating.
             {
                 g_Rating += 100;
-                g_moderate = true;
-                g_strategy = "Naked Pair";
-                g_SolvePath[index] += g_strategy;
-            }
-            else if (FindHiddenPair(grid))//A Hidden Pair contributes +150 to the rating.
-            {
-                g_Rating += 150;
-                g_moderate = true;
-                g_strategy = "Hidden Pair";
-                g_SolvePath[index] += g_strategy;
-            }
-            else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +250 to the rating.
-            {
-                g_Rating += 250;
                 g_moderate = true;
                 g_strategy = "Pointing Line";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +300 to the rating.
+            else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +150 to the rating.
             {
-                g_Rating += 300;
+                g_Rating += 150;
                 g_moderate = true;
                 g_strategy = "Block-Line Reduction";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindNakedTriple(grid))//A Naked Triple contributes +400 to the rating.
+            else if (FindNakedPair(grid))//A Naked Pair contributes +175 to the rating.
             {
-                g_Rating += 400;
+                g_Rating += 175;
+                g_moderate = true;
+                g_strategy = "Naked Pair";
+                g_SolvePath[index] += g_strategy;
+            }
+            else if (FindHiddenPair(grid))//A Hidden Pair contributes +225 to the rating.
+            {
+                g_Rating += 225;
+                g_moderate = true;
+                g_strategy = "Hidden Pair";
+                g_SolvePath[index] += g_strategy;
+            }            
+            else if (FindNakedTriple(grid))//A Naked Triple contributes +300 to the rating.
+            {
+                g_Rating += 300;
                 g_moderate = true;
                 g_strategy = "Naked Triple";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindHiddenTriple(grid))//A Hidden Triple contributes +450 to the rating.
+            else if (FindHiddenTriple(grid))//A Hidden Triple contributes +400 to the rating.
             {
-                g_Rating += 450;
+                g_Rating += 400;
                 g_moderate = true;
                 g_strategy = "Hidden Triple";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindXWing(grid))//An X-Wing contributes +550 to the rating.
+            else if (FindXWing(grid))//An X-Wing contributes +500 to the rating.
             {
-                g_Rating += 550;
+                g_Rating += 500;
                 g_advanced = true;
                 g_strategy = "X-Wing";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindYWing(grid))//A Y-Wing contributes +600 to the rating.
+            else if (FindSingleChains(grid))//A Single Chain contributes +600 to the rating.
             {
                 g_Rating += 600;
-                g_advanced = true;
-                g_strategy = "Y-Wing";
-                g_SolvePath[index] += g_strategy;
-            }
-            else if (FindXYZWing(grid))//An XYZ-Wing contributes +650 to the rating.
-            {
-                g_Rating += 650;
-                g_advanced = true;
-                g_strategy = "XYZ-Wing";
-                g_SolvePath[index] += g_strategy;
-            }
-            else if (FindSingleChains(grid))//A successful Single Chain contributes +100*chain length to the rating.
-            {
                 g_advanced = true;
                 g_strategy = "Single Chains/Simple Colouring";
                 g_SolvePath[index] += g_strategy;
             }
+            else if (FindYWing(grid))//A Y-Wing contributes +650 to the rating.
+            {
+                g_Rating += 650;
+                g_advanced = true;
+                g_strategy = "Y-Wing";
+                g_SolvePath[index] += g_strategy;
+            }
+            else if (FindXYZWing(grid))//An XYZ-Wing contributes +700 to the rating.
+            {
+                g_Rating += 700;
+                g_advanced = true;
+                g_strategy = "XYZ-Wing";
+                g_SolvePath[index] += g_strategy;
+            }
+            
             else if (FindUniqueRectangleType1(grid))//A Unique Rectangle contributes +750 to the rating.
             {
                 g_Rating += 750;
@@ -2031,7 +2109,7 @@ namespace SudokuSolverSetter
                 g_SolvePath.Add("FINISHED");
                 return true;
             }
-            if (g_moderate)
+            if (g_moderate && !g_advanced)
                 g_Difficulty = "Moderate";
             if (g_advanced)
                 g_Difficulty = "Advanced";
