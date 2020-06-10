@@ -141,7 +141,7 @@ namespace SudokuSolverSetter
                 for (int i = 0; i < numPuzzles; i++)
                 {
                     sudokuPuzzles.Add(gen.Setter(symmetry));
-                    string puzzleString = gen.SudokuToString(sudokuPuzzles[i]);
+                    string puzzleString = gen.GridToString(sudokuPuzzles[i]);
                     PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
                     long rating = GetDifficulty(sudokuPuzzles[i], puzzleString, solver);
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(

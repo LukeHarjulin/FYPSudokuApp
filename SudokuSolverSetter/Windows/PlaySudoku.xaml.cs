@@ -25,20 +25,24 @@ namespace SudokuSolverSetter
     {
         #region Initialisation
         #region Global variables
-        private MainWindow homePage = new MainWindow();
-        private PuzzleGenerator g_Gen = new PuzzleGenerator();
+        private readonly MainWindow homePage = new MainWindow();
+        private readonly PuzzleGenerator g_Gen = new PuzzleGenerator();
         private TextBox g_selectedCell;
-        private SudokuGrid g_grid = new SudokuGrid();
-        private string g_currentTime = "", g_rating, g_difficulty, g_originalPuzzleString;
+        private readonly SudokuGrid g_grid = new SudokuGrid();
+        private string g_currentTime = "";
+        private readonly string g_rating;
+        private readonly string g_difficulty;
+        private readonly string g_originalPuzzleString;
         private bool g_pencilMarker = false, penType = false, g_solved = false;
-        private SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
-        private SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
-        private SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
-        private SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(255, 255, 224, 233));
-        private SolidColorBrush pauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
-        private SolidColorBrush darkPauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
+        private readonly SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
+        private readonly SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
+        private readonly SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(255, 255, 241, 230));
+        private readonly SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(255, 255, 224, 233));
+        private readonly SolidColorBrush pauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
+        private readonly SolidColorBrush darkPauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
         private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, darkTextColour, buttonColour, altDarkCellColour;
-        private DrawingAttributes g_penDA, g_highlighterDA;
+        private readonly DrawingAttributes g_penDA;
+        private readonly DrawingAttributes g_highlighterDA;
         private TimeSpan g_StartingTS = new TimeSpan();
         public DispatcherTimer DT { get; set; }
         public Stopwatch Timer { get; set; }
@@ -106,7 +110,7 @@ namespace SudokuSolverSetter
                 txtbx.PreviewKeyDown += new KeyEventHandler(Cell_PreviewKeyDown);
                 txtbx.MouseEnter += new MouseEventHandler(MouseEnter_Cell);
                 txtbx.MouseLeave += new MouseEventHandler(MouseLeave_Cell);
-                txtbx.GotFocus += new RoutedEventHandler(Cell_Selected);
+                txtbx.GotFocus += new RoutedEventHandler(Cell_GotFocus);
                 DataObject.AddPastingHandler(txtbx, OnCancelCommand);
 
                 SudokuPuzzle.Children.Add(txtbx); if (col == 8)
@@ -286,10 +290,10 @@ namespace SudokuSolverSetter
                 MessageBox.Show("No puzzles exist... A puzzle of random difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
                 g_grid = gen.Setter(true);
                 PopulateGrid(g_grid);
-                g_originalPuzzleString = gen.SudokuToString(g_grid);
+                g_originalPuzzleString = gen.GridToString(g_grid);
                 CreatePuzzles createPuzzles = new CreatePuzzles();
                 g_rating = createPuzzles.GetDifficulty(g_grid, g_originalPuzzleString, new PuzzleSolverObjDS()).ToString();
-                //Clipboard.SetText(g_gen.SudokuToString(grid));
+                //Clipboard.SetText(g_gen.GridToString(grid));
                 Sudoku_Title.Content = g_grid.Difficulty + " Sudoku Puzzle";
                 g_difficulty = g_grid.Difficulty;
             }
@@ -709,61 +713,12 @@ namespace SudokuSolverSetter
         /// <summary>
         /// checks if recent input is valid within rules of placement
         /// </summary>
-        private bool ValidateInput()
+        private bool ValidInput()
         {
-            //construct grid array to work with
             if (g_selectedCell.Text == "" || g_selectedCell.Text.Length > 1 || g_selectedCell.FontSize == 16)
                 return true;
-            string puzzleString = "";
-            int row = 0, col = 0;
-            for (int i = 0, r = 0, c = 0; i < 81; i++, c++)
-            {
-                if (((TextBox)SudokuPuzzle.Children[i]).Text.Length == 1 && ((TextBox)SudokuPuzzle.Children[i]).FontSize == 36)
-                    puzzleString += ((TextBox)SudokuPuzzle.Children[i]).Text[0];
-                else
-                    puzzleString += '0';
-                if (((TextBox)SudokuPuzzle.Children[i]) == g_selectedCell)
-                {
-                    row = r;
-                    col = c;
-                }
-                if (c == 8)
-                {
-                    c = -1;
-                    r++;
-                }
-            }
-            SudokuGrid grid = g_Gen.ConstructGrid();
-            g_Gen.StringToGrid(grid, puzzleString);
-            bool valid = true;
-            for (int n = 0; n < 8; n++)
-            {
-                if (grid.Rows[row][col].Num == grid.Rows[row][col].NeighbourCells[0][n].Num )
-                {
-                    int index = grid.Rows[row][col].NeighbourCells[0][n].XLocation * 9 + grid.Rows[row][col].NeighbourCells[0][n].YLocation;
-                    if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
-                    {
-                        valid = false; break;
-                    }
-                }
-                if (grid.Rows[row][col].Num == grid.Rows[row][col].NeighbourCells[1][n].Num)
-                {
-                    int index = grid.Rows[row][col].NeighbourCells[1][n].XLocation * 9 + grid.Rows[row][col].NeighbourCells[1][n].YLocation;
-                    if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
-                    {
-                        valid = false; break;
-                    }
-                }
-                if (grid.Rows[row][col].Num == grid.Rows[row][col].NeighbourCells[2][n].Num)
-                {
-                    int index = grid.Rows[row][col].NeighbourCells[2][n].XLocation * 9 + grid.Rows[row][col].NeighbourCells[2][n].YLocation;
-                    if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
-                    {
-                        valid = false; break;
-                    }
-                }
-            }
-            if (valid)
+
+            if (g_Gen.ValidateInput(SudokuPuzzle, g_grid, g_selectedCell))
             {
                 if (nightmode_chkbx.IsChecked == true)
                     RecolourACell(true, g_selectedCell);
@@ -920,11 +875,11 @@ namespace SudokuSolverSetter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Cell_Selected(object sender, RoutedEventArgs e)
+        private void Cell_GotFocus(object sender, RoutedEventArgs e)
         {
             if (g_selectedCell != null)//sets previously focused cell to default colour
             {
-                if (g_selectedCell.Text == "" || ValidateInput())
+                if (g_selectedCell.Text == "" || ValidInput())
                 {
                     bool darkMode = nightmode_chkbx.IsChecked == true ? true : false;
                     for (int i = 0; i < SudokuPuzzle.Children.Count; i++)
@@ -947,12 +902,10 @@ namespace SudokuSolverSetter
                     }
                 }
             }
-            
             g_selectedCell = (TextBox)sender;
             if (((TextBox)sender).Background != Brushes.Red)
                 ((TextBox)sender).Background = nightmode_chkbx.IsChecked == false ? focusCell : darkFocusCell;//sets the current focused cell to a more prominent colour
             g_selectedCell.CaretBrush = nightmode_chkbx.IsChecked == true ? (g_selectedCell.FontSize == 16 ? Brushes.White : Brushes.Transparent) : (g_selectedCell.FontSize == 16 ? Brushes.Black : Brushes.Transparent);
-
         }
         /// <summary>
         /// Asks the user if they are sure they want to quit, and ask if they want to save the progress. Closes the window properly if the 'X' is pressed
@@ -1306,11 +1259,7 @@ namespace SudokuSolverSetter
             }
         }
         /// <summary>
-        /// Beefy event handler to handle the text inputs into a cell, preventing more than one number being in a cell at once if notes are turned off.
-        /// And allowing more than one number in the cell if it is turned on.
-        /// Also prevents anything but numbers 1-9 being entered into a cell.
-        /// This handler method definitely needs many improvements!!!!!!!
-        /// SUPER MESSY
+        /// Handles changes in cells
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1346,7 +1295,7 @@ namespace SudokuSolverSetter
             }
             if (!g_pencilMarker && ((TextBox)sender).Text.Length == 1)
             {
-                ValidateInput();
+                ValidInput();
                 if (((TextBox)sender).FontSize != 36) 
                     ResizeCellFont((TextBox)sender, 36);
                 double index = SudokuPuzzle.Children.IndexOf((TextBox)sender);

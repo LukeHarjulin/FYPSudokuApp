@@ -252,6 +252,18 @@
                 </Paragraph>
                 <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
                     The "
+                    <Bold>Export Puzzle</Bold> " button can be used to export the current puzzle by copying a string of 81 characters that maps to the puzzle to your clipboard.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "
+                    <Bold>Reset Puzzle</Bold> " button reverts the state of the grid back to the original state of the previously valid puzzle.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "
+                    <Bold>Clear Puzzle (Manual Puzzle Entry)</Bold> " button clears all the cells of the grid and allows you to manually enter/create a puzzle. If the puzzle is invalid in the sense that it has more than 1 one solution, and you try to make a solver solve it a notification will pop-up saying that it is invalid.
+                </Paragraph>
+                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
+                    The "
                     <Bold>Symmetry?</Bold> " checkbox can be toggled 'On' for when you want to generate/display only symmetrical puzzles. 
                     The form of symmetry will always be rotational symmetry, however other forms of symmetry can be present.
                     <LineBreak/>

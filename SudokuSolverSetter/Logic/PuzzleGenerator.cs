@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 
 namespace SudokuSolverSetter
 {
@@ -203,13 +206,13 @@ namespace SudokuSolverSetter
                                     grid.Rows[altRow][altCol].Num = '0';
                                     if (solve.BacktrackingSolver(grid, 0, 0, 0))
                                     {
-                                        string firstSol = SudokuToString(grid);
+                                        string firstSol = GridToString(grid);
                                         grid = RestartPuzzle(grid, sudokuArray);
                                         grid.Rows[row][col].Num = '0';
                                         grid.Rows[altRow][altCol].Num = '0';
                                         if (solve.BacktrackingSolver(grid, 0, 0, 1))//tries Backtracking algorithm using reversed candidate lists so that if a solution that is different to the previous solution exists, it will be found, invalidating the puzzle
                                         {
-                                            string secSol = SudokuToString(grid);
+                                            string secSol = GridToString(grid);
                                             if (firstSol == secSol)//valid puzzle
                                             {
                                                 grid = RestartPuzzle(grid, sudokuArray);
@@ -299,12 +302,12 @@ namespace SudokuSolverSetter
                                         grid.Rows[row][col].Num = '0';
                                         if (solve.BacktrackingSolver(grid, 0, 0, 0))
                                         {
-                                            string firstSol = SudokuToString(grid);
+                                            string firstSol = GridToString(grid);
                                             grid = RestartPuzzle(grid, sudokuArray);
                                             grid.Rows[row][col].Num = '0';
                                             if (solve.BacktrackingSolver(grid, 0, 0, 1))
                                             {
-                                                string secSol = SudokuToString(grid);
+                                                string secSol = GridToString(grid);
                                                 if (firstSol == secSol)//valid puzzle
                                                 {
                                                     grid = RestartPuzzle(grid, sudokuArray);
@@ -360,7 +363,7 @@ namespace SudokuSolverSetter
                     }
                 }
             }
-            if (!minOfEight && givens >= 17)
+            if (!minOfEight || givens >= 17)
                 return false;
             char[][] sudokuArray = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
             for (int r = 0; r < 9; r++)
@@ -373,11 +376,11 @@ namespace SudokuSolverSetter
             PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
             if (solve.BacktrackingSolver(grid, 0, 0, 0))
             {
-                string firstSol = SudokuToString(grid);
+                string firstSol = GridToString(grid);
                 grid = RestartPuzzle(grid, sudokuArray);
                 if (solve.BacktrackingSolver(grid, 0, 0, 1))
                 {
-                    string secSol = SudokuToString(grid);
+                    string secSol = GridToString(grid);
                     if (firstSol == secSol)//valid puzzle
                     {
                         grid = RestartPuzzle(grid, sudokuArray);
@@ -643,7 +646,7 @@ namespace SudokuSolverSetter
         /// </summary>
         /// <param name="grid"></param>
         /// <returns></returns>
-        public string SudokuToString(SudokuGrid grid)
+        public string GridToString(SudokuGrid grid)
         {
             string sudokuExport = "";
 
@@ -655,6 +658,45 @@ namespace SudokuSolverSetter
                 }
             }
             return sudokuExport;
+        }
+        public bool ValidateInput(UniformGrid SudokuPuzzle, SudokuGrid g_grid, TextBox g_selectedCell)
+        {
+            if (g_selectedCell.Text == "")
+            {
+                return true;
+            }
+            double index_ = SudokuPuzzle.Children.IndexOf(g_selectedCell);
+            int row = (int)index_ / 9;
+            int col = (int)index_ % 9;
+            bool valid = true;
+            for (int n = 0; n < 8; n++)
+            {
+                if (g_grid.Rows[row][col].Num == g_grid.Rows[row][col].NeighbourCells[0][n].Num)
+                {
+                    int index = g_grid.Rows[row][col].NeighbourCells[0][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[0][n].YLocation;
+                    if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
+                    {
+                        valid = false; break;
+                    }
+                }
+                if (g_grid.Rows[row][col].Num == g_grid.Rows[row][col].NeighbourCells[1][n].Num)
+                {
+                    int index = g_grid.Rows[row][col].NeighbourCells[1][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[1][n].YLocation;
+                    if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
+                    {
+                        valid = false; break;
+                    }
+                }
+                if (g_grid.Rows[row][col].Num == g_grid.Rows[row][col].NeighbourCells[2][n].Num)
+                {
+                    int index = g_grid.Rows[row][col].NeighbourCells[2][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[2][n].YLocation;
+                    if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
+                    {
+                        valid = false; break;
+                    }
+                }
+            }
+            return valid;
         }
         #endregion
     }

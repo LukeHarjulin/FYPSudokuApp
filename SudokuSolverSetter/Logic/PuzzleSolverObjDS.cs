@@ -310,7 +310,7 @@ namespace SudokuSolverSetter
                     {
                         cellsToChange.Add(grid.Rows[i][j], grid.Rows[i][j].Candidates[0]);
                         changeMade = true;
-                        int rcVal = FindNakedSingleRC(grid, grid.Rows[i][j]);
+                        int rcVal = FindNakedSingleRC(grid.Rows[i][j]);
                         if (g_PathTracking)
                             g_SolvePath.Add("Number " + grid.Rows[i][j].Candidates[0] + " placed in cell [" + i + "," + j + "] - RC value = " + rcVal + " - NAKED SINGLE");
                         g_Rating += rcVal * 10;
@@ -335,7 +335,7 @@ namespace SudokuSolverSetter
         /// <param name="grid"></param>
         /// <param name="singleCell"></param>
         /// <returns></returns>
-        private int FindNakedSingleRC(SudokuGrid grid, Cell singleCell) 
+        private int FindNakedSingleRC(Cell singleCell) 
         {
             char[] numsInRow = new char[8], numsInCol = new char[8], numsInBlk = new char[8];
             for (int n = 0; n < 8; n++)

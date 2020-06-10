@@ -19,23 +19,25 @@ namespace SudokuSolverSetter
     /// </summary>
     public partial class DeveloperWindow : Window
     {
+        private string g_PrevCellContents = "";
         private string g_PuzzleString = "";
         private bool g_validPuzzle = true;
         private SudokuGrid g_grid = null;
-        private MainWindow g_homePage = new MainWindow();
-        private PuzzleGenerator g_gen = new PuzzleGenerator();
+        private readonly MainWindow g_homePage = new MainWindow();
+        private readonly PuzzleGenerator g_gen = new PuzzleGenerator();
         private PuzzleSolverObjDS g_solve = new PuzzleSolverObjDS();
         private string g_currentTime = "";
         private DispatcherTimer G_DT { get; set; }
         private Stopwatch G_Timer { get; set; }
-        private List<string> g_BacktrackingSolvePath = new List<string>();
+        private readonly List<string> g_BacktrackingSolvePath = new List<string>();
         private int g_PathCounter = 0;
-        private List<int> g_ratingList = new List<int>();
-        private List<string> g_puzzleStrList = new List<string>();
+        private readonly List<int> g_ratingList = new List<int>();
+        private readonly List<string> g_puzzleStrList = new List<string>();
+        private readonly SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         public DeveloperWindow()
         {
             InitializeComponent();
-            
+
             Number_List_combo.Items.Add(1);
             Number_List_combo.Items.Add(10);
             Number_List_combo.Items.Add(25);
@@ -46,7 +48,7 @@ namespace SudokuSolverSetter
             //Create all the cells so that they can be transformed
             for (int i = 0, row = 0, col = 0; i < 81; i++, col++)
             {
-                
+
                 TextBox txtbx = new TextBox();
                 double left = 0.75, right = 0.75, top = 0.75, bottom = 0.75;
                 if (row == 2 || row == 5 || row == 8)
@@ -75,6 +77,9 @@ namespace SudokuSolverSetter
                 txtbx.FontSize = 36; txtbx.HorizontalContentAlignment = HorizontalAlignment.Center; txtbx.VerticalContentAlignment = VerticalAlignment.Center;
                 txtbx.PreviewTextInput += new TextCompositionEventHandler(Cell_PreviewTextInput);
                 txtbx.TextChanged += new TextChangedEventHandler(Cell_TextChanged);
+                txtbx.LostFocus += new RoutedEventHandler(Cell_LostFocus);
+                txtbx.GotFocus += new RoutedEventHandler(Cell_GotFocus);
+                txtbx.PreviewKeyDown += new KeyEventHandler(Cell_PreviewKeyDown);
                 DataObject.AddPastingHandler(txtbx, OnCancelCommand);
                 SudokuPuzzle.Children.Add(txtbx); if (col == 8)
                 {
@@ -105,7 +110,7 @@ namespace SudokuSolverSetter
             {
                 symmetric = @"NonSymmetric";
             }
-            string fileName = symmetric+"/SudokuPuzzles.xml";
+            string fileName = symmetric + "/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
             try
             {
@@ -152,7 +157,7 @@ namespace SudokuSolverSetter
                             g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
                         }
                     }
-                    
+
                 }
                 for (int i = 0; i < g_ratingList.Count; i++)
                 {
@@ -180,10 +185,10 @@ namespace SudokuSolverSetter
                 {
                     ((TextBox)SudokuPuzzle.Children[i]).FontSize = 36;
                     ((TextBox)SudokuPuzzle.Children[i]).Text = grid[i].ToString();
-                    
+
                     givensCounter++;
                 }
-                
+
                 ((TextBox)SudokuPuzzle.Children[i]).Background = Brushes.White;
             }
             givenNums_lbl.Content = "Given Numbers: " + givensCounter;
@@ -216,7 +221,7 @@ namespace SudokuSolverSetter
                     ((TextBox)SudokuPuzzle.Children[i]).FontSize = 36;
                     ((TextBox)SudokuPuzzle.Children[i]).Text = grid.Rows[x][y].Num.ToString();
                 }
-                
+
                 y++;
                 if (y == 9)//row needs to increment and column needs to reset to 0 once it reaches the end of the row
                 {
@@ -393,7 +398,7 @@ namespace SudokuSolverSetter
                     MessageBox.Show("Something went wrong with the timer. \r\nError: " + ex);
                     throw;
                 }
-                
+
             }
         }
         #endregion
@@ -405,62 +410,50 @@ namespace SudokuSolverSetter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the grid that it is presented
+        private void B_Solve_Click(object sender, RoutedEventArgs e)//This button on the interface is used to solve the g_grid that it is presented
         {
             if (g_validPuzzle)
             {
-                //Initialising objects
-                g_solve = new PuzzleSolverObjDS();
-                PuzzleGenerator gen = new PuzzleGenerator();
-                SudokuGrid grid = new SudokuGrid
-                {
-                    Rows = new Cell[9][]
-                };
                 int cellNum = 0;
-
-                //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
-                for (int r = 0; r < grid.Rows.Length; r++)
+                g_solve = new PuzzleSolverObjDS();
+                //Maps the textbox values onto the g_grid
+                for (int r = 0; r < g_grid.Rows.Length; r++)
                 {
-                    grid.Rows[r] = new Cell[9];
-                    for (int c = 0; c < grid.Rows[r].Length; c++)
+                    for (int c = 0; c < g_grid.Rows[r].Length; c++)
                     {
                         if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length > 1)
                         {
-                            ((TextBox)SudokuPuzzle.Children[cellNum]).Text = "0";
-                            grid.Rows[r][c] = new Cell()
+                            List<char> candiList = new List<char>(((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length);
+                            for (int i = 0; i < ((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length; i++)
                             {
-                                Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' },
-                                Num = '0',
-                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
-                                XLocation = r,
-                                YLocation = c,
-                                ReadOnly = false
-                            };
+                                if (int.TryParse(((TextBox)SudokuPuzzle.Children[cellNum]).Text[i].ToString(), out int result))
+                                {
+                                    candiList.Add(((TextBox)SudokuPuzzle.Children[cellNum]).Text[i]);
+                                }
+                            }
+                            g_grid.Rows[r][c].Candidates = candiList;
+                            g_grid.Rows[r][c].Num = '0';
                         }
-                        else
+                        else if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length == 1 && ((TextBox)SudokuPuzzle.Children[cellNum]).FontSize == 36)
                         {
-                            grid.Rows[r][c] = new Cell()
-                            {
-                                Candidates = new List<char> { },
-                                Num = ((TextBox)SudokuPuzzle.Children[cellNum]).Text[0],
-                                BlockLoc = (r / 3) * 3 + (c / 3) + 1,
-                                XLocation = r,
-                                YLocation = c,
-                                ReadOnly = true
-                            };
+                            g_grid.Rows[r][c].Candidates = new List<char> { };
+                            g_grid.Rows[r][c].Num = ((TextBox)SudokuPuzzle.Children[cellNum]).Text[0];
                         }
-
+                        else if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length == 0)
+                        {
+                            g_grid.Rows[r][c].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                            g_grid.Rows[r][c].Num = '0';
+                        }
                         cellNum++;
                     }
                 }
-                gen.AddNeighbours(grid);
                 int method = 1;
                 if ((Button)sender == Backtracking_Solve_Obj)
                 {
                     method = 2;
                 }
                 int iterations = int.Parse(Number_List_combo.SelectedItem.ToString());
-                string puzzleString = gen.SudokuToString(grid);
+                string puzzleString = g_gen.GridToString(g_grid);
                 if ((Button)sender != TestAllThree)
                 {
                     int rating = 0;
@@ -476,14 +469,14 @@ namespace SudokuSolverSetter
                                 for (int y = 0; y < 9; y++)
                                 {
                                     if (puzzleString[counter] == '0')
-                                        grid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                                    grid.Rows[x][y].Num = puzzleString[counter];
+                                        g_grid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                    g_grid.Rows[x][y].Num = puzzleString[counter];
                                     counter++;
                                 }
                             }
                         }
                         var watch = System.Diagnostics.Stopwatch.StartNew();
-                        solved = g_solve.Solver(grid, method);
+                        solved = g_solve.Solver(g_grid, method);
                         if (i == 0)
                         {
                             rating = g_solve.g_Rating;
@@ -493,14 +486,14 @@ namespace SudokuSolverSetter
                         averageTime += watch.ElapsedMilliseconds;
 
                     }
-                    averageTime = averageTime / iterations;
+                    averageTime /= iterations;
 
                     g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
                     if (method == 1)
                     {
                         if (rating != 0)
                         {
-                            PopulateGrid(grid);
+                            PopulateGrid(g_grid);
                             if (solved && !g_solve.g_BacktrackingReq)
                             {
                                 MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + rating);
@@ -526,14 +519,14 @@ namespace SudokuSolverSetter
                             }
                             else
                             {
-                                PopulateGrid(grid);
+                                PopulateGrid(g_grid);
                             }
                         }
                     }
                 }
                 else
                 {
-                    TimeTestSolvers(g_solve, grid, iterations, puzzleString);
+                    TimeTestSolvers(g_solve, g_grid, iterations, puzzleString);
                 }
             }
             else
@@ -553,19 +546,11 @@ namespace SudokuSolverSetter
             {
                 try
                 {
-                    //Initialising objects
-                    PuzzleGenerator gen = new PuzzleGenerator();
-                    SudokuGrid grid = new SudokuGrid
-                    {
-                        Rows = new Cell[9][]
-                    };
                     int cellNum = 0;
-
-                    //This transforms the text in the boxes to a useable grid object. Resource heavy - alternative method may be developed in improvements
-                    for (int r = 0; r < grid.Rows.Length; r++)
+                    //Maps the textbox values onto the g_grid
+                    for (int r = 0; r < g_grid.Rows.Length; r++)
                     {
-                        grid.Rows[r] = new Cell[9];
-                        for (int c = 0; c < grid.Rows[r].Length; c++)
+                        for (int c = 0; c < g_grid.Rows[r].Length; c++)
                         {
                             if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length > 1)
                             {
@@ -577,85 +562,29 @@ namespace SudokuSolverSetter
                                         candiList.Add(((TextBox)SudokuPuzzle.Children[cellNum]).Text[i]);
                                     }
                                 }
-                                ((TextBox)SudokuPuzzle.Children[cellNum]).Text = "0";
-                                grid.Rows[r][c] = new Cell()
-                                {
-                                    Candidates = candiList,
-                                    Num = '0',
-                                    BlockLoc = (r / 3) * 3 + (c / 3) + 1,
-                                    XLocation = r,
-                                    YLocation = c,
-                                    ReadOnly = false
-                                };
+                                g_grid.Rows[r][c].Candidates = candiList;
+                                g_grid.Rows[r][c].Num = '0';
                             }
-                            else
+                            else if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length == 1 && ((TextBox)SudokuPuzzle.Children[cellNum]).FontSize == 36)
                             {
-                                grid.Rows[r][c] = new Cell()
-                                {
-                                    Candidates = new List<char> { },
-                                    Num = ((TextBox)SudokuPuzzle.Children[cellNum]).Text[0],
-                                    BlockLoc = (r / 3) * 3 + (c / 3) + 1,
-                                    XLocation = r,
-                                    YLocation = c,
-                                    ReadOnly = true
-                                };
+                                g_grid.Rows[r][c].Candidates = new List<char> { };
+                                g_grid.Rows[r][c].Num = ((TextBox)SudokuPuzzle.Children[cellNum]).Text[0];
                             }
-
+                            else if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length == 0)
+                            {
+                                g_grid.Rows[r][c].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                                g_grid.Rows[r][c].Num = '0';
+                            }
                             cellNum++;
                         }
-                    }
-
-                    for (int i = 0; i < 9; i++)
+                    }                    
+                    if (!g_gen.CheckIfSolved(g_grid))
                     {
-                        for (int j = 0; j < 9; j++)
-                        {
-                            int nbCounter = 0;//nbCounter is neighbourcounter
-                            grid.Rows[i][j].NeighbourCells = new List<List<Cell>>(3)
-                    {
-                        new List<Cell>(8),
-                        new List<Cell>(8),
-                        new List<Cell>(8)
-                    };
-                            for (int k = 0; k < 9; k++)
-                            {
-                                if (j != k)
-                                {
-                                    grid.Rows[i][j].NeighbourCells[0].Add(grid.Rows[i][k]);//add neighbour in i
-                                    nbCounter++;
-                                }
-                            }
-                            nbCounter = 0;
-                            for (int l = 0; l < 9; l++)
-                            {
-                                if (l != i)
-                                {
-                                    grid.Rows[i][j].NeighbourCells[1].Add(grid.Rows[l][j]);//add neighbour in column
-                                    nbCounter++;
-                                }
-                            }
-                            nbCounter = 0;
-                            int[] blockIndexes = gen.BlockIndexGetter(grid.Rows[i][j].BlockLoc);
-
-                            for (int x = blockIndexes[0]; x < blockIndexes[0] + 3; x++)
-                            {
-                                for (int y = blockIndexes[1]; y < blockIndexes[1] + 3; y++)
-                                {
-                                    if (grid.Rows[x][y] != grid.Rows[i][j])
-                                    {
-                                        grid.Rows[i][j].NeighbourCells[2].Add(grid.Rows[x][y]);//add neighbour in block
-                                        nbCounter++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (!gen.CheckIfSolved(grid))
-                    {
-                        if (g_solve.SolveNextStep(grid))
+                        if (g_solve.SolveNextStep(g_grid))
                         {
                             if (g_solve.g_Rating != 0)
                             {
-                                PopulateGrid(grid);
+                                PopulateGrid(g_grid);
                                 if (!g_solve.g_BacktrackingReq)
                                 {
                                     MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + g_solve.g_Rating);
@@ -669,8 +598,8 @@ namespace SudokuSolverSetter
                                 g_solve.g_Rating = 0;
                             }
                         }
-                        PopulateGrid(grid);
-                        strategy_lbl.Content = "Strategy/cleaning just used:\r\n" + g_solve.g_strategy;
+                        PopulateGrid(g_grid);
+                        strategy_lbl.Content = "Strategy/cleaning from Step " + g_solve.g_StepCounter + ":\r\n" + g_solve.g_strategy;
                     }
 
                 }
@@ -701,20 +630,6 @@ namespace SudokuSolverSetter
             }
             Close();
         }
-        /// <summary>
-        /// Closes the window properly
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Window_Closing(object sender, EventArgs e)
-        {
-            
-        }
-        /// <summary>
-        /// Brings up a window to generate and store puzzles
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
             bool symmetry = Symmetry_checkbox.IsChecked == true ? true : false;
@@ -748,9 +663,9 @@ namespace SudokuSolverSetter
                 g_validPuzzle = true;
                 difficulty_lbl.Content = "Difficulty: Unknown";
                 g_solve = new PuzzleSolverObjDS();
-                strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
+                strategy_lbl.Content = "";
             }
-            
+
         }
         /// <summary>
         /// Generates a puzzle
@@ -783,9 +698,9 @@ namespace SudokuSolverSetter
             g_validPuzzle = true;
             givenNums_lbl.Content = "Given Numbers: " + givensCounter;
             difficulty_lbl.Content = "Difficulty: Unknown";
-            strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
+            strategy_lbl.Content = "";
             PopulateGrid(g_grid);
-            g_PuzzleString = g_gen.SudokuToString(g_grid);
+            g_PuzzleString = g_gen.GridToString(g_grid);
             Clipboard.SetText(g_PuzzleString);
             g_solve = new PuzzleSolverObjDS();
         }
@@ -842,7 +757,7 @@ namespace SudokuSolverSetter
                     watch.Stop();
                     averageTime += watch.ElapsedMilliseconds;
                 }
-                averageTime = averageTime / iterations;
+                averageTime /= iterations;
                 g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
                 counter = 0;
                 if (solver.solvePath.Count != 0)
@@ -894,13 +809,13 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void RatingCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-                if (G_Timer != null)
+            if (G_Timer != null)
+            {
+                if (G_Timer.IsRunning)
                 {
-                    if (G_Timer.IsRunning)
-                    {
-                        StopTimer();
-                    }
+                    StopTimer();
                 }
+            }
             if (PuzzlesByRating_combo.SelectedIndex >= 0)
             {
                 g_PuzzleString = g_puzzleStrList[PuzzlesByRating_combo.SelectedIndex];
@@ -920,7 +835,7 @@ namespace SudokuSolverSetter
                         givensCounter++;
                     }
                     ((TextBox)SudokuPuzzle.Children[i]).Background = Brushes.White;
-                    
+
                 }
                 if (g_grid == null)
                 {
@@ -931,9 +846,9 @@ namespace SudokuSolverSetter
                 givenNums_lbl.Content = "Given Numbers: " + givensCounter;
                 difficulty_lbl.Content = "Difficulty: " + ((ComboBoxItem)PuzzleDifficulty_combo.SelectedItem).Content.ToString();
                 g_solve = new PuzzleSolverObjDS();
-                strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
+                strategy_lbl.Content = "";
             }
-            
+
         }
         private void Symmetry_checkbox_Checked(object sender, RoutedEventArgs e)
         {
@@ -989,7 +904,16 @@ namespace SudokuSolverSetter
             g_validPuzzle = true;
             g_solve = new PuzzleSolverObjDS();
             PopulateGridString(g_PuzzleString);
-            strategy_lbl.Content = "Strategy just used:\r\n<strategy>";
+            g_gen.StringToGrid(g_grid, g_PuzzleString);
+            strategy_lbl.Content = "";
+            int givensCounter = 0;
+            for (int i = 0; i < g_PuzzleString.Length; i++)
+            {
+                if (g_PuzzleString[i] != '0')
+                    givensCounter++;                   
+            }
+            givenNums_lbl.Content = "Given Numbers: " + givensCounter;
+            
         }
         private void ReGradePuzzles_btn_Click(object sender, RoutedEventArgs e)
         {
@@ -1110,11 +1034,12 @@ namespace SudokuSolverSetter
                 }
             }
             Clipboard.SetText(puzzleStr);
+            MessageBox.Show("Copied current puzzle string to clipboard!");
         }
         private void Cell_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             if (!((TextBox)sender).IsReadOnly)
-            { 
+            {
                 Regex rgx = new Regex("[1-9]");
                 if (!rgx.IsMatch(e.Text))
                 {
@@ -1128,7 +1053,6 @@ namespace SudokuSolverSetter
         }
         private void Cell_TextChanged(object sender, TextChangedEventArgs e)
         {
-            
             if (!((TextBox)sender).IsReadOnly)
             {
                 ((TextBox)sender).Text = ((TextBox)sender).Text.Trim();
@@ -1136,6 +1060,7 @@ namespace SudokuSolverSetter
                 {
                     g_grid = g_gen.ConstructGrid();
                 }
+                int givensCounter = 0;
                 for (int i = 0, index = 0; i < 9; i++)
                 {
                     for (int j = 0; j < 9; j++, index++)
@@ -1145,16 +1070,50 @@ namespace SudokuSolverSetter
                             g_grid.Rows[i][j].Num = '0';
                         }
                         else
+                        { 
                             g_grid.Rows[i][j].Num = ((TextBox)SudokuPuzzle.Children[index]).Text[0];
+                            givensCounter++;
+                        }
                     }
                 }
-                g_validPuzzle = g_gen.CheckValidity(g_grid);
-                    
+                if (g_gen.ValidateInput(SudokuPuzzle, g_grid, (TextBox)sender))
+                {
+                    if (g_gen.CheckValidity(g_grid))
+                    {
+                        g_validPuzzle = true;
+                        g_PuzzleString = g_gen.GridToString(g_grid);
+                    }
+                    else
+                    {
+                        g_validPuzzle = false;
+                    }
+                    givenNums_lbl.Content = "Given Numbers: " + givensCounter;
+                    g_PrevCellContents = ((TextBox)sender).Text;
+                }
+                else
+                {
+                    g_validPuzzle = false;
+                    if (g_PrevCellContents != "")
+                    {
+                        string givensContent = givenNums_lbl.Content.ToString();
+                        int prevGivens = int.Parse(givensContent.Substring(15, givensContent.Length - 15));
+                        givenNums_lbl.Content = "Given Numbers: " + --prevGivens;
+                    }
+                    ((TextBox)sender).Text = "";
+                    g_PrevCellContents = ((TextBox)sender).Text;
+                }
             }
         }
+        /// <summary>
+        /// Clears all textboxes of all values
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             g_validPuzzle = false;
+            givenNums_lbl.Content = "Given Numbers: 0";
+            difficulty_lbl.Content = "Difficulty: Unknown";
             for (int i = 0; i < SudokuPuzzle.Children.Count; i++)
             {
                 ((TextBox)SudokuPuzzle.Children[i]).Text = "";
@@ -1166,6 +1125,70 @@ namespace SudokuSolverSetter
         {
             e.CancelCommand();
         }
-        #endregion
+        /// <summary>
+        /// Handles when a cell in the grid is selected, changing the background colour of the selected cell
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Cell_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ((TextBox)sender).Background = focusCell;//sets the current focused cell to a more prominent colour
+            g_PrevCellContents = ((TextBox)sender).Text;
+        }
+        private void Cell_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((TextBox)sender).Background = Brushes.White;//sets the current focused cell to default colour
+        }
+        private void Cell_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) - 1 >= 0)
+                    {
+                        SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf((TextBox)sender) - 1].Focus();
+                    }
+                    break;
+                case Key.Up:
+                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) - 9 >= 0)
+                    {
+                        SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf(((TextBox)sender)) - 9].Focus();
+                    }
+                    break;
+                case Key.Right:
+                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) + 1 <= 80)
+                    {
+                        SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf((TextBox)sender) + 1].Focus();
+                    }
+                    break;
+                case Key.Down:
+                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) + 9 <= 80)
+                    {
+                        SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf((TextBox)sender) + 9].Focus();
+                    }
+                    break;
+                case Key.Delete:
+                    if (!((TextBox)sender).IsReadOnly && ((TextBox)sender).Text.Length > 0)
+                    {
+                        string givensContent = givenNums_lbl.Content.ToString();
+                        int prevGivens = int.Parse(givensContent.Substring(15, givensContent.Length - 15));
+                        givenNums_lbl.Content = "Given Numbers: " + --prevGivens;
+                        ((TextBox)sender).Text = "";
+                    }
+                    break;
+                case Key.Back:
+                    if (!((TextBox)sender).IsReadOnly && ((TextBox)sender).Text.Length > 0)
+                    {
+                        string givensContent = givenNums_lbl.Content.ToString();
+                        int prevGivens = int.Parse(givensContent.Substring(15, givensContent.Length - 15));
+                        givenNums_lbl.Content = "Given Numbers: " + --prevGivens;
+                        ((TextBox)sender).Text = "";
+                    }
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+        }
     }
 }

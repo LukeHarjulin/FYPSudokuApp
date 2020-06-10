@@ -15,25 +15,63 @@ namespace SudokuSolverSetter
     public partial class PuzzleSelector : Window
     {
         #region Initialisation
-        private MainWindow homePage = new MainWindow();
-        private List<TextBox> g_txtBxList = new List<TextBox>();
-        private List<string> g_puzzles = new List<string>();
+        private readonly MainWindow homePage = new MainWindow();
+        private readonly List<string> g_puzzles = new List<string>();
         private TextBox g_selectedTxBx = new TextBox { Text = "." };
-        private Brush selectColour = new SolidColorBrush(Color.FromArgb(178, 219, 255, 192));
+        private readonly Brush selectColour = new SolidColorBrush(Color.FromArgb(178, 219, 255, 192));
         public PuzzleSelector()
         {
             InitializeComponent();
-            g_txtBxList = new List<TextBox> {
-                bx1,bx2,bx3,bx4,bx5,bx6,bx7,bx8,bx9,
-                bx10,bx11,bx12,bx13,bx14,bx15,bx16,bx17,bx18,bx19,
-                bx20,bx21,bx22,bx23,bx24,bx25,bx26,bx27,bx28,bx29,
-                bx30,bx31,bx32,bx33,bx34,bx35,bx36,bx37,bx38,bx39,
-                bx40,bx41,bx42,bx43,bx44,bx45,bx46,bx47,bx48,bx49,
-                bx50,bx51,bx52,bx53,bx54,bx55,bx56,bx57,bx58,bx59,
-                bx60,bx61,bx62,bx63,bx64,bx65,bx66,bx67,bx68,bx69,
-                bx70,bx71,bx72,bx73,bx74,bx75,bx76,bx77,bx78,bx79,
-                bx80,bx81
-            };
+            //Create all the cells so that they can be transformed
+            for (int i = 0, row = 0, col = 0; i < 81; i++, col++)
+            {
+                TextBox txtbx = new TextBox();
+                double left = 0.75, right = 0.75, top = 0.75, bottom = 0.75;
+                if (row == 2 || row == 5 || row == 8)
+                {
+                    bottom = 2;
+                }
+                if (row == 0 || row == 3 || row == 6)
+                {
+                    top = 2;
+                }
+                if (col == 2 || col == 5 || col == 8)
+                {
+                    right = 2;
+                }
+                if (col == 0 || col == 3 || col == 6)
+                {
+                    left = 2;
+                }
+                txtbx.BorderThickness = new Thickness(left, top, right, bottom);
+                txtbx.CaretBrush = Brushes.Transparent;
+                txtbx.BorderBrush = Brushes.Black;
+                txtbx.Cursor = Cursors.Arrow;
+                txtbx.IsReadOnly = true;
+                txtbx.TextWrapping = TextWrapping.Wrap;
+                txtbx.FontSize = 36; 
+                txtbx.HorizontalContentAlignment = HorizontalAlignment.Center; txtbx.VerticalContentAlignment = VerticalAlignment.Center;
+                txtbx.Foreground = Brushes.Black;
+                if (i == 3 || i == 4 || i == 5 || i == 12 || i == 13 || i == 14
+                    || i == 21 || i == 22 || i == 23 || i == 27 || i == 28 || i == 29
+                    || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38
+                    || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47
+                    || i == 51 || i == 52 || i == 53 || i == 57 || i == 58 || i == 59
+                    || i == 66 || i == 67 || i == 68 || i == 75 || i == 76 || i == 77)
+                {
+                    txtbx.Background = new SolidColorBrush(Color.FromArgb(255, 255, 224, 233));
+                }
+                else
+                {
+                    txtbx.Background = new SolidColorBrush(Color.FromArgb(255, 255, 221, 192));
+                }
+                SudokuPuzzle.Children.Add(txtbx); 
+                if (col == 8)
+                {
+                    col = -1;
+                    row++;
+                }
+            }
             AddPuzzlesExpanders();
             if (Started_STKPNL.Children.Count == 0)
             {
@@ -222,7 +260,7 @@ namespace SudokuSolverSetter
             }
 
             string sudokuString = g_puzzles[int.Parse(index)];
-            g_txtBxList[0].Text = "";
+            ((TextBox)SudokuPuzzle.Children[0]).Text = "";
             for (int i = 0, counter = 0; counter < sudokuString.Length; counter++)
             {
                 if (sudokuString[counter] == '.')
@@ -233,13 +271,13 @@ namespace SudokuSolverSetter
                 {
                     if (sudokuString[counter] == '|')
                     {
-                        g_txtBxList[i].FontWeight = FontWeights.Bold;
+                        ((TextBox)SudokuPuzzle.Children[i]).FontWeight = FontWeights.Bold;
                         counter++;
                     }
                     else if (sudokuString[counter] == '-')
                     {
-                        g_txtBxList[i].FontSize = 16;
-                        g_txtBxList[i].FontWeight = FontWeights.Normal;
+                        ((TextBox)SudokuPuzzle.Children[i]).FontSize = 16;
+                        ((TextBox)SudokuPuzzle.Children[i]).FontWeight = FontWeights.Normal;
                         counter++;
                     }
                     if (counter == sudokuString.Length)
@@ -249,24 +287,24 @@ namespace SudokuSolverSetter
                     if (sudokuString[counter] == '_')
                     {
                         i++;
-                        g_txtBxList[i].Text = "";
+                        ((TextBox)SudokuPuzzle.Children[i]).Text = "";
                         counter++;
                     }
                     if (sudokuString[counter] != '0')
                     {
-                        g_txtBxList[i].Text += sudokuString[counter].ToString();
-                        if (g_txtBxList[i].Text.Length > 1)
+                        ((TextBox)SudokuPuzzle.Children[i]).Text += sudokuString[counter].ToString();
+                        if (((TextBox)SudokuPuzzle.Children[i]).Text.Length > 1)
                         {
-                            g_txtBxList[i].FontSize = 16;
+                            ((TextBox)SudokuPuzzle.Children[i]).FontSize = 16;
                         }
                         else
                         {
-                            g_txtBxList[i].FontSize = 36;
+                            ((TextBox)SudokuPuzzle.Children[i]).FontSize = 36;
                         }
                     }
                     else
                     {
-                        g_txtBxList[i].Text = "";
+                        ((TextBox)SudokuPuzzle.Children[i]).Text = "";
                     }
                     
                 }
@@ -274,13 +312,13 @@ namespace SudokuSolverSetter
                 {
                     if (sudokuString[counter] != '0')
                     {
-                        g_txtBxList[i].Text = sudokuString[counter].ToString();
-                        g_txtBxList[i].FontSize = 36;
-                        g_txtBxList[i].FontWeight = FontWeights.Bold;
+                        ((TextBox)SudokuPuzzle.Children[i]).Text = sudokuString[counter].ToString();
+                        ((TextBox)SudokuPuzzle.Children[i]).FontSize = 36;
+                        ((TextBox)SudokuPuzzle.Children[i]).FontWeight = FontWeights.Bold;
                     }
                     else
                     {
-                        g_txtBxList[i].Text = "";
+                        ((TextBox)SudokuPuzzle.Children[i]).Text = "";
                     }
                     i++;
                 }
