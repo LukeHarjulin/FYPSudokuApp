@@ -336,6 +336,63 @@ namespace SudokuSolverSetter
             
         }
         /// <summary>
+        /// checks for if the puzzle is valid in the sense that is has more than 7 unique numbers at any point in the puzzle, more than 16 givens, and one solution
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        public bool CheckValidity(SudokuGrid grid)
+        {
+            bool minOfEight = false;
+            int givens = 0;
+            List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            for (int x = 0; x < 9 && !minOfEight; x++)
+            {
+                for (int y = 0; y < 9 && !minOfEight; y++)
+                {
+                    if (grid.Rows[x][y].Num != '0')
+                    {
+                        numList.Remove(grid.Rows[x][y].Num);
+                        if (numList.Count <= 1)
+                        {
+                            minOfEight = true;
+                        }
+                        givens++;
+                    }
+                }
+            }
+            if (!minOfEight && givens >= 17)
+                return false;
+            char[][] sudokuArray = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+            for (int r = 0; r < 9; r++)
+            {
+                for (int c = 0; c < 9; c++)
+                {
+                    sudokuArray[r][c] = grid.Rows[r][c].Num;
+                }
+            }
+            PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
+            if (solve.BacktrackingSolver(grid, 0, 0, 0))
+            {
+                string firstSol = SudokuToString(grid);
+                grid = RestartPuzzle(grid, sudokuArray);
+                if (solve.BacktrackingSolver(grid, 0, 0, 1))
+                {
+                    string secSol = SudokuToString(grid);
+                    if (firstSol == secSol)//valid puzzle
+                    {
+                        grid = RestartPuzzle(grid, sudokuArray);
+                        return true;
+                    }
+                    else
+                    {
+                        grid = RestartPuzzle(grid, sudokuArray);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        /// <summary>
         /// Reassigns the values in the puzzle to what they were prior to being solved
         /// </summary>
         /// <param name="grid"></param>
