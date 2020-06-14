@@ -73,29 +73,11 @@ namespace SudokuSolverSetter
                         g_changeMade = true;
                         if (method == 1)
                             g_SolvePath[index] += "Hidden Single(s)";
-                    }
-                    else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +100 to the rating.
-                    {
-                        g_changeMade = true;
-                        g_Rating += 100;
-                        g_moderate = true;
-                        g_StrategyCount[5]++;
-                        if (method == 1)
-                            g_SolvePath[index] += "Pointing Line";
-                    }
-                    else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +150 to the rating.
-                    {
-                        g_changeMade = true;
-                        g_Rating += 150;
-                        g_moderate = true;
-                        g_StrategyCount[6]++;
-                        if (method == 1)
-                            g_SolvePath[index] += "Block-Line Reduction";
-                    }
+                    }                    
                     else if (FindNakedPair(grid))//A Naked Pair contributes +175 to the rating.
                     {
                         g_changeMade = true;
-                        g_Rating += 175;
+                        g_Rating += 150;
                         g_moderate = true;
                         g_StrategyCount[3]++;
                         if (method == 1)
@@ -104,11 +86,29 @@ namespace SudokuSolverSetter
                     else if (FindHiddenPair(grid))//A Hidden Pair contributes +225 to the rating.
                     {
                         g_changeMade = true;
-                        g_Rating += 225;
+                        g_Rating += 175;
                         g_moderate = true;
                         g_StrategyCount[4]++;
                         if (method == 1)
                             g_SolvePath[index] += "Hidden Pair";
+                    }
+                    else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +100 to the rating.
+                    {
+                        g_changeMade = true;
+                        g_Rating += 200;
+                        g_moderate = true;
+                        g_StrategyCount[5]++;
+                        if (method == 1)
+                            g_SolvePath[index] += "Pointing Line";
+                    }
+                    else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +150 to the rating.
+                    {
+                        g_changeMade = true;
+                        g_Rating += 225;
+                        g_moderate = true;
+                        g_StrategyCount[6]++;
+                        if (method == 1)
+                            g_SolvePath[index] += "Block-Line Reduction";
                     }
                     else if (FindNakedTriple(grid))//A Naked Triple contributes +350 to the rating.
                     {
@@ -202,8 +202,7 @@ namespace SudokuSolverSetter
                 g_BacktrackingReq = true;
                 g_Difficulty = "Extreme";
                 g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
-                g_StrategyCount[0]++;
-                return false;
+                g_StrategyCount[0]++;                
             }
             else if (method == 1)
                 g_SolvePath.Add("|--------------------------------FINISHED--------------------------------|");
@@ -278,6 +277,7 @@ namespace SudokuSolverSetter
                         if (!changeMade && g_PathTracking)
                             g_SolvePath.Add("(IMMEDIATE SOLUTIONS ACQUIRED FROM STRATEGY)");
                         changeMade = true;
+                        g_Rating += 30;
                         if (g_PathTracking)
                             g_SolvePath.Add("-Last candidate number in cell [" + i + "," + j + "] is " + grid.Rows[i][j].Num);
                         g_StrategyCount[1]++;
@@ -565,19 +565,26 @@ namespace SudokuSolverSetter
                                 {
                                     foreach (Cell cell in grid.Rows[i][j].NeighbourCells[index])
                                     {
+                                        bool cellChange = false; // bool for stacking solve path
                                         if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[0]) && cell.Num == '0')
                                         {
                                             cell.Candidates.Remove(neighbour.Candidates[0]);
-                                            changeMade = true;
                                             if (g_PathTracking)
                                                 g_SolvePath.Add("Candidate number " + neighbour.Candidates[0] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + "/" + neighbour.Candidates[1]);
+                                            changeMade = true;
+                                            cellChange = true;
                                         }
                                         if (cell != neighbour && cell.Candidates.Contains(neighbour.Candidates[1]) && cell.Num == '0')
                                         {
                                             cell.Candidates.Remove(neighbour.Candidates[1]);
-                                            changeMade = true;
-                                            if (g_PathTracking)
+                                            if (g_PathTracking && cellChange)
+                                            {
+                                                g_SolvePath.RemoveAt(g_SolvePath.Count - 1);
+                                                g_SolvePath.Add("Candidate numbers " + neighbour.Candidates[0] + neighbour.Candidates[1] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + "/" + neighbour.Candidates[1]);
+                                            }
+                                            else if (g_PathTracking)
                                                 g_SolvePath.Add("Candidate number " + neighbour.Candidates[1] + " removed from cell [" + cell.XLocation + "," + cell.YLocation + "] - NAKED PAIR - " + neighbour.Candidates[0] + "/" + neighbour.Candidates[1]);
+                                            changeMade = true;
                                         }
                                     }
                                     if (changeMade)
@@ -2013,34 +2020,34 @@ namespace SudokuSolverSetter
                 g_strategy = "Hidden Single(s)";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +100 to the rating.
-            {
-                g_Rating += 100;
-                g_moderate = true;
-                g_strategy = "Pointing Line";
-                g_SolvePath[index] += g_strategy;
-            }
-            else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +150 to the rating.
+            else if (FindNakedPair(grid))//A Naked Pair contributes +150 to the rating.
             {
                 g_Rating += 150;
-                g_moderate = true;
-                g_strategy = "Block-Line Reduction";
-                g_SolvePath[index] += g_strategy;
-            }
-            else if (FindNakedPair(grid))//A Naked Pair contributes +175 to the rating.
-            {
-                g_Rating += 175;
                 g_moderate = true;
                 g_strategy = "Naked Pair";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindHiddenPair(grid))//A Hidden Pair contributes +225 to the rating.
+            else if (FindHiddenPair(grid))//A Hidden Pair contributes +175 to the rating.
             {
-                g_Rating += 225;
+                g_Rating += 175;
                 g_moderate = true;
                 g_strategy = "Hidden Pair";
                 g_SolvePath[index] += g_strategy;
-            }            
+            }
+            else if (FindPointingNumbers(grid))//A Point Pair/Triple contributes +200 to the rating.
+            {
+                g_Rating += 200;
+                g_moderate = true;
+                g_strategy = "Pointing Line";
+                g_SolvePath[index] += g_strategy;
+            }
+            else if (FindBlockLineReduce(grid))//A Box-Line Reduction contributes +200 to the rating.
+            {
+                g_Rating += 225;
+                g_moderate = true;
+                g_strategy = "Block-Line Reduction";
+                g_SolvePath[index] += g_strategy;
+            }   
             else if (FindNakedTriple(grid))//A Naked Triple contributes +300 to the rating.
             {
                 g_Rating += 300;

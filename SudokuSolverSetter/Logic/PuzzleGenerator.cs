@@ -363,7 +363,7 @@ namespace SudokuSolverSetter
                     }
                 }
             }
-            if (!minOfEight || givens >= 17)
+            if (!minOfEight || givens < 17)
                 return false;
             char[][] sudokuArray = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
             for (int r = 0; r < 9; r++)
@@ -465,7 +465,7 @@ namespace SudokuSolverSetter
                     {
                         if (grid.Rows[row][col].Candidates.Count == 0)
                         {                            
-                            MessageBox.Show("A strategy has malfunctioned and caused a contradiction");//Catches if a strategy makes a mistake by causing a cell to have no candidates
+                            MessageBox.Show("A strategy has malfunctioned and caused a contradiction or the puzzle is invalid");//Catches if a strategy makes a mistake by causing a cell to have no candidates
                         }
                         return false;
                     }
@@ -662,12 +662,13 @@ namespace SudokuSolverSetter
         public bool ValidateInput(UniformGrid SudokuPuzzle, SudokuGrid g_grid, TextBox g_selectedCell)
         {
             if (g_selectedCell.Text == "")
-            {
                 return true;
-            }
             double index_ = SudokuPuzzle.Children.IndexOf(g_selectedCell);
             int row = (int)index_ / 9;
             int col = (int)index_ % 9;
+            g_grid.Rows[row][col].Num = g_selectedCell.Text[0];
+            if (g_grid.Rows[row][col].Num == '0')
+                return true;
             bool valid = true;
             for (int n = 0; n < 8; n++)
             {
@@ -676,6 +677,7 @@ namespace SudokuSolverSetter
                     int index = g_grid.Rows[row][col].NeighbourCells[0][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[0][n].YLocation;
                     if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
                     {
+                        g_grid.Rows[row][col].Num = '0';
                         valid = false; break;
                     }
                 }
@@ -684,6 +686,7 @@ namespace SudokuSolverSetter
                     int index = g_grid.Rows[row][col].NeighbourCells[1][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[1][n].YLocation;
                     if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
                     {
+                        g_grid.Rows[row][col].Num = '0';
                         valid = false; break;
                     }
                 }
@@ -692,6 +695,7 @@ namespace SudokuSolverSetter
                     int index = g_grid.Rows[row][col].NeighbourCells[2][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[2][n].YLocation;
                     if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
                     {
+                        g_grid.Rows[row][col].Num = '0';
                         valid = false; break;
                     }
                 }

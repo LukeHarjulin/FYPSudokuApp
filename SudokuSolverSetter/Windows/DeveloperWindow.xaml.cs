@@ -498,9 +498,13 @@ namespace SudokuSolverSetter
                             {
                                 MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + rating);
                             }
-                            else if (g_solve.g_BacktrackingReq)
+                            else if (solved && g_solve.g_BacktrackingReq)
                             {
                                 MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFinished with trial and error, unable to finish using implemented strategies." + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + rating);
+                            }
+                            else if (!solved)
+                            {
+                                MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFailed with trial and error, puzzle must be invalid!." + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + rating);
                             }
                             SolvePath path = new SolvePath();
                             path.PopulateTextBlock(rating, g_currentTime, g_solve);
@@ -511,16 +515,26 @@ namespace SudokuSolverSetter
                         if (g_solve.g_BacktrackingPath.Count != 0)
                         {
                             int estimateSimulationTime = g_solve.g_BacktrackingPath.Count * 17 / 1000;
-                            MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\n\r\nDo you want to see a simulation of the Backtracking algorithm solving the puzzle?\r\nTotal # of Digit Changes: " + g_solve.g_BacktrackingPath.Count + "\r\nEstimated Duration of Simulation: " + estimateSimulationTime + " seconds\r\n(Warning: The simulation can take a very long time to finish, ~17ms per digit change)", "Backtracking Simulation Confirmation", MessageBoxButton.YesNo);
-                            if (result == MessageBoxResult.Yes)
+                            if (solved)
                             {
-                                g_BacktrackingSolvePath.AddRange(g_solve.g_BacktrackingPath);
-                                StartTimer();
+                                MessageBoxResult result = MessageBox.Show("SOLVED\r\n" + g_currentTime + "\r\n\r\nDo you want to see a simulation of the Backtracking algorithm solving the puzzle?\r\nTotal # of Digit Changes: " + g_solve.g_BacktrackingPath.Count + "\r\nEstimated Duration of Simulation: " + estimateSimulationTime + " seconds\r\n(Warning: The simulation can take a very long time to finish, ~17ms per digit change)", "Backtracking Simulation Confirmation", MessageBoxButton.YesNo);
+                                if (result == MessageBoxResult.Yes)
+                                {
+                                    g_BacktrackingSolvePath.AddRange(g_solve.g_BacktrackingPath);
+                                    StartTimer();
+                                }
+                                else
+                                {
+                                    PopulateGrid(g_grid);
+                                }
                             }
                             else
                             {
+                                MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFailed with trial and error, puzzle must be invalid!." + "\r\nMeasured Puzzle Difficulty Level(experimental): " + g_solve.g_Difficulty + "\r\nMeasured Puzzle Rating(experimental): " + rating);
                                 PopulateGrid(g_grid);
                             }
+
+
                         }
                     }
                 }
@@ -598,6 +612,8 @@ namespace SudokuSolverSetter
                                 g_solve.g_Rating = 0;
                             }
                         }
+                        else if (g_solve.g_BacktrackingReq)
+                            MessageBox.Show("FAILED\r\n" + g_currentTime + "\r\nFailed with trial and error, puzzle must be invalid!.");
                         PopulateGrid(g_grid);
                         strategy_lbl.Content = "Strategy/cleaning from Step " + g_solve.g_StepCounter + ":\r\n" + g_solve.g_strategy;
                     }
@@ -1111,6 +1127,13 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
+            if (G_Timer != null)
+            {
+                if (G_Timer.IsRunning)
+                {
+                    StopTimer();
+                }
+            }
             g_validPuzzle = false;
             givenNums_lbl.Content = "Given Numbers: 0";
             difficulty_lbl.Content = "Difficulty: Unknown";
