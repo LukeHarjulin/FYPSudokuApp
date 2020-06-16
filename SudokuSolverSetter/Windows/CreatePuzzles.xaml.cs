@@ -24,15 +24,14 @@ namespace SudokuSolverSetter
     public partial class CreatePuzzles : Window
     {
         #region Initialisation
-        private bool g_Symmetry = false;
         public CreatePuzzles() => InitializeComponent(); 
-        public CreatePuzzles(int addLimit, bool symmetry)
+        public CreatePuzzles(int addLimit)
         {
             InitializeComponent();
-            g_Symmetry = symmetry;
             Number_List_combo.Items.Add(1);
             if (addLimit > 10)
             {
+                Number_List_combo.Items.Add(5);
                 Number_List_combo.Items.Add(10);
                 Number_List_combo.Items.Add(25);
                 Number_List_combo.Items.Add(50);
@@ -42,10 +41,6 @@ namespace SudokuSolverSetter
                 Number_List_combo.Items.Add(750);
                 Number_List_combo.Items.Add(1000);
                 Number_List_combo.Items.Add(2000);
-                Number_List_combo.Items.Add(2500);
-                Number_List_combo.Items.Add(5000);
-                Number_List_combo.Items.Add(10000);
-                Number_List_combo.Items.Add(20000);
             }
             else
             {
@@ -79,26 +74,26 @@ namespace SudokuSolverSetter
         /// Function that reacts to the button click and generates the given number of puzzles
         /// </summary>
         /// <param name="numPuzzles"></param>
-        public void GeneratePuzzles(int numPuzzles, bool symmetry)
+        public void GeneratePuzzles(int numPuzzles)
         {
             List<SudokuGrid> sudokuPuzzles = new List<SudokuGrid>();
             PuzzleGenerator gen = new PuzzleGenerator();
             try
             {
                 XDocument doc;
-                string symmetric = "";
-                if (symmetry)
-                {
-                    symmetric = @"Symmetric";
-                }
-                else
-                {
-                    symmetric = @"NonSymmetric";
-                }
-                string filename = symmetric + "/SudokuPuzzles.xml";
+                string filename = @"Puzzles/SudokuPuzzles.xml";
+                int seed = 0;
                 if (File.Exists(filename))
                 {
                     doc = XDocument.Load(filename);
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(filename);
+                    XmlNode types = xmlDoc.DocumentElement.SelectSingleNode("/SudokuPuzzles");
+                    XmlNode notStarted = types.FirstChild;
+                    foreach (XmlNode item in notStarted.ChildNodes)
+                    {
+                        seed += item.ChildNodes.Count;
+                    }
                 }
                 else
                 {
@@ -127,25 +122,27 @@ namespace SudokuSolverSetter
                             )
                         );
                 }
-                StreamWriter ratingWrite = new StreamWriter(symmetric+"/ratings.txt",true);
-                StreamWriter difficWrite = new StreamWriter(symmetric+"/difficulties.txt", true); 
-                StreamWriter givensWrite = new StreamWriter(symmetric+"/givens.txt", true);
+                StreamWriter ratingWrite = new StreamWriter(@"Puzzles/ratings.txt",true);
+                StreamWriter difficWrite = new StreamWriter(@"Puzzles/difficulties.txt", true); 
+                StreamWriter givensWrite = new StreamWriter(@"Puzzles/givens.txt", true);
+                StreamWriter seedsWrite = new StreamWriter(@"Puzzles/seeds.txt", true);
                 #region Strategy Files
-                StreamWriter NS = new StreamWriter(symmetric+"/StratsCounts/nakedsingles.txt", true), HS = new StreamWriter(symmetric+"/StratsCounts/hiddensingles.txt", true), NP = new StreamWriter(symmetric+"/StratsCounts/nakedpair.txt", true),
-                HP = new StreamWriter(symmetric+"/StratsCounts/hiddenpair.txt", true), PP = new StreamWriter(symmetric + "/StratsCounts/pointline.txt", true), BLR = new StreamWriter(symmetric+"/StratsCounts/blocklinereduc.txt", true), NT = new StreamWriter(symmetric+"/StratsCounts/nakedtriple.txt", true),
-                HT = new StreamWriter(symmetric+"/StratsCounts/hiddentriple.txt", true), XW = new StreamWriter(symmetric+"/StratsCounts/xwing.txt", true), YW = new StreamWriter(symmetric+"/StratsCounts/ywing.txt", true), XYZ = new StreamWriter(symmetric+"/StratsCounts/xyzwing.txt", true),
-                SC = new StreamWriter(symmetric + "/StratsCounts/singlechains.txt", true), UR1 = new StreamWriter(symmetric+"/StratsCounts/uniquerecttyp1.txt", true), BT = new StreamWriter(symmetric+"/StratsCounts/backtrack.txt", true);
+                StreamWriter NS = new StreamWriter(@"Puzzles/StratsCounts/nakedsingles.txt", true), HS = new StreamWriter(@"Puzzles/StratsCounts/hiddensingles.txt", true), NP = new StreamWriter(@"Puzzles/StratsCounts/nakedpair.txt", true),
+                HP = new StreamWriter(@"Puzzles/StratsCounts/hiddenpair.txt", true), PP = new StreamWriter(@"Puzzles/StratsCounts/pointline.txt", true), BLR = new StreamWriter(@"Puzzles/StratsCounts/blocklinereduc.txt", true), NT = new StreamWriter(@"Puzzles/StratsCounts/nakedtriple.txt", true),
+                HT = new StreamWriter(@"Puzzles/StratsCounts/hiddentriple.txt", true), XW = new StreamWriter(@"Puzzles/StratsCounts/xwing.txt", true), YW = new StreamWriter(@"Puzzles/StratsCounts/ywing.txt", true), XYZ = new StreamWriter(@"Puzzles/StratsCounts/xyzwing.txt", true),
+                SC = new StreamWriter(@"Puzzles/StratsCounts/singlechains.txt", true), UR1 = new StreamWriter(@"Puzzles/StratsCounts/uniquerecttyp1.txt", true), BT = new StreamWriter(@"Puzzles/StratsCounts/backtrack.txt", true);
                 #endregion
                 Stopwatch Timer = new Stopwatch();
                 Timer.Start();
                 for (int i = 0; i < numPuzzles; i++)
                 {
-                    sudokuPuzzles.Add(gen.Setter(symmetry));
+                    sudokuPuzzles.Add(gen.Setter());
                     string puzzleString = gen.GridToString(sudokuPuzzles[i]);
                     PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
                     long rating = GetDifficulty(sudokuPuzzles[i], puzzleString, solver);
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
                         new XElement("puzzle",
+                            new XElement("Seed", ++seed),
                             new XElement("DifficultyRating", rating),
                             new XElement("SudokuString", puzzleString)
                             )
@@ -159,7 +156,6 @@ namespace SudokuSolverSetter
                             givens++;
                         }
                     }
-                    ratingWrite.WriteLine(rating);
                     switch (sudokuPuzzles[i].Difficulty)
                     {
                         case "Beginner":
@@ -175,7 +171,9 @@ namespace SudokuSolverSetter
                             difficWrite.WriteLine("4");
                             break;
                     }
+                    ratingWrite.WriteLine(rating);
                     givensWrite.WriteLine(givens);
+                    seedsWrite.WriteLine(seed);
                     NS.WriteLine(solver.g_StrategyCount[1]);HS.WriteLine(solver.g_StrategyCount[2]);NP.WriteLine(solver.g_StrategyCount[3]);
                     HP.WriteLine(solver.g_StrategyCount[4]);PP.WriteLine(solver.g_StrategyCount[5]);BLR.WriteLine(solver.g_StrategyCount[6]);
                     NT.WriteLine(solver.g_StrategyCount[7]);HT.WriteLine(solver.g_StrategyCount[8]);XW.WriteLine(solver.g_StrategyCount[9]);
@@ -184,6 +182,7 @@ namespace SudokuSolverSetter
                 }
                 Timer.Stop();
                 ratingWrite.Close();
+                seedsWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
                 NS.Close();HS.Close();NP.Close();HP.Close();PP.Close();BLR.Close();NT.Close();
@@ -239,7 +238,7 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            GeneratePuzzles(int.Parse(Number_List_combo.SelectedItem.ToString()), g_Symmetry);
+            GeneratePuzzles(int.Parse(Number_List_combo.SelectedItem.ToString()));
         }
         #endregion
     }

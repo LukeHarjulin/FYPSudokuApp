@@ -15,19 +15,18 @@ namespace SudokuSolverSetter
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="symmetry">true=apply symmetry, false = symmetry not applied, but can exist</param>
         /// <returns>the puzzle in form of SudokuGrid</returns>
-        public SudokuGrid Setter(bool symmetry)
+        public SudokuGrid Setter()
         {
             PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
             SudokuGrid grid = ConstructGrid();
-            //Using BacktrackingSolver to fill in a blank grid to get a starting solution - possibly the part of the generator that causes performance issues
+            //Using Backtracking Solver to fill in a blank grid to get a starting solution - possibly the part of the generator that causes performance issues
             bool testing = false;
             if (!testing)
             {
                 try
                 {
-                    if (!solve.BacktrackingSolver(grid, 0, 0, 2))
+                    if (!solve.CompileBacktracker(grid, 2))
                         MessageBox.Show("Generator did not find a puzzle to generate");
                 }
                 catch (Exception ex)
@@ -43,7 +42,7 @@ namespace SudokuSolverSetter
                 #endregion
             }
 
-            RemoveNumbers(grid, solve, symmetry);
+            RemoveNumbers(grid, solve);
             return grid;
         }
         #region Public Functions
@@ -98,7 +97,7 @@ namespace SudokuSolverSetter
         /// <param name="grid"></param>
         public void AddNeighbours(SudokuGrid grid)
         {
-            
+
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -144,34 +143,120 @@ namespace SudokuSolverSetter
                 }
             }
         }
-        public void RemoveNumbers(SudokuGrid grid, PuzzleSolverObjDS solve, bool symmetry)
+        public void RemoveNumbers(SudokuGrid grid, PuzzleSolverObjDS solve)
         {
             ///This section consists of constantly removing parallel numbers, e.g. [0,0] and [8,8] or [2,5] and [5,2], and checking if the puzzle is still valid (i.e. still has only one solution)
-            
-            bool changeMade = false;
+
             int removed = 0;
             List<string> cellsChecked = new List<string>(81);
             List<int> rowList = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
             List<int> colList = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-            do
+
+            rowList = Shuffler_intList(rowList);
+            colList = Shuffler_intList(colList);
+            foreach (int row in rowList)
             {
-                changeMade = false;
-                rowList = Shuffler_intList(rowList);
-                colList = Shuffler_intList(colList);
+                if (removed >= g_MaxRemoves)
+                { break; }
+                foreach (int col in colList)
+                {
+                    if (removed >= g_MaxRemoves)
+                    { break; }
+                    if (!cellsChecked.Contains(row.ToString() + col.ToString()))
+                    {
+                        int altRow = NumberSwitch(row);
+                        int altCol = NumberSwitch(col);
+
+                        if (grid.Rows[altRow][altCol].Num != '0' && grid.Rows[row][col].Num != '0')
+                        {
+                            bool valid = false;
+                            List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                            for (int x = 0; x < 9 && !valid; x++)//checks for if the puzzle is valid in the sense that is has more than 7 unique numbers at any point in the puzzle
+                            {
+                                for (int y = 0; y < 9 && !valid; y++)
+                                {
+                                    if (grid.Rows[x][y].Num != '0')
+                                    {
+                                        if ((x == altRow && y == altCol) == false && (x == row && y == col) == false)
+                                        {
+                                            numList.Remove(grid.Rows[x][y].Num);
+                                        }
+                                        if (numList.Count <= 1)
+                                        {
+                                            valid = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (valid)
+                            {
+                                char[][] sudokuArray = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
+                                for (int r = 0; r < 9; r++)
+                                {
+                                    for (int c = 0; c < 9; c++)
+                                    {
+                                        sudokuArray[r][c] = grid.Rows[r][c].Num;
+                                    }
+                                }
+                                grid.Rows[row][col].Num = '0';
+                                grid.Rows[altRow][altCol].Num = '0';
+                                if (solve.CompileBacktracker(grid, 4))
+                                {
+                                    string firstSol = GridToString(grid);
+                                    grid = RestartPuzzle(grid, sudokuArray);
+                                    grid.Rows[row][col].Num = '0';
+                                    grid.Rows[altRow][altCol].Num = '0';
+                                    if (solve.CompileBacktracker(grid, 1))//tries Backtracking algorithm using reversed candidate lists so that if a solution that is different to the previous solution exists, it will be found, invalidating the puzzle
+                                    {
+                                        string secSol = GridToString(grid);
+                                        if (firstSol == secSol)//valid puzzle
+                                        {
+                                            grid = RestartPuzzle(grid, sudokuArray);
+                                            grid.Rows[row][col].Num = '0';
+                                            grid.Rows[altRow][altCol].Num = '0';
+                                            if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
+                                                removed++;
+                                            else
+                                                removed += 2;
+                                        }
+                                        else//Multiple solutions
+                                        {
+                                            grid = RestartPuzzle(grid, sudokuArray);
+                                        }
+                                    }
+                                }
+                                else//Invalid puzzle, should never occur
+                                {
+                                    grid = RestartPuzzle(grid, sudokuArray);
+                                }
+                            }
+                            if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
+                                cellsChecked.Add(row.ToString() + col.ToString());
+                            else
+                            {
+                                cellsChecked.Add(row.ToString() + col.ToString());
+                                cellsChecked.Add(altRow.ToString() + altCol.ToString());
+                            }
+
+                        }
+                    }
+
+                }
+            }
+            if (removed < g_MaxRemoves)
+            {
+                cellsChecked = new List<string>();
                 foreach (int row in rowList)
                 {
-                    if (removed > g_MaxRemoves)
-                    { changeMade = true; break; }
+                    if (removed >= g_MaxRemoves)
+                    { break; }
                     foreach (int col in colList)
                     {
-                        if (removed > g_MaxRemoves)
-                        { changeMade = true; break; }
+                        if (removed >= g_MaxRemoves)
+                        { break; }
                         if (!cellsChecked.Contains(row.ToString() + col.ToString()))
                         {
-                            int altRow = NumberSwitch(row);
-                            int altCol = NumberSwitch(col);
-                            
-                            if (grid.Rows[altRow][altCol].Num != '0' && grid.Rows[row][col].Num != '0')
+                            if (grid.Rows[row][col].Num != '0')
                             {
                                 bool valid = false;
                                 List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
@@ -181,7 +266,7 @@ namespace SudokuSolverSetter
                                     {
                                         if (grid.Rows[x][y].Num != '0')
                                         {
-                                            if ((x == altRow && y == altCol) == false && (x == row && y == col) == false)
+                                            if ((x == row && y == col) == false)
                                             {
                                                 numList.Remove(grid.Rows[x][y].Num);
                                             }
@@ -203,140 +288,37 @@ namespace SudokuSolverSetter
                                         }
                                     }
                                     grid.Rows[row][col].Num = '0';
-                                    grid.Rows[altRow][altCol].Num = '0';
-                                    if (solve.BacktrackingSolver(grid, 0, 0, 0))
+                                    if (solve.CompileBacktracker(grid, 4))
                                     {
                                         string firstSol = GridToString(grid);
                                         grid = RestartPuzzle(grid, sudokuArray);
                                         grid.Rows[row][col].Num = '0';
-                                        grid.Rows[altRow][altCol].Num = '0';
-                                        if (solve.BacktrackingSolver(grid, 0, 0, 1))//tries Backtracking algorithm using reversed candidate lists so that if a solution that is different to the previous solution exists, it will be found, invalidating the puzzle
+                                        if (solve.CompileBacktracker(grid, 1))
                                         {
                                             string secSol = GridToString(grid);
                                             if (firstSol == secSol)//valid puzzle
                                             {
                                                 grid = RestartPuzzle(grid, sudokuArray);
                                                 grid.Rows[row][col].Num = '0';
-                                                grid.Rows[altRow][altCol].Num = '0';
-                                                changeMade = true;
-                                                if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
-                                                    removed++;
-                                                else
-                                                    removed += 2;
+                                                removed++;
                                             }
-                                            else//Multiple solutions
+                                            else
                                             {
                                                 grid = RestartPuzzle(grid, sudokuArray);
                                             }
                                         }
                                     }
-                                    else//Invalid puzzle, should never occur
+                                    else
                                     {
                                         grid = RestartPuzzle(grid, sudokuArray);
                                     }
                                 }
-                                if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
-                                    cellsChecked.Add(row.ToString() + col.ToString());
-                                else
-                                {
-                                    cellsChecked.Add(row.ToString() + col.ToString());
-                                    cellsChecked.Add(altRow.ToString() + altCol.ToString());
-                                }
-                                
                             }
+                            cellsChecked.Add(row.ToString() + col.ToString());
                         }
-
                     }
                 }
-                
-            } while (removed <= g_MaxRemoves && changeMade);
-
-            if (!symmetry)
-            {
-                cellsChecked = new List<string>();
-                do
-                {
-                    #region Asymmetrical : Symmetry not essential to the puzzle
-                    changeMade = false;
-                    foreach (int row in rowList)
-                    {
-                        if (removed > g_MaxRemoves)
-                        { changeMade = true; break; }
-                        foreach (int col in colList)
-                        {
-                            if (removed > g_MaxRemoves)
-                            { changeMade = true; break; }
-                            if (!cellsChecked.Contains(row.ToString() + col.ToString()))
-                            {
-                                if (grid.Rows[row][col].Num != '0')
-                                {
-                                    bool valid = false;
-                                    List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                                    for (int x = 0; x < 9 && !valid; x++)//checks for if the puzzle is valid in the sense that is has more than 7 unique numbers at any point in the puzzle
-                                    {
-                                        for (int y = 0; y < 9 && !valid; y++)
-                                        {
-                                            if (grid.Rows[x][y].Num != '0')
-                                            {
-                                                if ((x == row && y == col) == false)
-                                                {
-                                                    numList.Remove(grid.Rows[x][y].Num);
-                                                }
-                                                if (numList.Count <= 1)
-                                                {
-                                                    valid = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (valid)
-                                    {
-                                        char[][] sudokuArray = new char[9][] { new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9], new char[9] };
-                                        for (int r = 0; r < 9; r++)
-                                        {
-                                            for (int c = 0; c < 9; c++)
-                                            {
-                                                sudokuArray[r][c] = grid.Rows[r][c].Num;
-                                            }
-                                        }
-                                        grid.Rows[row][col].Num = '0';
-                                        if (solve.BacktrackingSolver(grid, 0, 0, 0))
-                                        {
-                                            string firstSol = GridToString(grid);
-                                            grid = RestartPuzzle(grid, sudokuArray);
-                                            grid.Rows[row][col].Num = '0';
-                                            if (solve.BacktrackingSolver(grid, 0, 0, 1))
-                                            {
-                                                string secSol = GridToString(grid);
-                                                if (firstSol == secSol)//valid puzzle
-                                                {
-                                                    grid = RestartPuzzle(grid, sudokuArray);
-                                                    grid.Rows[row][col].Num = '0';
-                                                    changeMade = true;
-                                                    removed++;
-                                                }
-                                                else
-                                                {
-                                                    grid = RestartPuzzle(grid, sudokuArray);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            grid = RestartPuzzle(grid, sudokuArray);
-                                        }
-                                    }
-                                }
-                                cellsChecked.Add(row.ToString() + col.ToString());
-                            }
-                        }
-                    }
-                    
-                    #endregion
-                } while (removed <= g_MaxRemoves && changeMade);
             }
-            
-            
         }
         /// <summary>
         /// checks for if the puzzle is valid in the sense that is has more than 7 unique numbers at any point in the puzzle, more than 16 givens, and one solution
@@ -374,11 +356,11 @@ namespace SudokuSolverSetter
                 }
             }
             PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
-            if (solve.BacktrackingSolver(grid, 0, 0, 0))
+            if (solve.CompileBacktracker(grid, 0))
             {
                 string firstSol = GridToString(grid);
                 grid = RestartPuzzle(grid, sudokuArray);
-                if (solve.BacktrackingSolver(grid, 0, 0, 1))
+                if (solve.CompileBacktracker(grid, 1))
                 {
                     string secSol = GridToString(grid);
                     if (firstSol == secSol)//valid puzzle
@@ -412,7 +394,7 @@ namespace SudokuSolverSetter
             }
             return grid;
         }
-        
+
         /// <summary>
         /// Shuffles the candidate values, used in Backtracking solvers
         /// </summary>
@@ -464,7 +446,7 @@ namespace SudokuSolverSetter
                     if (grid.Rows[row][col].Num == '0')
                     {
                         if (grid.Rows[row][col].Candidates.Count == 0)
-                        {                            
+                        {
                             MessageBox.Show("A strategy has malfunctioned and caused a contradiction or the puzzle is invalid");//Catches if a strategy makes a mistake by causing a cell to have no candidates
                         }
                         return false;

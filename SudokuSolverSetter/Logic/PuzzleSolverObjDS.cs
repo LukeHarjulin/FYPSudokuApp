@@ -194,11 +194,11 @@ namespace SudokuSolverSetter
             else if (method == 2)
             {
                 g_BacktrackingPath = new List<string>();
-                BacktrackingSolver(grid, 0, 0, 3);
+                CompileBacktracker(grid, 3);
             }
             if (!g_Gen.CheckIfSolved(grid))
             {
-                BacktrackingSolver(grid, 0, 0, 0);
+                CompileBacktracker(grid, 0);
                 g_BacktrackingReq = true;
                 g_Difficulty = "Extreme";
                 g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
@@ -206,10 +206,13 @@ namespace SudokuSolverSetter
             }
             else if (method == 1)
                 g_SolvePath.Add("|--------------------------------FINISHED--------------------------------|");
-            if (g_moderate)
-                g_Difficulty = "Moderate";
-            if (g_advanced)
-                g_Difficulty = "Advanced";
+            if (!g_BacktrackingReq)
+            {
+                if (g_moderate)
+                    g_Difficulty = "Moderate";
+                if (g_advanced)
+                    g_Difficulty = "Advanced";
+            }
             return g_Gen.CheckIfSolved(grid);
         }
         #endregion
@@ -1843,144 +1846,87 @@ namespace SudokuSolverSetter
                     return false;
                 }
             }
-
-            if (grid.Rows[row][col].Candidates.Count == 1)
-            {
-                grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];
-                if (variator == 3)
-                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
-            }
             return true;
         }
         /// <summary>
-        /// This Backtracking solver uses heavy recursion to reach a solution, iterating through cells attempting to place each possible number in each cell till the valid solution is found.
-        /// It initially starts from the top left cell and, with each recursive instance, looks at the next cell over in the current row.
+        /// This Backtracking solver uses the Backtracker method to perform heavy recursion to reach a solution, iterating through a list of empty cells, order by their initial candidate count (smallest-highest), attempting to place each possible number in each cell till the valid solution is found.
+        /// It initially starts from the cell with the least possible numbers to minimise worst-case-scenario and, with each recursive instance, looks at the next cell in the list.
         /// Once the last cell in the row is reached, the column counter is incremented and the row counter is set back to 0. 
-        /// For example, if [i,j] is a cell, when looking at cell [0,8], the next cell to be looked at is [1,0].
         /// </summary>
         /// <param name="grid">Sudoku grid that is passed into and mutated in the method</param>
-        /// <param name="row">Current row number being examined in this instance of the method</param>
-        /// <param name="col">Current column number being examined in this instance of the method</param>
         /// <param name="variator">Variator changes how the solver functions. 
-        /// '0' = normal ordered candidate list, '1' = reversed candidate list, '2' = shuffled candidate list, '3' = no use of naked single strategy
+        /// '0' = normal ordered candidate list, '1' = reversed candidate list, '2' = shuffled candidate list, '3' = add to solve path, '4' = from generator method, requires order list of cells by cell index, not candidate count
         /// </param>
         /// <returns>Returns true if solver completes puzzle with all values in the correct place. 
         /// Returns false if solver finds contradiction within a cell, i.e. no candidate numbers in a cell</returns>
-        public bool BacktrackingSolver(SudokuGrid grid, int row, int col, byte variator)
+        public bool CompileBacktracker(SudokuGrid grid, byte variator)
         {
-            if (col == 9 && row == 9)//If somehow the method tries to look at this non-existent cell, this catches the exception
+            List<Cell> emptyCells = new List<Cell>();
+            bool first = true;
+            for (int i = 0; i < 9; i++)
             {
-                if (g_Gen.CheckIfSolved(grid))
+                for (int j = 0; j < 9; j++)
                 {
-                    return true;
-                }
-                else
-                {
-                    grid.Rows[--row][--col].Num = '0';
-                    if (variator == 3)
-                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                    return false;
-                }
-            }
-
-            if (grid.Rows[row][col].Num != '0')
-            {
-                bool emptyCell = false;
-                do//Searches for next empty cell
-                {
-                    if (++col == 9)
+                    if (grid.Rows[i][j].Num == '0')
                     {
-                        if (++row == 9)
+                        if (variator == 0 || variator == 3 || variator == 4)
+                            grid.Rows[i][j].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                        else if (variator == 1)
+                            grid.Rows[i][j].Candidates = new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' };
+                        else if (variator == 2)
+                            grid.Rows[i][j].Candidates = g_Gen.Shuffler(new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' });
+                        if (variator == 0 || variator == 3)
                         {
-                            if (g_Gen.CheckIfSolved(grid))
+                            RemoveCands(grid, i, j, variator);
+                            if (first)
                             {
-                                return true;
+                                first = false;
+                                emptyCells.Add(grid.Rows[i][j]);
                             }
                             else
                             {
-                                grid.Rows[--row][--col].Num = '0';
-                                if (variator == 3)
-                                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                                return false;
+                                for (int k = 0; k < emptyCells.Count; k++)
+                                {
+                                    if (grid.Rows[i][j].Candidates.Count < emptyCells[k].Candidates.Count)
+                                    {
+                                        emptyCells.Insert(k, grid.Rows[i][j]);
+                                        break;
+                                    }
+                                    else if (k == emptyCells.Count - 1)
+                                    {
+                                        emptyCells.Add(grid.Rows[i][j]);
+                                        break;
+                                    }
+                                }
                             }
                         }
                         else
-                            col = 0;
-
+                            emptyCells.Add(grid.Rows[i][j]);
                     }
-                    if (grid.Rows[row][col].Num == '0')
-                        emptyCell = true;
-                } while (!emptyCell);
+                }
             }
-            if (variator == 0 || variator == 3)
-                grid.Rows[row][col].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-            else if (variator == 1)
-                grid.Rows[row][col].Candidates = new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' };
-            else if (variator == 2)
-                grid.Rows[row][col].Candidates = g_Gen.Shuffler(new List<char> { '9', '8', '7', '6', '5', '4', '3', '2', '1' });
-            //Reversed list is for checking for multiple solutions or shuffle if given the generating
-
-            if (!RemoveCands(grid, row, col, variator))//if it returns false, candidates count must be 0 so a contradiction is found
+            return Backtracker(grid, 0, variator, emptyCells);
+        }
+        public bool Backtracker(SudokuGrid grid, int k, byte variator, List<Cell> emptyCells)
+        {
+            if (k >= emptyCells.Count)
+                return g_Gen.CheckIfSolved(grid);
+            List<char> oldCands = new List<char>();
+            oldCands.AddRange(emptyCells[k].Candidates);
+            RemoveCands(grid, emptyCells[k].XLocation, emptyCells[k].YLocation, variator);
+            for (int n = 0; n < emptyCells[k].Candidates.Count; n++)
             {
-                grid.Rows[row][col].Num = '0';
+                emptyCells[k].Num = emptyCells[k].Candidates[n];
                 if (variator == 3)
-                    g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                return false;
-            }
-
-
-            int nextRow = row, nextCol = col;
-            if (++nextCol == 9)//increments the nextCol value which is used in conjunction with nextRow to look at the next cell in the sequence. If it is 9, it must be reset to 0
-            {
-                if (++nextRow == 9)//Currently looking at cell 81 in grid
-                {
-                    grid.Rows[row][col].Num = grid.Rows[row][col].Candidates[0];//Sets the last cell to be the only value possible, then the solution is checked.
-                    if (variator == 3)
-                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + grid.Rows[row][col].Candidates[0].ToString());//Add to solve path
-                    if (g_Gen.CheckIfSolved(grid))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
-                        if (variator == 3)
-                            g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                        return false;
-                    }
-                }
-                else nextCol = 0;
-            }
-            if (grid.Rows[row][col].Num == '0')
-            {
-                foreach (char candidate in grid.Rows[row][col].Candidates)//iterates through each candidate value, assigning it to the current cell number.  
-                {
-                    grid.Rows[row][col].Num = candidate;
-                    if (variator == 3)
-                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + candidate.ToString());//Add to solve path
-                    //A new instance of BacktrackingSolver is called using the grid with an updated value of a cell and is provided with the next cell coordinates
-                    if (BacktrackingSolver(grid, nextRow, nextCol, variator))
-                        return true;
-                }
-            }
-            else
-            {
-                //If the current cell contains a number found from a naked single strategy,
-                //then it is dismissed and a new instance of BacktrackingSolver is called and is provided with the next cell coordinates
-                if (BacktrackingSolver(grid, nextRow, nextCol, variator))
+                    g_BacktrackingPath.Add(emptyCells[k].XLocation.ToString() + emptyCells[k].YLocation.ToString() + emptyCells[k].Candidates[n]);//Add to solve path
+                if (Backtracker(grid, k+1, variator, emptyCells))
                     return true;
-                else
-                {//if it returns false, then the number for the cell is set back to 0, and then cycles backwards through the recursions by returning false.
-                    grid.Rows[row][col].Num = '0';
-                    if (variator == 3)
-                        g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-                    return false;
-                }
             }
-            grid.Rows[row][col].Num = '0';//cell value must be set to 0 to backtrack
+            emptyCells[k].Num = '0';
+            emptyCells[k].Candidates = oldCands;
             if (variator == 3)
-                g_BacktrackingPath.Add(row.ToString() + col.ToString() + "0");//Add to solve path
-            return false;//gets hit if each attempt with each 'candidate' returns false in the foreach
+                g_BacktrackingPath.Add(emptyCells[k].XLocation.ToString() + emptyCells[k].YLocation.ToString() + "0");//Add to solve path
+            return false;
         }
         #endregion
         #region Solver Decisions Method for Solving Cell by Cell button
@@ -1988,9 +1934,7 @@ namespace SudokuSolverSetter
         {
             g_PathTracking = true;
             if (g_Gen.CheckIfSolved(grid))
-            {
                 return true;
-            }
             int index;
 
             g_changeMade = false;
@@ -2103,12 +2047,19 @@ namespace SudokuSolverSetter
             {
                 g_StepCounter--;
                 g_SolvePath.RemoveAt(g_SolvePath.Count - 1);
-                BacktrackingSolver(grid, 0, 0, 0);
+                CompileBacktracker(grid, 0);
                 g_BacktrackingReq = true;
                 g_Difficulty = "Extreme";
                 g_SolvePath.Add("BACKTRACKING/TRIAL-AND-ERROR USED TO FINISH PUZZLE - UNABLE TO FINISH WITH IMPLEMENTED STRATEGIES");
                 g_SolvePath.Add(separator);
                 g_strategy = "Trial-and-error/Brute-force";
+            }
+            if (!g_BacktrackingReq)
+            {
+                if (g_moderate && !g_advanced)
+                    g_Difficulty = "Moderate";
+                if (g_advanced)
+                    g_Difficulty = "Advanced";
             }
             g_SolvePath.Add(separator);
             if (g_Gen.CheckIfSolved(grid))
@@ -2116,10 +2067,7 @@ namespace SudokuSolverSetter
                 g_SolvePath.Add("FINISHED");
                 return true;
             }
-            if (g_moderate && !g_advanced)
-                g_Difficulty = "Moderate";
-            if (g_advanced)
-                g_Difficulty = "Advanced";
+            
             return false;
         }
         #endregion

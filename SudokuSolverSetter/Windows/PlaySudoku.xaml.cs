@@ -30,7 +30,7 @@ namespace SudokuSolverSetter
         private TextBox g_selectedCell;
         private readonly SudokuGrid g_grid = new SudokuGrid();
         private string g_currentTime = "";
-        private readonly string g_rating;
+        private readonly string g_rating, g_seed;
         private readonly string g_difficulty;
         private readonly string g_originalPuzzleString;
         private bool g_pencilMarker = false, penType = false, g_solved = false;
@@ -119,7 +119,7 @@ namespace SudokuSolverSetter
                 }
             }
             RecolourAllCells(false);
-            string fileName = @"Symmetric/SudokuPuzzles.xml";
+            string fileName = @"Puzzles/SudokuPuzzles.xml";
             g_difficulty = difficulty;
             XmlDocument doc = new XmlDocument();
             try
@@ -130,45 +130,36 @@ namespace SudokuSolverSetter
                 {
                     XmlNode notStartedPuzzles = sudokuPuzzles.FirstChild;
                     XmlNodeList puzzleDifficulties = notStartedPuzzles.ChildNodes;
-
+                    XmlNode puzzle = null;
+                    Random rnd = new Random();
                     if (difficulty == "Beginner")//pull random beginner puzzle from xml file
                     {
                         Sudoku_Title.Content = "Beginner Sudoku Puzzle";
                         XmlNodeList beginnerPuzzles = puzzleDifficulties[0].ChildNodes;
-                        Random rnd = new Random();
-                        XmlNode puzzle = beginnerPuzzles[rnd.Next(0, beginnerPuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
-                        //pull random easy puzzle from xml file/database
+                        puzzle = beginnerPuzzles[rnd.Next(0, beginnerPuzzles.Count)];
                     }
                     else if (difficulty == "Moderate")//pull random moderate puzzle from xml file
                     {
                         Sudoku_Title.Content = "Moderate Sudoku Puzzle";
                         XmlNodeList moderatePuzzles = puzzleDifficulties[1].ChildNodes;
-                        Random rnd = new Random();
-                        XmlNode puzzle = moderatePuzzles[rnd.Next(0, moderatePuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
+                        puzzle = moderatePuzzles[rnd.Next(0, moderatePuzzles.Count)];
                     }
                     else if (difficulty == "Advanced")//pull random advanced puzzle from xml file
                     {
                         Sudoku_Title.Content = "Advanced Sudoku Puzzle";
                         XmlNodeList advancedPuzzles = puzzleDifficulties[2].ChildNodes;
-                        Random rnd = new Random();
-                        XmlNode puzzle = advancedPuzzles[rnd.Next(0, advancedPuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
-                        
+                        puzzle = advancedPuzzles[rnd.Next(0, advancedPuzzles.Count)];
                     }
                     else if (difficulty == "Extreme")//pull random extreme puzzle from xml file
                     {
                         Sudoku_Title.Content = "Extreme Sudoku Puzzle";
                         XmlNodeList extremePuzzles = puzzleDifficulties[3].ChildNodes;
-                        Random rnd = new Random();
-                        XmlNode puzzle = extremePuzzles[rnd.Next(0, extremePuzzles.Count)];
-                        puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
-                        g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
+                        puzzle = extremePuzzles[rnd.Next(0, extremePuzzles.Count)];
                     }
+
+                    puzzleString = puzzle.SelectSingleNode("SudokuString").InnerText;
+                    g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
+                    g_seed = puzzle.SelectSingleNode("Seed").InnerText;
                 }
                 else if (puzzleString.Contains('_'))//puzzle that's been started
                 {
@@ -178,7 +169,8 @@ namespace SudokuSolverSetter
                     foreach (XmlNode puzzle in difficultyNode)
                     {
                         if (puzzle.SelectSingleNode("SudokuString").InnerText == puzzleString)
-                        {
+                        { 
+                            g_seed = puzzle.SelectSingleNode("Seed").InnerText;
                             g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
                             g_originalPuzzleString = puzzle.SelectSingleNode("OriginalSudokuString").InnerText;
                             Rating_lbl.Content = g_rating;
@@ -211,8 +203,8 @@ namespace SudokuSolverSetter
                         if (puzzle.SelectSingleNode("SudokuString").InnerText == puzzleString)
                         {
                             g_rating = puzzle.SelectSingleNode("DifficultyRating").InnerText;
+                            g_seed = puzzle.SelectSingleNode("Seed").InnerText;
                             g_originalPuzzleString = puzzleString;
-                            Rating_lbl.Content = g_rating;
                             break;
                         }
                     }
@@ -287,7 +279,7 @@ namespace SudokuSolverSetter
             catch (Exception)//Generates puzzle of random g_difficulty
             {
                 MessageBox.Show("No puzzles exist... A puzzle of random difficulty will be generated after clicking 'OK'. \r\nGeneration of puzzle may take some time.");
-                g_grid = gen.Setter(true);
+                g_grid = gen.Setter();
                 PopulateGrid(g_grid);
                 g_originalPuzzleString = gen.GridToString(g_grid);
                 CreatePuzzles createPuzzles = new CreatePuzzles();
@@ -295,8 +287,10 @@ namespace SudokuSolverSetter
                 //Clipboard.SetText(g_gen.GridToString(grid));
                 Sudoku_Title.Content = g_grid.Difficulty + " Sudoku Puzzle";
                 g_difficulty = g_grid.Difficulty;
+                g_seed = "1";
             }
             Rating_lbl.Content = "Rating: " + g_rating;
+            Seed_lbl.Content = "Seed: " + g_seed;
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -502,7 +496,7 @@ namespace SudokuSolverSetter
         {
             ///Save Puzzle to Started/Completed
             XDocument doc;
-            string filename = @"Symmetric/SudokuPuzzles.xml", candidatesInString = "";
+            string filename = @"Puzzles/SudokuPuzzles.xml", candidatesInString = "";
             
             doc = File.Exists(filename)
                 ? XDocument.Load(filename)
@@ -565,11 +559,12 @@ namespace SudokuSolverSetter
                     XmlNodeList puzzles = difficulty.ChildNodes;
                     foreach (XmlNode puzzle in puzzles)
                     {
-                        if (puzzle.SelectSingleNode("OriginalSudokuString").InnerText == g_originalPuzzleString)
+                        if (puzzle.SelectSingleNode("Seed").InnerText == g_seed)
                         {
                             string s = puzzle.SelectSingleNode("DifficultyRating").InnerText;
                             doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty).Add(
                             new XElement("puzzle",
+                               new XElement("Seed", g_seed),
                                new XElement("DifficultyRating", s),
                                new XElement("SudokuString", candidatesInString),
                                new XElement("OriginalSudokuString", g_originalPuzzleString),
@@ -581,7 +576,7 @@ namespace SudokuSolverSetter
                             puzzleExists = true;
                             var childNode = doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty)
                             .Elements("puzzle")
-                            .First(n => n.Element("OriginalSudokuString").Value == g_originalPuzzleString);
+                            .First(n => n.Element("Seed").Value == g_seed);
                             childNode.Remove();
                             break;
                         }                        
@@ -595,6 +590,7 @@ namespace SudokuSolverSetter
                 {
                     doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty).Add(
                            new XElement("puzzle",
+                               new XElement("Seed", g_seed),
                                new XElement("DifficultyRating", g_rating),
                                new XElement("SudokuString", candidatesInString),
                                new XElement("OriginalSudokuString", g_originalPuzzleString),
@@ -608,6 +604,7 @@ namespace SudokuSolverSetter
             {
                 doc.Element("SudokuPuzzles").Element("Completed").Element(g_difficulty).Add(
                            new XElement("puzzle",
+                               new XElement("Seed", g_seed),
                                new XElement("DifficultyRating", g_rating),
                                new XElement("SudokuString", "."+g_originalPuzzleString),
                                new XElement("TimeTaken", g_currentTime),
@@ -618,7 +615,7 @@ namespace SudokuSolverSetter
                 {
                     var childNode = doc.Element("SudokuPuzzles").Element("Started").Element(g_difficulty)
                             .Elements("puzzle")
-                            .First(n => n.Element("OriginalSudokuString").Value == g_originalPuzzleString);
+                            .First(n => n.Element("Seed").Value == g_seed);
                     childNode.Remove();
                 }
                 catch (Exception)

@@ -89,7 +89,7 @@ namespace SudokuSolverSetter
         /// </summary>
         public void AddPuzzlesExpanders()
         {
-            string fileName = @"Symmetric/SudokuPuzzles.xml";
+            string fileName = @"Puzzles/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
             try
             {
@@ -107,7 +107,7 @@ namespace SudokuSolverSetter
                         List<List<string>> allPuzzles = new List<List<string>>();
                         foreach (XmlNode puzzle in difficulty)
                         {
-                            List<string> pzle = new List<string>() { puzzle["SudokuString"].InnerText, puzzle["DifficultyRating"].InnerText };
+                            List<string> pzle = new List<string>() { puzzle["SudokuString"].InnerText, puzzle["DifficultyRating"].InnerText, puzzle["Seed"].InnerText };
                             if (label.Name == "Started" || label.Name == "Completed")
                             {
                                 pzle.Add(puzzle["TimeTaken"].InnerText);
@@ -147,7 +147,7 @@ namespace SudokuSolverSetter
                             TextBox textBox = new TextBox { Background = Brushes.Transparent, FontSize = 16, TextWrapping = TextWrapping.Wrap, Padding = new Thickness(5, 5, 5, 1), IsReadOnly = true, Cursor = Cursors.Hand, FontFamily = new FontFamily("Verdana") };
                             if (label.Name == "Started" || label.Name == "Completed")
                             {
-                                textBox.Text = "Rating: " + allPuzzles[n][1] + "\r\nDifficulty: " + difficulty.Name + "\r\nElapsed Time: " + allPuzzles[n][2] + "\r\nLast Played: " + allPuzzles[n][3];
+                                textBox.Text = "Seed: "+ allPuzzles[n][2] + "\r\nRating: " + allPuzzles[n][1] + "\r\nDifficulty: " + difficulty.Name + "\r\nElapsed Time: " + allPuzzles[n][3] + "\r\nLast Played: " + allPuzzles[n][4];
                                 border.Child = textBox;
                                 if (label.Name == "Started")
                                     Started_STKPNL.Children.Add(border);
@@ -173,7 +173,7 @@ namespace SudokuSolverSetter
                             }
                             else
                             {
-                                textBox.Text = "Rating: " + allPuzzles[n][1];
+                                textBox.Text = "Seed: " + allPuzzles[n][2] + "\r\nRating: " + allPuzzles[n][1];
                                 border.Child = textBox;
                                 switch (difficulty.Name)
                                 {
@@ -294,18 +294,12 @@ namespace SudokuSolverSetter
                     {
                         ((TextBox)SudokuPuzzle.Children[i]).Text += sudokuString[counter].ToString();
                         if (((TextBox)SudokuPuzzle.Children[i]).Text.Length > 1)
-                        {
                             ((TextBox)SudokuPuzzle.Children[i]).FontSize = 16;
-                        }
                         else
-                        {
                             ((TextBox)SudokuPuzzle.Children[i]).FontSize = 36;
-                        }
                     }
                     else
-                    {
                         ((TextBox)SudokuPuzzle.Children[i]).Text = "";
-                    }
                     
                 }
                 else
@@ -317,9 +311,7 @@ namespace SudokuSolverSetter
                         ((TextBox)SudokuPuzzle.Children[i]).FontWeight = FontWeights.Bold;
                     }
                     else
-                    {
                         ((TextBox)SudokuPuzzle.Children[i]).Text = "";
-                    }
                     i++;
                 }
                 

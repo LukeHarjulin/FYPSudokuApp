@@ -32,12 +32,11 @@ namespace SudokuSolverSetter
         private readonly List<string> g_BacktrackingSolvePath = new List<string>();
         private int g_PathCounter = 0;
         private readonly List<int> g_ratingList = new List<int>();
-        private readonly List<string> g_puzzleStrList = new List<string>();
+        private readonly List<string> g_puzzleStrList = new List<string>(), g_seedList = new List<string>();
         private readonly SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         public DeveloperWindow()
         {
             InitializeComponent();
-
             Number_List_combo.Items.Add(1);
             Number_List_combo.Items.Add(10);
             Number_List_combo.Items.Add(25);
@@ -81,19 +80,20 @@ namespace SudokuSolverSetter
                 txtbx.GotFocus += new RoutedEventHandler(Cell_GotFocus);
                 txtbx.PreviewKeyDown += new KeyEventHandler(Cell_PreviewKeyDown);
                 DataObject.AddPastingHandler(txtbx, OnCancelCommand);
-                SudokuPuzzle.Children.Add(txtbx); if (col == 8)
+                SudokuPuzzle.Children.Add(txtbx); 
+                if (col == 8)
                 {
                     col = -1;
                     row++;
                 }
             }
-            Symmetry_checkbox.IsChecked = true;
+            PuzzleDifficulty_combo.SelectedIndex = 0;
         }
         #region Functions/Methods
         /// <summary>
         /// Updates the combo box with all the puzzles from the XML file, displayed and ordered by their rating
         /// </summary>
-        public void AddPuzzlesToCombo(bool symmetry)
+        public void AddPuzzlesToCombo()
         {
             if (PuzzlesByRating_combo.Items.Count > 0)
             {
@@ -101,16 +101,7 @@ namespace SudokuSolverSetter
                 g_ratingList.Clear();
                 g_puzzleStrList.Clear();
             }
-            string symmetric = "";
-            if (symmetry)
-            {
-                symmetric = @"Symmetric";
-            }
-            else
-            {
-                symmetric = @"NonSymmetric";
-            }
-            string fileName = symmetric + "/SudokuPuzzles.xml";
+            string fileName = @"Puzzles/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
             try
             {
@@ -145,28 +136,32 @@ namespace SudokuSolverSetter
                         if (label.Name == "Started")
                         {
                             g_puzzleStrList.Insert(i, puzzle["OriginalSudokuString"].InnerText);
+                            g_seedList.Insert(i, puzzle["Seed"].InnerText);
                         }
                         else if (label.Name == "Completed")
                         {
                             string tempPuzzleStr = puzzle["SudokuString"].InnerText;
                             tempPuzzleStr = tempPuzzleStr.Remove(0, 1);
                             g_puzzleStrList.Insert(i, tempPuzzleStr);
+                            g_seedList.Insert(i, puzzle["Seed"].InnerText);
+
                         }
                         else
                         {
                             g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
+                            g_seedList.Insert(i, puzzle["Seed"].InnerText);
                         }
                     }
 
                 }
                 for (int i = 0; i < g_ratingList.Count; i++)
                 {
-                    PuzzlesByRating_combo.Items.Add(g_ratingList[i]);
+                    PuzzlesByRating_combo.Items.Add(g_seedList[i] +", "+ g_ratingList[i]);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Something went wrong with loading puzzles... \r\n\r\nError Message:" + ex, "Error");
+
             }
         }
         public void PopulateGridString(string grid)
@@ -648,13 +643,12 @@ namespace SudokuSolverSetter
         }
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
-            bool symmetry = Symmetry_checkbox.IsChecked == true ? true : false;
-            CreatePuzzles createPuzzles = new CreatePuzzles(1000, symmetry)
+            CreatePuzzles createPuzzles = new CreatePuzzles(1000)
             {
                 Owner = this
             };
             createPuzzles.ShowDialog();
-            AddPuzzlesToCombo(symmetry);
+            AddPuzzlesToCombo();
         }
         /// <summary>
         /// Brings up a window to import a puzzle
@@ -697,8 +691,7 @@ namespace SudokuSolverSetter
                     StopTimer();
                 }
             }
-            bool symmetry = Symmetry_checkbox.IsChecked == true ? true : false;
-            g_grid = g_gen.Setter(symmetry);//Calling the automated puzzle generator method to create a puzzle
+            g_grid = g_gen.Setter();//Calling the automated puzzle generator method to create a puzzle
             int givensCounter = 0;
             for (int i = 0; i < 9; i++)//fill in candidate values for each cell with a full candidate list
             {
@@ -832,59 +825,42 @@ namespace SudokuSolverSetter
                     StopTimer();
                 }
             }
-            if (PuzzlesByRating_combo.SelectedIndex >= 0)
+            if (PuzzlesByRating_combo.Items.Count > 0)
             {
-                g_PuzzleString = g_puzzleStrList[PuzzlesByRating_combo.SelectedIndex];
-                int givensCounter = 0;
-                for (int i = 0; i < 81; i++)
+                if (PuzzlesByRating_combo.SelectedIndex >= 0)
                 {
-                    ((TextBox)SudokuPuzzle.Children[i]).IsReadOnly = true;
-                    if (g_PuzzleString[i] == '0')
+                    g_PuzzleString = g_puzzleStrList[PuzzlesByRating_combo.SelectedIndex];
+                    int givensCounter = 0;
+                    for (int i = 0; i < 81; i++)
                     {
-                        ((TextBox)SudokuPuzzle.Children[i]).FontSize = 12;
-                        ((TextBox)SudokuPuzzle.Children[i]).Text = "1 2 3 4 5 6 7 8 9";
+                        ((TextBox)SudokuPuzzle.Children[i]).IsReadOnly = true;
+                        if (g_PuzzleString[i] == '0')
+                        {
+                            ((TextBox)SudokuPuzzle.Children[i]).FontSize = 12;
+                            ((TextBox)SudokuPuzzle.Children[i]).Text = "1 2 3 4 5 6 7 8 9";
+                        }
+                        else
+                        {
+                            ((TextBox)SudokuPuzzle.Children[i]).FontSize = 36;
+                            ((TextBox)SudokuPuzzle.Children[i]).Text = g_PuzzleString[i].ToString();
+                            givensCounter++;
+                        }
+                        ((TextBox)SudokuPuzzle.Children[i]).Background = Brushes.White;
+
                     }
-                    else
+                    if (g_grid == null)
                     {
-                        ((TextBox)SudokuPuzzle.Children[i]).FontSize = 36;
-                        ((TextBox)SudokuPuzzle.Children[i]).Text = g_PuzzleString[i].ToString();
-                        givensCounter++;
+                        g_grid = g_gen.ConstructGrid();
                     }
-                    ((TextBox)SudokuPuzzle.Children[i]).Background = Brushes.White;
-
+                    g_validPuzzle = true;
+                    g_gen.StringToGrid(g_grid, g_PuzzleString);
+                    givenNums_lbl.Content = "Given Numbers: " + givensCounter;
+                    difficulty_lbl.Content = "Difficulty: " + ((ComboBoxItem)PuzzleDifficulty_combo.SelectedItem).Content.ToString();
+                    g_solve = new PuzzleSolverObjDS();
+                    strategy_lbl.Content = "";
                 }
-                if (g_grid == null)
-                {
-                    g_grid = g_gen.ConstructGrid();
-                }
-                g_validPuzzle = true;
-                g_gen.StringToGrid(g_grid, g_PuzzleString);
-                givenNums_lbl.Content = "Given Numbers: " + givensCounter;
-                difficulty_lbl.Content = "Difficulty: " + ((ComboBoxItem)PuzzleDifficulty_combo.SelectedItem).Content.ToString();
-                g_solve = new PuzzleSolverObjDS();
-                strategy_lbl.Content = "";
             }
 
-        }
-        private void Symmetry_checkbox_Checked(object sender, RoutedEventArgs e)
-        {
-            if (PuzzleDifficulty_combo.SelectedIndex == 0)
-            {
-                AddPuzzlesToCombo(true);
-                PuzzlesByRating_combo.SelectedIndex = 0;
-            }
-            else
-                PuzzleDifficulty_combo.SelectedIndex = 0;
-        }
-        private void Symmetry_checkbox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (PuzzleDifficulty_combo.SelectedIndex == 0)
-            {
-                AddPuzzlesToCombo(false);
-                PuzzlesByRating_combo.SelectedIndex = 0;
-            }
-            else
-                PuzzleDifficulty_combo.SelectedIndex = 0;
         }
         private void Window_Closing(object sender, CancelEventArgs e)
         {
@@ -898,15 +874,11 @@ namespace SudokuSolverSetter
         }
         private void DifficultyCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Symmetry_checkbox.IsChecked == true)
+            AddPuzzlesToCombo();
+            if (PuzzlesByRating_combo.Items.Count > 0)
             {
-                AddPuzzlesToCombo(true);
+                PuzzlesByRating_combo.SelectedIndex = 0;
             }
-            else
-            {
-                AddPuzzlesToCombo(false);
-            }
-            PuzzlesByRating_combo.SelectedIndex = 0;
         }
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
@@ -938,27 +910,18 @@ namespace SudokuSolverSetter
             {
                 return;
             }
-            string symmetric;
-            if (Symmetry_checkbox.IsChecked == true)
-            {
-                symmetric = @"Symmetric";
-            }
-            else
-            {
-                symmetric = @"NonSymmetric";
-            }
-            string fileName = symmetric + "/SudokuPuzzles.xml";
+            string fileName = @"Puzzles/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
             try
             {
-                StreamWriter ratingWrite = new StreamWriter(symmetric + "/ratings.txt", false);
-                StreamWriter difficWrite = new StreamWriter(symmetric + "/difficulties.txt", false);
-                StreamWriter givensWrite = new StreamWriter(symmetric + "/givens.txt", false);
+                StreamWriter ratingWrite = new StreamWriter(@"Puzzles/ratings.txt", false);
+                StreamWriter difficWrite = new StreamWriter(@"Puzzles/difficulties.txt", false);
+                StreamWriter givensWrite = new StreamWriter(@"Puzzles/givens.txt", false);
                 #region Strategy Files
-                StreamWriter NS = new StreamWriter(symmetric + "/StratsCounts/nakedsingles.txt", false), HS = new StreamWriter(symmetric + "/StratsCounts/hiddensingles.txt", false), NP = new StreamWriter(symmetric + "/StratsCounts/nakedpair.txt", false),
-                HP = new StreamWriter(symmetric + "/StratsCounts/hiddenpair.txt", false), PP = new StreamWriter(symmetric + "/StratsCounts/pointline.txt", false), BLR = new StreamWriter(symmetric + "/StratsCounts/blocklinereduc.txt", false), NT = new StreamWriter(symmetric + "/StratsCounts/nakedtriple.txt", false),
-                HT = new StreamWriter(symmetric + "/StratsCounts/hiddentriple.txt", false), XW = new StreamWriter(symmetric + "/StratsCounts/xwing.txt", false), YW = new StreamWriter(symmetric + "/StratsCounts/ywing.txt", false), XYZ = new StreamWriter(symmetric + "/StratsCounts/xyzwing.txt", false),
-                SC = new StreamWriter(symmetric + "/StratsCounts/singlechains.txt", false), UR1 = new StreamWriter(symmetric + "/StratsCounts/uniquerecttyp1.txt", false), BT = new StreamWriter(symmetric + "/StratsCounts/backtrack.txt", false);
+                StreamWriter NS = new StreamWriter(@"Puzzles/StratsCounts/nakedsingles.txt", false), HS = new StreamWriter(@"Puzzles/StratsCounts/hiddensingles.txt", false), NP = new StreamWriter(@"Puzzles/StratsCounts/nakedpair.txt", false),
+                HP = new StreamWriter(@"Puzzles/StratsCounts/hiddenpair.txt", false), PP = new StreamWriter(@"Puzzles/StratsCounts/pointline.txt", false), BLR = new StreamWriter(@"Puzzles/StratsCounts/blocklinereduc.txt", false), NT = new StreamWriter(@"Puzzles/StratsCounts/nakedtriple.txt", false),
+                HT = new StreamWriter(@"Puzzles/StratsCounts/hiddentriple.txt", false), XW = new StreamWriter(@"Puzzles/StratsCounts/xwing.txt", false), YW = new StreamWriter(@"Puzzles/StratsCounts/ywing.txt", false), XYZ = new StreamWriter(@"Puzzles/StratsCounts/xyzwing.txt", false),
+                SC = new StreamWriter(@"Puzzles/StratsCounts/singlechains.txt", false), UR1 = new StreamWriter(@"Puzzles/StratsCounts/uniquerecttyp1.txt", false), BT = new StreamWriter(@"Puzzles/StratsCounts/backtrack.txt", false);
                 #endregion
                 Stopwatch Timer = new Stopwatch();
                 Timer.Start();
@@ -1028,7 +991,7 @@ namespace SudokuSolverSetter
                 HT.Close(); XW.Close(); YW.Close(); XYZ.Close(); SC.Close(); UR1.Close(); BT.Close();
                 doc.Save(fileName);
                 Timer.Stop();
-                MessageBox.Show("Successfully re-graded all Symmetric/Non-Symmetric puzzles in storage\r\n" + "Elapsed Time: " + Timer.Elapsed + "\r\nNumber of puzzles re-graded: " + counter);
+                MessageBox.Show("Successfully re-graded all puzzles in storage\r\n" + "Elapsed Time: " + Timer.Elapsed + "\r\nNumber of puzzles re-graded: " + counter);
             }
             catch (Exception)
             {

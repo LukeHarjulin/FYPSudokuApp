@@ -104,7 +104,8 @@
             </Grid>
             <Grid x:Name="TitleBox_grid" Height="50" Canvas.Left="45" Canvas.Top="7" Width="649">
                 <Label x:Name="Sudoku_Title" HorizontalAlignment="Left" VerticalAlignment="Center" Width="382" Height="44" FontSize="24" Content="&lt;Difficulty&gt; Sudoku Puzzle" FontFamily="Verdana" Margin="0,3"/>
-                <Label x:Name="Rating_lbl" Content="Rating: &lt;Rating&gt;" FontSize="18" FontFamily="Verdana" Margin="0,9" HorizontalAlignment="Right" VerticalAlignment="Center" Width="182"/>
+                <Label x:Name="Rating_lbl" Content="Rating: &lt;Rating&gt;" FontSize="16" FontFamily="Verdana" Margin="0,11,0,10" HorizontalAlignment="Right" VerticalAlignment="Center" Width="152"/>
+                <Label x:Name="Seed_lbl" Content="Seed: &lt;Seed&gt;" FontSize="16" FontFamily="Verdana" Margin="0,-10,17,31" HorizontalAlignment="Right" VerticalAlignment="Center" Width="135"/>
             </Grid>
             <InkCanvas x:Name="ColourCanvas" Canvas.Left="45" Canvas.Top="201" Height="650" Width="649" Background="#19A7BBFF" Visibility="Hidden"/>
             <Grid x:Name="ExitBox_grid" Height="150" Canvas.Left="727" Canvas.Top="677" Width="215">

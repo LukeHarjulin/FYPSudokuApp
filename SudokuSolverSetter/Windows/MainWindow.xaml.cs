@@ -144,7 +144,7 @@ namespace SudokuSolverSetter
         }
         private void Create_Store_Puzzles_btn_Click(object sender, RoutedEventArgs e)
         {
-            CreatePuzzles createPuzzles = new CreatePuzzles(5, true)//user is only allowed to create a max of 5 puzzles to prevent extensive wait times and potential crashes all of which must be symmetrical
+            CreatePuzzles createPuzzles = new CreatePuzzles(5)//user is only allowed to create a max of 5 puzzles to prevent extensive wait times and potential crashes
             {
                 Owner = this
             };

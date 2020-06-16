@@ -118,7 +118,7 @@
                     Keep in mind that creating several puzzles at once can take a while, please be patient.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    All playable puzzles are rotationally symmetric and have one and only one solution.
+                    All playable puzzles have one and only one solution.
                     _________________________________________________________________________
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="22" LineHeight="20">
@@ -262,21 +262,14 @@
                     The "
                     <Bold>Clear Puzzle (Manual Puzzle Entry)</Bold> " button clears all the cells of the grid and allows you to manually enter/create a puzzle. If the puzzle is invalid in the sense that it has more than 1 one solution, and you try to make a solver solve it a notification will pop-up saying that it is invalid.
                 </Paragraph>
+                
                 <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
                     The "
-                    <Bold>Symmetry?</Bold> " checkbox can be toggled 'On' for when you want to generate/display only symmetrical puzzles. 
-                    The form of symmetry will always be rotational symmetry, however other forms of symmetry can be present.
-                    <LineBreak/>
-                    When the checkbox is unchecked, the symmetry condition isn't required and non-symmetric puzzles can be generated and displayed.
+                    <Bold>Generate &amp; Display</Bold> " button generates and displays a puzzle of unknown difficulty.
                 </Paragraph>
                 <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
                     The "
-                    <Bold>Generate &amp; Display</Bold> " button generates and displays a puzzle of unknown difficulty in accordance to the state of the "Symmetry?" checkbox.
-                </Paragraph>
-                <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    The "
-                    <Bold>Generate &amp; Store Puzzles</Bold> " button produces a small window where you can select how many puzzles you wish to generate and store; 
-                    these generated puzzles are also in accordance to the state of the "Symmetry?" checkbox. 
+                    <Bold>Generate &amp; Store Puzzles</Bold> " button produces a small window where you can select how many puzzles you wish to generate and store. 
                     Puzzles can take a long time to generate so beware of waiting for a significant amount of time if more than 10 puzzles are selected to be generated.
                 </Paragraph>
                 <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
@@ -285,7 +278,7 @@
                 </Paragraph>
                 <Paragraph FontFamily="Verdana" FontSize="15" LineHeight="20">
                     The "
-                    <Bold>Select existing puzzle</Bold> " drop down box displays all of the puzzles stored in the data files, in accordance to the state of the "Symmetry?" checkbox.
+                    <Bold>Select existing puzzle</Bold> " drop down box displays all of the puzzles stored in the data files.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">_________________________________________________________________________</Paragraph>
             </FlowDocument>
