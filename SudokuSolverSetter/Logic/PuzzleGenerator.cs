@@ -41,7 +41,6 @@ namespace SudokuSolverSetter
                 StringToGrid(grid, "600438079900705080800000032200004060000000000040600003180000005070806001560941008");
                 #endregion
             }
-
             RemoveNumbers(grid, solve);
             return grid;
         }
@@ -224,6 +223,7 @@ namespace SudokuSolverSetter
                                             grid = RestartPuzzle(grid, sudokuArray);
                                         }
                                     }
+                                    
                                 }
                                 else//Invalid puzzle, should never occur
                                 {
@@ -307,6 +307,7 @@ namespace SudokuSolverSetter
                                                 grid = RestartPuzzle(grid, sudokuArray);
                                             }
                                         }
+                                        
                                     }
                                     else
                                     {
@@ -330,9 +331,9 @@ namespace SudokuSolverSetter
             bool minOfEight = false;
             int givens = 0;
             List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-            for (int x = 0; x < 9 && !minOfEight; x++)
+            for (int x = 0; x < 9; x++)
             {
-                for (int y = 0; y < 9 && !minOfEight; y++)
+                for (int y = 0; y < 9; y++)
                 {
                     if (grid.Rows[x][y].Num != '0')
                     {
@@ -356,7 +357,7 @@ namespace SudokuSolverSetter
                 }
             }
             PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
-            if (solve.CompileBacktracker(grid, 0))
+            if (solve.CompileBacktracker(grid, 4))
             {
                 string firstSol = GridToString(grid);
                 grid = RestartPuzzle(grid, sudokuArray);

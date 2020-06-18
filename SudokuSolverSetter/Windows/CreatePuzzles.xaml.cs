@@ -126,6 +126,7 @@ namespace SudokuSolverSetter
                 StreamWriter difficWrite = new StreamWriter(@"Puzzles/difficulties.txt", true); 
                 StreamWriter givensWrite = new StreamWriter(@"Puzzles/givens.txt", true);
                 StreamWriter seedsWrite = new StreamWriter(@"Puzzles/seeds.txt", true);
+                StreamWriter stepsWrite = new StreamWriter(@"Puzzles/steps.txt", false);
                 #region Strategy Files
                 StreamWriter NS = new StreamWriter(@"Puzzles/StratsCounts/nakedsingles.txt", true), HS = new StreamWriter(@"Puzzles/StratsCounts/hiddensingles.txt", true), NP = new StreamWriter(@"Puzzles/StratsCounts/nakedpair.txt", true),
                 HP = new StreamWriter(@"Puzzles/StratsCounts/hiddenpair.txt", true), PP = new StreamWriter(@"Puzzles/StratsCounts/pointline.txt", true), BLR = new StreamWriter(@"Puzzles/StratsCounts/blocklinereduc.txt", true), NT = new StreamWriter(@"Puzzles/StratsCounts/nakedtriple.txt", true),
@@ -174,6 +175,8 @@ namespace SudokuSolverSetter
                     ratingWrite.WriteLine(rating);
                     givensWrite.WriteLine(givens);
                     seedsWrite.WriteLine(seed);
+                    stepsWrite.WriteLine(solver.g_StepCounter);
+
                     NS.WriteLine(solver.g_StrategyCount[1]);HS.WriteLine(solver.g_StrategyCount[2]);NP.WriteLine(solver.g_StrategyCount[3]);
                     HP.WriteLine(solver.g_StrategyCount[4]);PP.WriteLine(solver.g_StrategyCount[5]);BLR.WriteLine(solver.g_StrategyCount[6]);
                     NT.WriteLine(solver.g_StrategyCount[7]);HT.WriteLine(solver.g_StrategyCount[8]);XW.WriteLine(solver.g_StrategyCount[9]);
@@ -185,6 +188,7 @@ namespace SudokuSolverSetter
                 seedsWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
+                stepsWrite.Close();
                 NS.Close();HS.Close();NP.Close();HP.Close();PP.Close();BLR.Close();NT.Close();
                 HT.Close();XW.Close();YW.Close();XYZ.Close();SC.Close();UR1.Close();BT.Close();
                 doc.Save(filename);

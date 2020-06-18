@@ -80,7 +80,7 @@ namespace SudokuSolverSetter
                 txtbx.GotFocus += new RoutedEventHandler(Cell_GotFocus);
                 txtbx.PreviewKeyDown += new KeyEventHandler(Cell_PreviewKeyDown);
                 DataObject.AddPastingHandler(txtbx, OnCancelCommand);
-                SudokuPuzzle.Children.Add(txtbx); 
+                SudokuPuzzle.Children.Add(txtbx);
                 if (col == 8)
                 {
                     col = -1;
@@ -108,55 +108,44 @@ namespace SudokuSolverSetter
                 doc.Load(fileName);
                 XmlNode sudokuPuzzles = doc.DocumentElement.SelectSingleNode("/SudokuPuzzles");
                 XmlNodeList puzzleLabels = sudokuPuzzles.ChildNodes;
-                foreach (XmlNode label in puzzleLabels)
+                XmlNode label = puzzleLabels[0];
+                XmlNodeList difficulty = label.SelectSingleNode(((ComboBoxItem)PuzzleDifficulty_combo.SelectedItem).Content.ToString()).ChildNodes;
+                foreach (XmlNode puzzle in difficulty)
                 {
-                    XmlNode difficulty = label.SelectSingleNode(((ComboBoxItem)PuzzleDifficulty_combo.SelectedItem).Content.ToString());
-                    foreach (XmlNode puzzle in difficulty)
+                    int rating = int.Parse(puzzle["DifficultyRating"].InnerText), i = 0;
+                    bool added = false;
+                    if (g_ratingList.Count > 0)
                     {
-                        int rating = int.Parse(puzzle["DifficultyRating"].InnerText), i = 0;
-                        bool added = false;
-                        if (g_ratingList.Count > 0)
+                        for (i = 0; i < g_ratingList.Count; i++)
                         {
-                            for (i = 0; i < g_ratingList.Count; i++)
+                            if (rating < g_ratingList[i])
                             {
-                                if (rating < g_ratingList[i])
-                                {
-                                    g_ratingList.Insert(i, rating);
-                                    added = true;
-                                    break;
-                                }
-                            }
-                            if (!added)
-                            {
-                                g_ratingList.Add(rating);
+                                g_ratingList.Insert(i, rating);
+                                g_seedList.Insert(i, puzzle["Seed"].InnerText);
+                                g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
+                                added = true;
+                                break;
                             }
                         }
-                        else
+                        if (!added)
+                        {
                             g_ratingList.Add(rating);
-                        if (label.Name == "Started")
-                        {
-                            g_puzzleStrList.Insert(i, puzzle["OriginalSudokuString"].InnerText);
-                            g_seedList.Insert(i, puzzle["Seed"].InnerText);
-                        }
-                        else if (label.Name == "Completed")
-                        {
-                            string tempPuzzleStr = puzzle["SudokuString"].InnerText;
-                            tempPuzzleStr = tempPuzzleStr.Remove(0, 1);
-                            g_puzzleStrList.Insert(i, tempPuzzleStr);
-                            g_seedList.Insert(i, puzzle["Seed"].InnerText);
-
-                        }
-                        else
-                        {
-                            g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
-                            g_seedList.Insert(i, puzzle["Seed"].InnerText);
+                            g_puzzleStrList.Add(puzzle["SudokuString"].InnerText);
+                            g_seedList.Add(puzzle["Seed"].InnerText);
                         }
                     }
-
+                    else
+                    { 
+                        g_ratingList.Add(rating);
+                        g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
+                        g_seedList.Insert(i, puzzle["Seed"].InnerText);
+                    }
                 }
+
+
                 for (int i = 0; i < g_ratingList.Count; i++)
                 {
-                    PuzzlesByRating_combo.Items.Add(g_seedList[i] +", "+ g_ratingList[i]);
+                    PuzzlesByRating_combo.Items.Add(g_seedList[i] + ", " + g_ratingList[i]);
                 }
             }
             catch (Exception)
@@ -586,7 +575,7 @@ namespace SudokuSolverSetter
                             }
                             cellNum++;
                         }
-                    }                    
+                    }
                     if (!g_gen.CheckIfSolved(g_grid))
                     {
                         if (g_solve.SolveNextStep(g_grid))
@@ -898,10 +887,10 @@ namespace SudokuSolverSetter
             for (int i = 0; i < g_PuzzleString.Length; i++)
             {
                 if (g_PuzzleString[i] != '0')
-                    givensCounter++;                   
+                    givensCounter++;
             }
             givenNums_lbl.Content = "Given Numbers: " + givensCounter;
-            
+
         }
         private void ReGradePuzzles_btn_Click(object sender, RoutedEventArgs e)
         {
@@ -917,6 +906,8 @@ namespace SudokuSolverSetter
                 StreamWriter ratingWrite = new StreamWriter(@"Puzzles/ratings.txt", false);
                 StreamWriter difficWrite = new StreamWriter(@"Puzzles/difficulties.txt", false);
                 StreamWriter givensWrite = new StreamWriter(@"Puzzles/givens.txt", false);
+                StreamWriter seedsWrite = new StreamWriter(@"Puzzles/seeds.txt", false);
+                StreamWriter stepsWrite = new StreamWriter(@"Puzzles/steps.txt", false);
                 #region Strategy Files
                 StreamWriter NS = new StreamWriter(@"Puzzles/StratsCounts/nakedsingles.txt", false), HS = new StreamWriter(@"Puzzles/StratsCounts/hiddensingles.txt", false), NP = new StreamWriter(@"Puzzles/StratsCounts/nakedpair.txt", false),
                 HP = new StreamWriter(@"Puzzles/StratsCounts/hiddenpair.txt", false), PP = new StreamWriter(@"Puzzles/StratsCounts/pointline.txt", false), BLR = new StreamWriter(@"Puzzles/StratsCounts/blocklinereduc.txt", false), NT = new StreamWriter(@"Puzzles/StratsCounts/nakedtriple.txt", false),
@@ -927,21 +918,21 @@ namespace SudokuSolverSetter
                 Timer.Start();
                 doc.Load(fileName);
                 XmlNode sudokuPuzzles = doc.DocumentElement.SelectSingleNode("/SudokuPuzzles");
-                XmlNodeList puzzleLabels = sudokuPuzzles.ChildNodes;
                 string sudokuString = "";
                 int counter = 0;
-                foreach (XmlNode label in puzzleLabels)
+                foreach (XmlNode label in sudokuPuzzles.ChildNodes)
                 {
-                    XmlNodeList difficulties = label.ChildNodes;
-                    foreach (XmlNode difficulty in difficulties)
+                    foreach (XmlNode difficulty in label.ChildNodes)
                     {
                         List<List<string>> allPuzzles = new List<List<string>>();
-                        foreach (XmlNode puzzle in difficulty)
+                        foreach (XmlNode puzzle in difficulty.ChildNodes)
                         {
                             PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
                             counter++;
                             if (label.Name == "Started")
                                 sudokuString = puzzle["OriginalSudokuString"].InnerText;
+                            else if (label.Name == "Completed")
+                                sudokuString = puzzle["SudokuString"].InnerText.Remove(0,1);
                             else
                                 sudokuString = puzzle["SudokuString"].InnerText;
                             SudokuGrid grid = g_gen.ConstructGrid();
@@ -958,7 +949,7 @@ namespace SudokuSolverSetter
                                         givens++;
                                     }
                                 }
-                                ratingWrite.WriteLine(solver.g_Rating);
+                                
                                 switch (solver.g_Difficulty)
                                 {
                                     case "Beginner":
@@ -974,7 +965,10 @@ namespace SudokuSolverSetter
                                         difficWrite.WriteLine("4");
                                         break;
                                 }
+                                ratingWrite.WriteLine(solver.g_Rating);
                                 givensWrite.WriteLine(givens);
+                                seedsWrite.WriteLine(puzzle["Seed"].InnerText);
+                                stepsWrite.WriteLine(solver.g_StepCounter);
                                 NS.WriteLine(solver.g_StrategyCount[1]); HS.WriteLine(solver.g_StrategyCount[2]); NP.WriteLine(solver.g_StrategyCount[3]);
                                 HP.WriteLine(solver.g_StrategyCount[4]); PP.WriteLine(solver.g_StrategyCount[5]); BLR.WriteLine(solver.g_StrategyCount[6]);
                                 NT.WriteLine(solver.g_StrategyCount[7]); HT.WriteLine(solver.g_StrategyCount[8]); XW.WriteLine(solver.g_StrategyCount[9]);
@@ -987,6 +981,8 @@ namespace SudokuSolverSetter
                 ratingWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
+                seedsWrite.Close();
+                stepsWrite.Close();
                 NS.Close(); HS.Close(); NP.Close(); HP.Close(); PP.Close(); BLR.Close(); NT.Close();
                 HT.Close(); XW.Close(); YW.Close(); XYZ.Close(); SC.Close(); UR1.Close(); BT.Close();
                 doc.Save(fileName);
@@ -1049,7 +1045,7 @@ namespace SudokuSolverSetter
                             g_grid.Rows[i][j].Num = '0';
                         }
                         else
-                        { 
+                        {
                             g_grid.Rows[i][j].Num = ((TextBox)SudokuPuzzle.Children[index]).Text[0];
                             givensCounter++;
                         }

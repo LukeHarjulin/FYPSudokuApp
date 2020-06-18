@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
 using System.Windows.Input;
@@ -52,6 +53,7 @@ namespace SudokuSolverSetter
                 int index = 0;
                 do
                 {
+                    ++g_StepCounter;
                     if (CleanCandidateLists(grid))
                     {
                         if (method == 1) 
@@ -59,7 +61,7 @@ namespace SudokuSolverSetter
                     }
                     if (method == 1)
                     {
-                        g_SolvePath.Add("STEP " + ++g_StepCounter + ": ");
+                        g_SolvePath.Add("STEP " + g_StepCounter + ": ");
                         index = g_SolvePath.Count - 1;
                     }
                     if (FindNakedSingles(grid))
@@ -178,9 +180,9 @@ namespace SudokuSolverSetter
                     {
                         if (method == 1)
                         {
-                            g_StepCounter--;
                             g_SolvePath.RemoveAt(g_SolvePath.Count - 1);
                         }
+                        g_StepCounter--;
                         g_changeMade = false;
                         
                     }
@@ -213,6 +215,7 @@ namespace SudokuSolverSetter
                 if (g_advanced)
                     g_Difficulty = "Advanced";
             }
+            g_Rating = (int)(g_Rating * (1 + ((double)g_StepCounter / 100)));
             return g_Gen.CheckIfSolved(grid);
         }
         #endregion
@@ -2064,6 +2067,7 @@ namespace SudokuSolverSetter
             g_SolvePath.Add(separator);
             if (g_Gen.CheckIfSolved(grid))
             {
+                g_Rating = (int)(g_Rating * (1 + ((double)g_StepCounter / 100)));
                 g_SolvePath.Add("FINISHED");
                 return true;
             }
