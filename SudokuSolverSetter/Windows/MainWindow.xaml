@@ -96,7 +96,7 @@
                     The "Update Candidates" button is a helper tool that uses the current state of the puzzle to display, in each empty cell, the possible digits that can go into a cell - based off of the numbers missing from the row/column/block that the cell shares.
                     <LineBreak/>
                     <LineBreak/>
-                    The "Reset Candidates" button does the same as the Update Candidates button, however it ignores any updates to the notes in the cells that you have changed.
+                    The "Show All Candidates" button does the same as the Update Candidates button, however it ignores any updates to the notes in the cells that you have changed.
                     <LineBreak/>
                     <LineBreak/>
                     The "Clear Candidates" button removes notes from all empty cells.
@@ -133,7 +133,7 @@
                     - they will also require the Beginner strategies.
                 </Paragraph>
                 <Paragraph TextAlignment="Center" FontFamily="Verdana" FontSize="15" LineHeight="20">
-                    <Bold>Advanced</Bold> puzzles will require strategies such as X-Wings, Y-Wings, XYZ-Wings, Single Chaining (aka Simple Colouring), and Unique Rectangle (Type 1)
+                    <Bold>Advanced</Bold> puzzles will require strategies such as X-Wings, Y-Wings, XYZ-Wings, Single's Chaining (aka Simple Colouring), and Unique Rectangle (Type 1)
                     - they will also require the lower tier strategies.
                     Advanced puzzles should never require Extreme strategies because the difficulty rating system is yet to detect any Extreme strategies.
                     Therefore, when a puzzle's difficulty is measured, if the implemented Strategic Solver cannot solve the puzzle using the strategies at hand, 

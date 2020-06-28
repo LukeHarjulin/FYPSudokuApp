@@ -32,7 +32,7 @@ namespace SudokuSolverSetter
         private readonly List<string> g_BacktrackingSolvePath = new List<string>();
         private int g_PathCounter = 0;
         private readonly List<int> g_ratingList = new List<int>();
-        private readonly List<string> g_puzzleStrList = new List<string>(), g_seedList = new List<string>();
+        private readonly List<string> g_puzzleStrList = new List<string>(), g_IDList = new List<string>();
         private readonly SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(255, 176, 231, 233));
         public DeveloperWindow()
         {
@@ -121,7 +121,7 @@ namespace SudokuSolverSetter
                             if (rating < g_ratingList[i])
                             {
                                 g_ratingList.Insert(i, rating);
-                                g_seedList.Insert(i, puzzle["Seed"].InnerText);
+                                g_IDList.Insert(i, puzzle["ID"].InnerText);
                                 g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
                                 added = true;
                                 break;
@@ -131,21 +131,21 @@ namespace SudokuSolverSetter
                         {
                             g_ratingList.Add(rating);
                             g_puzzleStrList.Add(puzzle["SudokuString"].InnerText);
-                            g_seedList.Add(puzzle["Seed"].InnerText);
+                            g_IDList.Add(puzzle["ID"].InnerText);
                         }
                     }
                     else
                     { 
                         g_ratingList.Add(rating);
                         g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
-                        g_seedList.Insert(i, puzzle["Seed"].InnerText);
+                        g_IDList.Insert(i, puzzle["ID"].InnerText);
                     }
                 }
 
 
                 for (int i = 0; i < g_ratingList.Count; i++)
                 {
-                    PuzzlesByRating_combo.Items.Add(g_seedList[i] + ", " + g_ratingList[i]);
+                    PuzzlesByRating_combo.Items.Add(g_IDList[i] + ", " + g_ratingList[i]);
                 }
             }
             catch (Exception)
@@ -906,7 +906,7 @@ namespace SudokuSolverSetter
                 StreamWriter ratingWrite = new StreamWriter(@"Puzzles/ratings.txt", false);
                 StreamWriter difficWrite = new StreamWriter(@"Puzzles/difficulties.txt", false);
                 StreamWriter givensWrite = new StreamWriter(@"Puzzles/givens.txt", false);
-                StreamWriter seedsWrite = new StreamWriter(@"Puzzles/seeds.txt", false);
+                StreamWriter IDsWrite = new StreamWriter(@"Puzzles/IDs.txt", false);
                 StreamWriter stepsWrite = new StreamWriter(@"Puzzles/steps.txt", false);
                 #region Strategy Files
                 StreamWriter NS = new StreamWriter(@"Puzzles/StratsCounts/nakedsingles.txt", false), HS = new StreamWriter(@"Puzzles/StratsCounts/hiddensingles.txt", false), NP = new StreamWriter(@"Puzzles/StratsCounts/nakedpair.txt", false),
@@ -967,7 +967,7 @@ namespace SudokuSolverSetter
                                 }
                                 ratingWrite.WriteLine(solver.g_Rating);
                                 givensWrite.WriteLine(givens);
-                                seedsWrite.WriteLine(puzzle["Seed"].InnerText);
+                                IDsWrite.WriteLine(puzzle["ID"].InnerText);
                                 stepsWrite.WriteLine(solver.g_StepCounter);
                                 NS.WriteLine(solver.g_StrategyCount[1]); HS.WriteLine(solver.g_StrategyCount[2]); NP.WriteLine(solver.g_StrategyCount[3]);
                                 HP.WriteLine(solver.g_StrategyCount[4]); PP.WriteLine(solver.g_StrategyCount[5]); BLR.WriteLine(solver.g_StrategyCount[6]);
@@ -981,7 +981,7 @@ namespace SudokuSolverSetter
                 ratingWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
-                seedsWrite.Close();
+                IDsWrite.Close();
                 stepsWrite.Close();
                 NS.Close(); HS.Close(); NP.Close(); HP.Close(); PP.Close(); BLR.Close(); NT.Close();
                 HT.Close(); XW.Close(); YW.Close(); XYZ.Close(); SC.Close(); UR1.Close(); BT.Close();

@@ -37,7 +37,7 @@
                 <ComboBoxItem Content="Advanced"/>
                 <ComboBoxItem Content="Extreme"/>
             </ComboBox>
-            <Label Content="Select Puzzle (Seed, Rating):" Canvas.Left="580" Canvas.Top="67" FontSize="16" HorizontalContentAlignment="Right" Height="36" Width="221"/>
+            <Label Content="Select Puzzle (ID, Rating):" Canvas.Left="580" Canvas.Top="67" FontSize="16" HorizontalContentAlignment="Right" Height="36" Width="221"/>
             <ComboBox x:Name="PuzzlesByRating_combo" Canvas.Left="806" Canvas.Top="73" MaxDropDownHeight="700" Width="130" Height="25" FontSize="16" SelectionChanged="RatingCombo_SelectionChanged" ToolTip="Select puzzle by rating"/>
             <Label x:Name="givenNums_lbl" Content="Given Numbers: " Canvas.Left="315" Canvas.Top="53" FontSize="16" Width="150"/>
             <Label x:Name="difficulty_lbl" Content="Difficulty: Unknown" Canvas.Left="315" Canvas.Top="79" FontSize="16" Width="185"/>

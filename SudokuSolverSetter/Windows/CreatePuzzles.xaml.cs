@@ -82,7 +82,7 @@ namespace SudokuSolverSetter
             {
                 XDocument doc;
                 string filename = @"Puzzles/SudokuPuzzles.xml";
-                int seed = 0;
+                int ID = 0;
                 if (File.Exists(filename))
                 {
                     doc = XDocument.Load(filename);
@@ -92,7 +92,7 @@ namespace SudokuSolverSetter
                     XmlNode notStarted = types.FirstChild;
                     foreach (XmlNode item in notStarted.ChildNodes)
                     {
-                        seed += item.ChildNodes.Count;
+                        ID += item.ChildNodes.Count;
                     }
                 }
                 else
@@ -125,7 +125,7 @@ namespace SudokuSolverSetter
                 StreamWriter ratingWrite = new StreamWriter(@"Puzzles/ratings.txt",true);
                 StreamWriter difficWrite = new StreamWriter(@"Puzzles/difficulties.txt", true); 
                 StreamWriter givensWrite = new StreamWriter(@"Puzzles/givens.txt", true);
-                StreamWriter seedsWrite = new StreamWriter(@"Puzzles/seeds.txt", true);
+                StreamWriter IDsWrite = new StreamWriter(@"Puzzles/IDs.txt", true);
                 StreamWriter stepsWrite = new StreamWriter(@"Puzzles/steps.txt", false);
                 #region Strategy Files
                 StreamWriter NS = new StreamWriter(@"Puzzles/StratsCounts/nakedsingles.txt", true), HS = new StreamWriter(@"Puzzles/StratsCounts/hiddensingles.txt", true), NP = new StreamWriter(@"Puzzles/StratsCounts/nakedpair.txt", true),
@@ -143,7 +143,7 @@ namespace SudokuSolverSetter
                     long rating = GetDifficulty(sudokuPuzzles[i], puzzleString, solver);
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
                         new XElement("puzzle",
-                            new XElement("Seed", ++seed),
+                            new XElement("ID", ++ID),
                             new XElement("DifficultyRating", rating),
                             new XElement("SudokuString", puzzleString)
                             )
@@ -174,7 +174,7 @@ namespace SudokuSolverSetter
                     }
                     ratingWrite.WriteLine(rating);
                     givensWrite.WriteLine(givens);
-                    seedsWrite.WriteLine(seed);
+                    IDsWrite.WriteLine(ID);
                     stepsWrite.WriteLine(solver.g_StepCounter);
 
                     NS.WriteLine(solver.g_StrategyCount[1]);HS.WriteLine(solver.g_StrategyCount[2]);NP.WriteLine(solver.g_StrategyCount[3]);
@@ -185,7 +185,7 @@ namespace SudokuSolverSetter
                 }
                 Timer.Stop();
                 ratingWrite.Close();
-                seedsWrite.Close();
+                IDsWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
                 stepsWrite.Close();

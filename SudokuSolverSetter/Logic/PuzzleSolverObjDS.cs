@@ -139,14 +139,14 @@ namespace SudokuSolverSetter
                         if (method == 1)
                             g_SolvePath[index] += "X-Wing";
                     }
-                    else if (FindSingleChains(grid))//A Single Chain contributes + 600 to the rating.
+                    else if (FindSinglesChain(grid))//A Single's Chain contributes + 600 to the rating.
                     {
                         g_changeMade = true;
                         g_advanced = true;
                         g_Rating += 600;
                         g_StrategyCount[12]++;
                         if (method == 1)
-                            g_SolvePath[index] += "Single Chains / Simple Colouring";
+                            g_SolvePath[index] += "Single's Chain / Simple Colouring";
                     }
                     else if (FindYWing(grid))//A Y-Wing contributes +650 to the rating.
                     {
@@ -1264,7 +1264,7 @@ namespace SudokuSolverSetter
                                                                     cellB.NeighbourCells[index][n].Candidates.Remove(thirdCandi);
                                                                     changeMade = true;
                                                                     if (g_PathTracking)
-                                                                        g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + cellC.NeighbourCells[index][n].XLocation + "," + cellC.NeighbourCells[index][n].YLocation + "] - Y-WING, BLOCK-ROW/COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
+                                                                        g_SolvePath.Add("Candidate number " + thirdCandi + " removed from cell [" + cellB.NeighbourCells[index][n].XLocation + "," + cellB.NeighbourCells[index][n].YLocation + "] - Y-WING, BLOCK-ROW/COLUMN - HINGE [" + cellA.XLocation + "," + cellA.YLocation + "] - WINGS [" + cellB.XLocation + "," + cellB.YLocation + "] [" + cellC.XLocation + "," + cellC.YLocation + "]");
                                                                 }
                                                             }
                                                         }
@@ -1556,7 +1556,7 @@ namespace SudokuSolverSetter
         #endregion
         #region Single Chains
         /// <summary>
-        /// Find Single Chains(aka Simple Colouring):
+        /// Find Single's Chain(aka Simple Colouring):
         /// A chain is a collection of cells that are linked together because of common a candidate(s).
         /// Two cells can only have a link if the common candidate doesn't exist within any other cell in the group (row/column/block).
         /// This way, if one of the two cells' value becomes the shared candidate number, the other cell cannot possibly be that number.
@@ -1572,7 +1572,7 @@ namespace SudokuSolverSetter
         /// </summary>
         /// <param name="grid"></param>
         /// <returns>returns true if a change to a cell candidate list or value is made</returns>
-        private bool FindSingleChains(SudokuGrid grid)
+        private bool FindSinglesChain(SudokuGrid grid)
         {
             bool changeMade = false;
 
@@ -1612,7 +1612,7 @@ namespace SudokuSolverSetter
 
                                                                     changeMade = true;
                                                                     if (g_PathTracking)
-                                                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - SINGLE CHAINS / SIMPLE COLOURING - Type 1");
+                                                                        g_SolvePath.Add("Candidate number " + candidate + " removed from cell [" + neighbour.XLocation + "," + neighbour.YLocation + "] - SINGLE'S CHAIN / SIMPLE COLOURING - Type 1");
                                                                 }
                                                             }
                                                         }
@@ -1648,7 +1648,7 @@ namespace SudokuSolverSetter
                                                 {
                                                     contradiction = indicatorForCell[c1];
                                                     if (g_PathTracking)
-                                                        g_SolvePath.Add("SINGLE CHAINS / SIMPLE COLOURING - Type 2\r\n\r\nContradiction in cells coloured " + (indicatorForCell[c1] ? "Blue" : "Red") + " between cells [" + chain[c1].XLocation + "," + chain[c1].YLocation + "] and [" + chain[c2].XLocation + "," + chain[c2].YLocation + "]");
+                                                        g_SolvePath.Add("SINGLE'S CHAIN / SIMPLE COLOURING - Type 2\r\n\r\nContradiction in cells coloured " + (indicatorForCell[c1] ? "Blue" : "Red") + " between cells [" + chain[c1].XLocation + "," + chain[c1].YLocation + "] and [" + chain[c2].XLocation + "," + chain[c2].YLocation + "]");
                                                     break;
                                                 }
                                             }
@@ -2016,11 +2016,11 @@ namespace SudokuSolverSetter
                 g_strategy = "X-Wing";
                 g_SolvePath[index] += g_strategy;
             }
-            else if (FindSingleChains(grid))//A Single Chain contributes +600 to the rating.
+            else if (FindSinglesChain(grid))//A Single's Chain contributes +600 to the rating.
             {
                 g_Rating += 600;
                 g_advanced = true;
-                g_strategy = "Single Chains/Simple Colouring";
+                g_strategy = "Single's Chain/Simple Colouring";
                 g_SolvePath[index] += g_strategy;
             }
             else if (FindYWing(grid))//A Y-Wing contributes +650 to the rating.
