@@ -13,13 +13,13 @@ namespace SudokuSolverSetter
 
         }
 
-        public SudokuGrid(Cell[][] rows, string difficulty)
+        public SudokuGrid(Cell[][] cells, string difficulty)
         {
-            Rows = rows;
+            Cells = cells;
             Difficulty = difficulty;
         }
 
-        public Cell[][] Rows { get; set; }
+        public Cell[][] Cells { get; set; }
         public string Difficulty { get; set; }
 
     }

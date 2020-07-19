@@ -16,7 +16,7 @@ namespace SudokuSolverSetter
             InitializeComponent();
 
         }
-        public void PopulateTextBlock(int difficultyRating, string timeString, PuzzleSolverObjDS puzzleSolver)
+        public void PopulateTextBlock(int difficultyRating, string timeString, PuzzleSolverAdvDS puzzleSolver)
         {
             Show();
             AdditionalInfo.Text = "Difficulty Rating: " + difficultyRating + "\r\n" + timeString + "\r\nNumber of Steps: " + puzzleSolver.g_StepCounter;

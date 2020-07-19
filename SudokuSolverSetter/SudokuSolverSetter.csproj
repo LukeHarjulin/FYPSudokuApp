@@ -112,7 +112,7 @@
     </Compile>
     <Compile Include="Objects\SudokuGrid.cs" />
     <Compile Include="Logic\PuzzleGenerator.cs" />
-    <Compile Include="Logic\PuzzleSolverObjDS.cs" />
+    <Compile Include="Logic\PuzzleSolverAdvDS.cs" />
     <Page Include="Windows\CreatePuzzles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -176,7 +176,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="SudokuSolverSetter_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

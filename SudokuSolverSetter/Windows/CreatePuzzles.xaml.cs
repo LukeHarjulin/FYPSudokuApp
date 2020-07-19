@@ -65,7 +65,7 @@ namespace SudokuSolverSetter
             {
                 for (int y = 0; y < 9; y++)
                 {
-                    puzzle[x][y] = grid.Rows[x][y].Num;
+                    puzzle[x][y] = grid.Cells[x][y].Num;
                 }
             }
             return puzzle;
@@ -139,7 +139,7 @@ namespace SudokuSolverSetter
                 {
                     sudokuPuzzles.Add(gen.Setter());
                     string puzzleString = gen.GridToString(sudokuPuzzles[i]);
-                    PuzzleSolverObjDS solver = new PuzzleSolverObjDS();
+                    PuzzleSolverAdvDS solver = new PuzzleSolverAdvDS();
                     long rating = GetDifficulty(sudokuPuzzles[i], puzzleString, solver);
                     doc.Element("SudokuPuzzles").Element("NotStarted").Element(sudokuPuzzles[i].Difficulty).Add(
                         new XElement("puzzle",
@@ -207,7 +207,7 @@ namespace SudokuSolverSetter
         /// <param name="puzzleGrid"></param>
         /// <param name="puzzleString"></param>
         /// <returns>returns the difficulty rating of the puzzle</returns>
-        public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString, PuzzleSolverObjDS solver)
+        public long GetDifficulty(SudokuGrid puzzleGrid, string puzzleString, PuzzleSolverAdvDS solver)
         {
             long rating = 0;
             int counter = 0;
@@ -218,13 +218,13 @@ namespace SudokuSolverSetter
                 {
                     if (puzzleString[counter] == '0')
                     {
-                        puzzleGrid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                        puzzleGrid.Cells[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                     }
                     else
                     {
-                        puzzleGrid.Rows[x][y].Candidates = new List<char> { };
+                        puzzleGrid.Cells[x][y].Candidates = new List<char> { };
                     }
-                    puzzleGrid.Rows[x][y].Num = puzzleString[counter];
+                    puzzleGrid.Cells[x][y].Num = puzzleString[counter];
                     counter++;
                 }
             }

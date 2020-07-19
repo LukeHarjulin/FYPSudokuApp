@@ -18,10 +18,10 @@ namespace SudokuSolverSetter
         /// <returns>the puzzle in form of SudokuGrid</returns>
         public SudokuGrid Setter()
         {
-            PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
+            PuzzleSolverAdvDS solve = new PuzzleSolverAdvDS();
             SudokuGrid grid = ConstructGrid();
             //Using Backtracking Solver to fill in a blank grid to get a starting solution - possibly the part of the generator that causes performance issues
-            bool testing = false;
+            bool testing = false;//testing condition
             if (!testing)
             {
                 try
@@ -37,7 +37,7 @@ namespace SudokuSolverSetter
             }
             else
             {
-                #region Manual Number Removal Test
+                #region Manual Testing Puzzle
                 StringToGrid(grid, "600438079900705080800000032200004060000000000040600003180000005070806001560941008");
                 #endregion
             }
@@ -49,14 +49,14 @@ namespace SudokuSolverSetter
         {
             SudokuGrid grid = new SudokuGrid
             {
-                Rows = new Cell[9][]
+                Cells = new Cell[9][]
             };
             for (int i = 0; i < 9; i++)
             {
-                grid.Rows[i] = new Cell[9];
+                grid.Cells[i] = new Cell[9];
                 for (int j = 0; j < 9; j++)
                 {
-                    grid.Rows[i][j] = new Cell
+                    grid.Cells[i][j] = new Cell
                     {
                         BlockLoc = (i / 3) * 3 + (j / 3) + 1,//Block number = row/3*3+column/3
                         Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' },
@@ -70,71 +70,51 @@ namespace SudokuSolverSetter
             AddNeighbours(grid);
             return grid;
         }
-        public void StringToGrid(SudokuGrid puzzleGrid, string puzzleString)
-        {
-            int counter = 0;
-            for (int x = 0; x < 9; x++)
-            {
-                for (int y = 0; y < 9; y++)
-                {
-                    if (puzzleString[counter] == '0')
-                    {
-                        puzzleGrid.Rows[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                    }
-                    else
-                    {
-                        puzzleGrid.Rows[x][y].Candidates = new List<char> { };
-                    }
-                    puzzleGrid.Rows[x][y].Num = puzzleString[counter];
-                    counter++;
-                }
-            }
-        }
+        
         /// <summary>
         /// For each cell, add all neighbouring cells to the list of cells property
         /// </summary>
         /// <param name="grid"></param>
         public void AddNeighbours(SudokuGrid grid)
         {
-
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
                     int nbCounter = 0;//nbCounter is neighbourcounter
-                    grid.Rows[i][j].NeighbourCells = new List<List<Cell>>(3)
+                    grid.Cells[i][j].NeighbourCells = new Cell[3][]
                     {
-                        new List<Cell>(8),
-                        new List<Cell>(8),
-                        new List<Cell>(8)
+                        new Cell[8],
+                        new Cell[8],
+                        new Cell[8]
                     };
-                    for (int k = 0; k < 9; k++)
+                    for (int k = 0, p = 0; k < 9; k++)
                     {
                         if (j != k)
                         {
-                            grid.Rows[i][j].NeighbourCells[0].Add(grid.Rows[i][k]);//add neighbour in i
+                            grid.Cells[i][j].NeighbourCells[0][p++] = grid.Cells[i][k];//add neighbour in i
                             nbCounter++;
                         }
                     }
                     nbCounter = 0;
-                    for (int l = 0; l < 9; l++)
+                    for (int l = 0, p = 0; l < 9; l++)
                     {
                         if (l != i)
                         {
-                            grid.Rows[i][j].NeighbourCells[1].Add(grid.Rows[l][j]);//add neighbour in column
+                            grid.Cells[i][j].NeighbourCells[1][p++] = grid.Cells[l][j];//add neighbour in column
                             nbCounter++;
                         }
                     }
                     nbCounter = 0;
-                    int[] blockIndexes = BlockIndexGetter(grid.Rows[i][j].BlockLoc);
+                    int[] blockIndexes = BlockIndexGetter(grid.Cells[i][j].BlockLoc);
 
-                    for (int x = blockIndexes[0]; x < blockIndexes[0] + 3; x++)
+                    for (int x = blockIndexes[0], p = 0; x < blockIndexes[0] + 3; x++)
                     {
                         for (int y = blockIndexes[1]; y < blockIndexes[1] + 3; y++)
                         {
-                            if (grid.Rows[x][y] != grid.Rows[i][j])
+                            if (grid.Cells[x][y] != grid.Cells[i][j])
                             {
-                                grid.Rows[i][j].NeighbourCells[2].Add(grid.Rows[x][y]);//add neighbour in block
+                                grid.Cells[i][j].NeighbourCells[2][p++] = grid.Cells[x][y];//add neighbour in block
                                 nbCounter++;
                             }
                         }
@@ -142,7 +122,7 @@ namespace SudokuSolverSetter
                 }
             }
         }
-        public void RemoveNumbers(SudokuGrid grid, PuzzleSolverObjDS solve)
+        public void RemoveNumbers(SudokuGrid grid, PuzzleSolverAdvDS solve)
         {
             ///This section consists of constantly removing parallel numbers, e.g. [0,0] and [8,8] or [2,5] and [5,2], and checking if the puzzle is still valid (i.e. still has only one solution)
 
@@ -166,7 +146,7 @@ namespace SudokuSolverSetter
                         int altRow = NumberSwitch(row);
                         int altCol = NumberSwitch(col);
 
-                        if (grid.Rows[altRow][altCol].Num != '0' && grid.Rows[row][col].Num != '0')
+                        if (grid.Cells[altRow][altCol].Num != '0' && grid.Cells[row][col].Num != '0')
                         {
                             bool valid = false;
                             List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
@@ -174,11 +154,11 @@ namespace SudokuSolverSetter
                             {
                                 for (int y = 0; y < 9 && !valid; y++)
                                 {
-                                    if (grid.Rows[x][y].Num != '0')
+                                    if (grid.Cells[x][y].Num != '0')
                                     {
                                         if ((x == altRow && y == altCol) == false && (x == row && y == col) == false)
                                         {
-                                            numList.Remove(grid.Rows[x][y].Num);
+                                            numList.Remove(grid.Cells[x][y].Num);
                                         }
                                         if (numList.Count <= 1)
                                         {
@@ -194,26 +174,26 @@ namespace SudokuSolverSetter
                                 {
                                     for (int c = 0; c < 9; c++)
                                     {
-                                        sudokuArray[r][c] = grid.Rows[r][c].Num;
+                                        sudokuArray[r][c] = grid.Cells[r][c].Num;
                                     }
                                 }
-                                grid.Rows[row][col].Num = '0';
-                                grid.Rows[altRow][altCol].Num = '0';
+                                grid.Cells[row][col].Num = '0';
+                                grid.Cells[altRow][altCol].Num = '0';
                                 if (solve.CompileBacktracker(grid, 4))
                                 {
                                     string firstSol = GridToString(grid);
                                     grid = RestartPuzzle(grid, sudokuArray);
-                                    grid.Rows[row][col].Num = '0';
-                                    grid.Rows[altRow][altCol].Num = '0';
+                                    grid.Cells[row][col].Num = '0';
+                                    grid.Cells[altRow][altCol].Num = '0';
                                     if (solve.CompileBacktracker(grid, 1))//tries Backtracking algorithm using reversed candidate lists so that if a solution that is different to the previous solution exists, it will be found, invalidating the puzzle
                                     {
                                         string secSol = GridToString(grid);
                                         if (firstSol == secSol)//valid puzzle
                                         {
                                             grid = RestartPuzzle(grid, sudokuArray);
-                                            grid.Rows[row][col].Num = '0';
-                                            grid.Rows[altRow][altCol].Num = '0';
-                                            if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
+                                            grid.Cells[row][col].Num = '0';
+                                            grid.Cells[altRow][altCol].Num = '0';
+                                            if (grid.Cells[row][col] == grid.Cells[altRow][altCol])
                                                 removed++;
                                             else
                                                 removed += 2;
@@ -230,7 +210,7 @@ namespace SudokuSolverSetter
                                     grid = RestartPuzzle(grid, sudokuArray);
                                 }
                             }
-                            if (grid.Rows[row][col] == grid.Rows[altRow][altCol])
+                            if (grid.Cells[row][col] == grid.Cells[altRow][altCol])
                                 cellsChecked.Add(row.ToString() + col.ToString());
                             else
                             {
@@ -256,7 +236,7 @@ namespace SudokuSolverSetter
                         { break; }
                         if (!cellsChecked.Contains(row.ToString() + col.ToString()))
                         {
-                            if (grid.Rows[row][col].Num != '0')
+                            if (grid.Cells[row][col].Num != '0')
                             {
                                 bool valid = false;
                                 List<char> numList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
@@ -264,11 +244,11 @@ namespace SudokuSolverSetter
                                 {
                                     for (int y = 0; y < 9 && !valid; y++)
                                     {
-                                        if (grid.Rows[x][y].Num != '0')
+                                        if (grid.Cells[x][y].Num != '0')
                                         {
                                             if ((x == row && y == col) == false)
                                             {
-                                                numList.Remove(grid.Rows[x][y].Num);
+                                                numList.Remove(grid.Cells[x][y].Num);
                                             }
                                             if (numList.Count <= 1)
                                             {
@@ -284,22 +264,22 @@ namespace SudokuSolverSetter
                                     {
                                         for (int c = 0; c < 9; c++)
                                         {
-                                            sudokuArray[r][c] = grid.Rows[r][c].Num;
+                                            sudokuArray[r][c] = grid.Cells[r][c].Num;
                                         }
                                     }
-                                    grid.Rows[row][col].Num = '0';
+                                    grid.Cells[row][col].Num = '0';
                                     if (solve.CompileBacktracker(grid, 4))
                                     {
                                         string firstSol = GridToString(grid);
                                         grid = RestartPuzzle(grid, sudokuArray);
-                                        grid.Rows[row][col].Num = '0';
+                                        grid.Cells[row][col].Num = '0';
                                         if (solve.CompileBacktracker(grid, 1))
                                         {
                                             string secSol = GridToString(grid);
                                             if (firstSol == secSol)//valid puzzle
                                             {
                                                 grid = RestartPuzzle(grid, sudokuArray);
-                                                grid.Rows[row][col].Num = '0';
+                                                grid.Cells[row][col].Num = '0';
                                                 removed++;
                                             }
                                             else
@@ -335,9 +315,9 @@ namespace SudokuSolverSetter
             {
                 for (int y = 0; y < 9; y++)
                 {
-                    if (grid.Rows[x][y].Num != '0')
+                    if (grid.Cells[x][y].Num != '0')
                     {
-                        numList.Remove(grid.Rows[x][y].Num);
+                        numList.Remove(grid.Cells[x][y].Num);
                         if (numList.Count <= 1)
                         {
                             minOfEight = true;
@@ -353,10 +333,10 @@ namespace SudokuSolverSetter
             {
                 for (int c = 0; c < 9; c++)
                 {
-                    sudokuArray[r][c] = grid.Rows[r][c].Num;
+                    sudokuArray[r][c] = grid.Cells[r][c].Num;
                 }
             }
-            PuzzleSolverObjDS solve = new PuzzleSolverObjDS();
+            PuzzleSolverAdvDS solve = new PuzzleSolverAdvDS();
             if (solve.CompileBacktracker(grid, 4))
             {
                 string firstSol = GridToString(grid);
@@ -390,7 +370,7 @@ namespace SudokuSolverSetter
             {
                 for (int y = 0; y < 9; y++)
                 {
-                    grid.Rows[x][y].Num = sudokuArray[x][y];
+                    grid.Cells[x][y].Num = sudokuArray[x][y];
                 }
             }
             return grid;
@@ -444,23 +424,23 @@ namespace SudokuSolverSetter
                 List<char> numberList = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                 for (int col = 0; col < 9; col++)
                 {
-                    if (grid.Rows[row][col].Num == '0')
+                    if (grid.Cells[row][col].Num == '0')
                     {
-                        if (grid.Rows[row][col].Candidates.Count == 0)
+                        if (grid.Cells[row][col].Candidates.Count == 0)
                         {
                             MessageBox.Show("A strategy has malfunctioned and caused a contradiction or the puzzle is invalid");//Catches if a strategy makes a mistake by causing a cell to have no candidates
                         }
                         return false;
                     }
-                    else if (numberList.Contains(grid.Rows[row][col].Num))
+                    else if (numberList.Contains(grid.Cells[row][col].Num))
                     {
-                        numberList.Remove(grid.Rows[row][col].Num);
+                        numberList.Remove(grid.Cells[row][col].Num);
                     }
                     for (int index = 0; index < 3; index++)
                     {
                         for (int i = 0; i < 8; i++)
                         {
-                            if (grid.Rows[row][col].NeighbourCells[index][i].Num == grid.Rows[row][col].Num)
+                            if (grid.Cells[row][col].NeighbourCells[index][i].Num == grid.Cells[row][col].Num)
                             {
                                 return false;
                             }
@@ -637,10 +617,30 @@ namespace SudokuSolverSetter
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    sudokuExport += grid.Rows[i][j].Num;
+                    sudokuExport += grid.Cells[i][j].Num;
                 }
             }
             return sudokuExport;
+        }
+        public void StringToGrid(SudokuGrid puzzleGrid, string puzzleString)
+        {
+            int counter = 0;
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    if (puzzleString[counter] == '0')
+                    {
+                        puzzleGrid.Cells[x][y].Candidates = new List<char> { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                    }
+                    else
+                    {
+                        puzzleGrid.Cells[x][y].Candidates = new List<char> { };
+                    }
+                    puzzleGrid.Cells[x][y].Num = puzzleString[counter];
+                    counter++;
+                }
+            }
         }
         public bool ValidateInput(UniformGrid SudokuPuzzle, SudokuGrid g_grid, TextBox g_selectedCell)
         {
@@ -649,36 +649,36 @@ namespace SudokuSolverSetter
             double index_ = SudokuPuzzle.Children.IndexOf(g_selectedCell);
             int row = (int)index_ / 9;
             int col = (int)index_ % 9;
-            g_grid.Rows[row][col].Num = g_selectedCell.Text[0];
-            if (g_grid.Rows[row][col].Num == '0')
+            g_grid.Cells[row][col].Num = g_selectedCell.Text[0];
+            if (g_grid.Cells[row][col].Num == '0')
                 return true;
             bool valid = true;
             for (int n = 0; n < 8; n++)
             {
-                if (g_grid.Rows[row][col].Num == g_grid.Rows[row][col].NeighbourCells[0][n].Num)
+                if (g_grid.Cells[row][col].Num == g_grid.Cells[row][col].NeighbourCells[0][n].Num)
                 {
-                    int index = g_grid.Rows[row][col].NeighbourCells[0][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[0][n].YLocation;
+                    int index = g_grid.Cells[row][col].NeighbourCells[0][n].XLocation * 9 + g_grid.Cells[row][col].NeighbourCells[0][n].YLocation;
                     if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
                     {
-                        g_grid.Rows[row][col].Num = '0';
+                        g_grid.Cells[row][col].Num = '0';
                         valid = false; break;
                     }
                 }
-                if (g_grid.Rows[row][col].Num == g_grid.Rows[row][col].NeighbourCells[1][n].Num)
+                if (g_grid.Cells[row][col].Num == g_grid.Cells[row][col].NeighbourCells[1][n].Num)
                 {
-                    int index = g_grid.Rows[row][col].NeighbourCells[1][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[1][n].YLocation;
+                    int index = g_grid.Cells[row][col].NeighbourCells[1][n].XLocation * 9 + g_grid.Cells[row][col].NeighbourCells[1][n].YLocation;
                     if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
                     {
-                        g_grid.Rows[row][col].Num = '0';
+                        g_grid.Cells[row][col].Num = '0';
                         valid = false; break;
                     }
                 }
-                if (g_grid.Rows[row][col].Num == g_grid.Rows[row][col].NeighbourCells[2][n].Num)
+                if (g_grid.Cells[row][col].Num == g_grid.Cells[row][col].NeighbourCells[2][n].Num)
                 {
-                    int index = g_grid.Rows[row][col].NeighbourCells[2][n].XLocation * 9 + g_grid.Rows[row][col].NeighbourCells[2][n].YLocation;
+                    int index = g_grid.Cells[row][col].NeighbourCells[2][n].XLocation * 9 + g_grid.Cells[row][col].NeighbourCells[2][n].YLocation;
                     if (((TextBox)SudokuPuzzle.Children[index]).Background != Brushes.Red)
                     {
-                        g_grid.Rows[row][col].Num = '0';
+                        g_grid.Cells[row][col].Num = '0';
                         valid = false; break;
                     }
                 }
