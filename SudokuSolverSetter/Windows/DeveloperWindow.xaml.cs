@@ -100,6 +100,7 @@ namespace SudokuSolverSetter
                 PuzzlesByRating_combo.Items.Clear();
                 g_ratingList.Clear();
                 g_puzzleStrList.Clear();
+                g_IDList.Clear();
             }
             string fileName = @"Puzzles/SudokuPuzzles.xml";
             XmlDocument doc = new XmlDocument();
@@ -137,12 +138,10 @@ namespace SudokuSolverSetter
                     else
                     { 
                         g_ratingList.Add(rating);
-                        g_puzzleStrList.Insert(i, puzzle["SudokuString"].InnerText);
-                        g_IDList.Insert(i, puzzle["ID"].InnerText);
+                        g_puzzleStrList.Add(puzzle["SudokuString"].InnerText);
+                        g_IDList.Add(puzzle["ID"].InnerText);
                     }
                 }
-
-
                 for (int i = 0; i < g_ratingList.Count; i++)
                 {
                     PuzzlesByRating_combo.Items.Add(g_IDList[i] + ", " + g_ratingList[i]);
@@ -261,9 +260,9 @@ namespace SudokuSolverSetter
                         else
                             puzzleSolver.Solver(grid, m);
                         watch.Stop();
-                        averageTime += watch.ElapsedMilliseconds;
+                        averageTime += watch.Elapsed.TotalSeconds;
                     }
-                    times[m - 1] = m + "," + (averageTime / iterations / 1000).ToString();
+                    times[m - 1] = m + "," + (averageTime / iterations).ToString();
 
                 }
                 PuzzleSolverCharDS solver = new PuzzleSolverCharDS();
@@ -280,14 +279,14 @@ namespace SudokuSolverSetter
                             counter2++;
                         }
                     }
-                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    var watch = Stopwatch.StartNew();
                     solver.Solvers(puzzleCharArr, '2');
                     watch.Stop();
-                    averageTime += watch.ElapsedMilliseconds;
+                    averageTime += watch.Elapsed.TotalSeconds;
                 }
                 if (rating != 0)
                 {
-                    times[2] = 4 + "," + (averageTime / iterations / 1000).ToString();
+                    times[2] = 4 + "," + (averageTime / iterations).ToString();
                     string outputStr = "After " + iterations + " iteration(s), average times taken to solve\r\nMeasured Puzzle Difficulty Level(experimental): " + puzzleSolver.g_Difficulty + "\r\nMeasured Rating (experimental): " + rating + "\r\n";
                     times[0] = times[0].Remove(0, 2);
                     outputStr += solved ? "Strategy Solver using an Advanced Data Structure: " + times[0] + "\r\n" : "Strategy Solver using an Advanced Data Structure(trial-and-error required): " + times[0] + "\r\n";
@@ -459,7 +458,7 @@ namespace SudokuSolverSetter
                                 }
                             }
                         }
-                        var watch = System.Diagnostics.Stopwatch.StartNew();
+                        var watch = Stopwatch.StartNew();
                         solved = g_solve.Solver(g_grid, method);
                         if (i == 0)
                         {
@@ -467,12 +466,12 @@ namespace SudokuSolverSetter
                             difficulty_lbl.Content = "Difficulty: " + g_solve.g_Difficulty;
                         }
                         watch.Stop();
-                        averageTime += watch.ElapsedMilliseconds;
+                        averageTime += watch.Elapsed.TotalSeconds;
 
                     }
                     averageTime /= iterations;
 
-                    g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
+                    g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime : "Time taken to solve: " + averageTime;
                     if (method == 1)
                     {
                         if (rating != 0)
@@ -774,10 +773,10 @@ namespace SudokuSolverSetter
                     var watch = Stopwatch.StartNew();
                     solved = solver.Solvers(puzzleTemp, '2');
                     watch.Stop();
-                    averageTime += watch.ElapsedMilliseconds;
+                    averageTime += watch.Elapsed.TotalSeconds;
                 }
                 averageTime /= iterations;
-                g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime / 1000 : "Time taken to solve: " + averageTime / 1000;
+                g_currentTime = iterations > 1 ? "Average time taken to solve: " + averageTime : "Time taken to solve: " + averageTime;
                 counter = 0;
                 if (solver.solvePath.Count != 0)
                 {
@@ -949,6 +948,7 @@ namespace SudokuSolverSetter
                 StreamWriter givensWrite = new StreamWriter(@"Puzzles/givens.txt", false);
                 StreamWriter IDsWrite = new StreamWriter(@"Puzzles/IDs.txt", false);
                 StreamWriter stepsWrite = new StreamWriter(@"Puzzles/steps.txt", false);
+                StreamWriter times = new StreamWriter(@"Puzzles/times.txt", false);
                 #region Strategy Files
                 StreamWriter NS = new StreamWriter(@"Puzzles/StratsCounts/nakedsingles.txt", false), HS = new StreamWriter(@"Puzzles/StratsCounts/hiddensingles.txt", false), NP = new StreamWriter(@"Puzzles/StratsCounts/nakedpair.txt", false),
                 HP = new StreamWriter(@"Puzzles/StratsCounts/hiddenpair.txt", false), PP = new StreamWriter(@"Puzzles/StratsCounts/pointline.txt", false), BLR = new StreamWriter(@"Puzzles/StratsCounts/blocklinereduc.txt", false), NT = new StreamWriter(@"Puzzles/StratsCounts/nakedtriple.txt", false),
@@ -978,7 +978,9 @@ namespace SudokuSolverSetter
                                 sudokuString = puzzle["SudokuString"].InnerText;
                             SudokuGrid grid = g_gen.ConstructGrid();
                             g_gen.StringToGrid(grid, sudokuString);
+                            var watch = Stopwatch.StartNew();
                             solver.Solver(grid, 3);
+                            watch.Stop();
                             puzzle["DifficultyRating"].InnerText = solver.g_Rating.ToString();
                             if (label.Name == "NotStarted")
                             {
@@ -1006,6 +1008,7 @@ namespace SudokuSolverSetter
                                         difficWrite.WriteLine("4");
                                         break;
                                 }
+                                times.WriteLine(watch.Elapsed.TotalSeconds);
                                 ratingWrite.WriteLine(solver.g_Rating);
                                 givensWrite.WriteLine(givens);
                                 IDsWrite.WriteLine(puzzle["ID"].InnerText);
@@ -1019,6 +1022,7 @@ namespace SudokuSolverSetter
                         }
                     }
                 }
+                times.Close();
                 ratingWrite.Close();
                 difficWrite.Close();
                 givensWrite.Close();
