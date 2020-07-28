@@ -34,18 +34,19 @@ namespace SudokuSolverSetter
         private readonly string g_difficulty;
         private readonly string g_originalPuzzleString;
         private bool g_pencilMarker = false, penType = false, g_solved = false;
-        private readonly SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(150, 176, 231, 233));
-        private readonly SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(150, 255, 221, 192));
-        private readonly SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(150, 255, 241, 230));
-        private readonly SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(150, 255, 224, 233));
+        private static readonly byte g_opacity = 140;
+        private readonly SolidColorBrush focusCell = new SolidColorBrush(Color.FromArgb(g_opacity, 176, 231, 233));
+        private readonly SolidColorBrush cellColour = new SolidColorBrush(Color.FromArgb(g_opacity, 255, 221, 192));
+        private readonly SolidColorBrush hoverCell = new SolidColorBrush(Color.FromArgb(g_opacity, 255, 241, 230));
+        private readonly SolidColorBrush altCellColour = new SolidColorBrush(Color.FromArgb(g_opacity, 255, 224, 233));
         private readonly SolidColorBrush pauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
         private readonly SolidColorBrush darkPauseBlockBckGrd = new SolidColorBrush(Color.FromArgb(255, 238, 241, 255));
         private SolidColorBrush backgroundCol, darkFocusCell, darkHoverCell, darkerColour, darkColour, darkButtonColour, darkTextColour, buttonColour, altDarkCellColour;
         private readonly DrawingAttributes g_penDA;
         private readonly DrawingAttributes g_highlighterDA;
         private TimeSpan g_StartingTS = new TimeSpan();
-        public DispatcherTimer DT { get; set; }
-        public Stopwatch Timer { get; set; }
+        public DispatcherTimer g_DT { get; set; }
+        public Stopwatch g_Timer { get; set; }
         #endregion
         public PlaySudoku() => InitializeComponent();
         /// <summary>
@@ -310,12 +311,12 @@ namespace SudokuSolverSetter
         /// </summary>
         private void StartTimer()
         {
-            Timer = new Stopwatch();
-            DT = new DispatcherTimer();
-            DT.Tick += new EventHandler(DT_Tick);
-            DT.Interval = new TimeSpan(0,0,0,0,100);
-            Timer.Start();
-            DT.Start();
+            g_Timer = new Stopwatch();
+            g_DT = new DispatcherTimer();
+            g_DT.Tick += new EventHandler(DT_Tick);
+            g_DT.Interval = new TimeSpan(0,0,0,0,100);
+            g_Timer.Start();
+            g_DT.Start();
         }
         /// <summary>
         /// Pauses the timer if pause or help is requested (or if puzzle is complete)
@@ -323,11 +324,11 @@ namespace SudokuSolverSetter
         /// <param name="type">1 means to Pause, 2 means to Pause and bring up Help, 3 is Pause onced puzzle is finished</param>
         private void PauseTimer(int type)
         {
-            if (Timer.IsRunning)
+            if (g_Timer.IsRunning)
             {
                 
-                Timer.Stop();
-                DT.Stop();
+                g_Timer.Stop();
+                g_DT.Stop();
                 if (type == 1 || type == 2)
                 {
                     Pause_btn.Content = "Resume (P)";
@@ -389,8 +390,8 @@ namespace SudokuSolverSetter
                     RTB_HelpText.Inlines.Clear();
                     PauseBlock.Visibility = Visibility.Visible;
                     PauseBlock.Background = nightmode_chkbx.IsChecked == true
-                        ? new SolidColorBrush(Color.FromArgb(150, 45, 45, 45))
-                        : new SolidColorBrush(Color.FromArgb(150, 238, 241, 255));
+                        ? new SolidColorBrush(Color.FromArgb(g_opacity, 45, 45, 45))
+                        : new SolidColorBrush(Color.FromArgb(g_opacity, 238, 241, 255));
                     RTB_LargeText.Inlines.Add("Congratulations! Sudoku Complete!");
                     RTB_LargeText.FontSize = 48;
                     RTB_LargeText.Padding = new Thickness(120,250,120,0);
@@ -400,8 +401,8 @@ namespace SudokuSolverSetter
             else
             {
                 Pause_btn.Content = "Pause (P)";
-                Timer.Start();
-                DT.Start();
+                g_Timer.Start();
+                g_DT.Start();
                 PauseBlock.Visibility = Visibility.Hidden;
                 btn1.IsEnabled = true; btn2.IsEnabled = true; btn3.IsEnabled = true; btn4.IsEnabled = true; btn5.IsEnabled = true; btn6.IsEnabled = true; btn7.IsEnabled = true; btn8.IsEnabled = true; btn9.IsEnabled = true;
                 del_btn.IsEnabled = true; TogglePencil.IsEnabled = true; ToggleDrawing.IsEnabled = true;
@@ -866,7 +867,7 @@ namespace SudokuSolverSetter
                         if (((TextBox)SudokuPuzzle.Children[cellNum]).Text == "" || ((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length > 1 || ((TextBox)SudokuPuzzle.Children[cellNum]).FontSize == 16 || ((TextBox)SudokuPuzzle.Children[cellNum]).Background == Brushes.Red)
                         {
                             List<char> candis = new List<char> { };
-                            if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length > 1)
+                            if (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length > 1 || (((TextBox)SudokuPuzzle.Children[cellNum]).Text.Length == 1 && ((TextBox)SudokuPuzzle.Children[cellNum]).FontSize == 16))
                             {
 
                                 candis.AddRange(((TextBox)SudokuPuzzle.Children[cellNum]).Text.ToCharArray());
@@ -910,7 +911,7 @@ namespace SudokuSolverSetter
                     {
                         for (int j = 0; j < 9; j++)
                         {
-                            if (((TextBox)SudokuPuzzle.Children[index]).Text.Length > 1)
+                            if (((TextBox)SudokuPuzzle.Children[index]).Text.Length > 1 || (((TextBox)SudokuPuzzle.Children[index]).Text.Length == 1 && ((TextBox)SudokuPuzzle.Children[index]).FontSize == 16))
                             {
                                 string candis = "";
                                 for (int k = 0; k < grid.Cells[i][j].Candidates.Count; k++)
@@ -988,7 +989,7 @@ namespace SudokuSolverSetter
                     {
                         for (int j = 0; j < 9; j++)
                         {
-                            if (((TextBox)SudokuPuzzle.Children[index]).Text == "" || ((TextBox)SudokuPuzzle.Children[index]).Text.Length > 1)
+                            if (((TextBox)SudokuPuzzle.Children[index]).Text == "" || ((TextBox)SudokuPuzzle.Children[index]).Text.Length > 1 || ((TextBox)SudokuPuzzle.Children[index]).FontSize == 16)
                             {
                                 string candis = "";
                                 for (int k = 0; k < grid.Cells[i][j].Candidates.Count; k++)
@@ -1015,13 +1016,18 @@ namespace SudokuSolverSetter
         }
         private void ClearCandidates()
         {
-            for (int i = 0; i < 81; i++)
+            for (int i = 0; i < 9; i++)
             {
-                if (((TextBox)SudokuPuzzle.Children[i]).FontSize == 16)
+                for (int j = 0; j < 9; j++)
                 {
-                    ((TextBox)SudokuPuzzle.Children[i]).Text = "";
-                    ResizeCellFont(((TextBox)SudokuPuzzle.Children[i]), 36);
+                    if (((TextBox)SudokuPuzzle.Children[(i * 9) + j]).FontSize == 16)
+                    {
+                        g_grid.Cells[i][j].Candidates = new List<char> { };
+                        ((TextBox)SudokuPuzzle.Children[(i * 9) + j]).Text = "";
+                        ResizeCellFont((TextBox)SudokuPuzzle.Children[(i * 9) + j], 36);
+                    }
                 }
+                
             }
             if (g_selectedCell != null)
             {
@@ -1037,9 +1043,9 @@ namespace SudokuSolverSetter
         /// <param name="e"></param>
         private void DT_Tick(object sender, EventArgs e)
         {
-            if (Timer.IsRunning)
+            if (g_Timer.IsRunning)
             {
-                TimeSpan ts = Timer.Elapsed.Add(g_StartingTS);
+                TimeSpan ts = g_Timer.Elapsed.Add(g_StartingTS);
                 g_currentTime = "";
                 if (ts.Hours < 1)
                     g_currentTime += "0:";
@@ -1476,35 +1482,35 @@ namespace SudokuSolverSetter
             switch (e.Key)
             {
                 case Key.Left:
-                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) - 1 >= 0)
+                    if (g_Timer.IsRunning && SudokuPuzzle.Children.IndexOf((TextBox)sender) - 1 >= 0)
                     {
                         SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf((TextBox)sender) - 1].Focus();
                     }
                     e.Handled = true;
                     break;
                 case Key.Up:
-                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) - 9 >= 0)
+                    if (g_Timer.IsRunning && SudokuPuzzle.Children.IndexOf((TextBox)sender) - 9 >= 0)
                     {
                         SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf(((TextBox)sender)) - 9].Focus();
                     }
                     e.Handled = true;
                     break;
                 case Key.Right:
-                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) + 1 <= 80)
+                    if (g_Timer.IsRunning && SudokuPuzzle.Children.IndexOf((TextBox)sender) + 1 <= 80)
                     {
                         SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf((TextBox)sender) + 1].Focus();
                     }
                     e.Handled = true;
                     break;
                 case Key.Down:
-                    if (SudokuPuzzle.Children.IndexOf((TextBox)sender) + 9 <= 80)
+                    if (g_Timer.IsRunning && SudokuPuzzle.Children.IndexOf((TextBox)sender) + 9 <= 80)
                     {
                         SudokuPuzzle.Children[SudokuPuzzle.Children.IndexOf((TextBox)sender) + 9].Focus();
                     }
                     e.Handled = true;
                     break;
                 case Key.Delete:
-                    if (!((TextBox)sender).IsReadOnly && ((TextBox)sender).Text.Length > 0)
+                    if (g_Timer.IsRunning && !((TextBox)sender).IsReadOnly && ((TextBox)sender).Text.Length > 0)
                     {
                         if (((TextBox)sender).Background == Brushes.Red)
                         {
@@ -1520,30 +1526,45 @@ namespace SudokuSolverSetter
                         PauseTimer(1);
                     e.Handled = true;
                     break;
-                case Key.N:                    
-                    PencilMarkONOFF('k');
-                    e.Handled = true;
+                case Key.N:
+                    if (g_Timer.IsRunning)
+                    {
+                        PencilMarkONOFF('k');
+                        e.Handled = true;
+                    }
                     break;
-                case Key.D:                    
-                    DrawingONOFF('k');
-                    e.Handled = true;
+                case Key.D:
+                    if (g_Timer.IsRunning)
+                    {
+                        DrawingONOFF('k');
+                        e.Handled = true;
+                    }
                     break;
                 case Key.H:                    
                     if (!g_solved)
                         PauseTimer(2);
                     e.Handled = true;
                     break;
-                case Key.A:                    
-                    ResetCandidates();
-                    e.Handled = true;
+                case Key.A:
+                    if (g_Timer.IsRunning)
+                    {
+                        ResetCandidates();
+                        e.Handled = true;
+                    }
                     break;
                 case Key.U:
-                    UpdateCandidates();
-                    e.Handled = true;
+                    if (g_Timer.IsRunning)
+                    {
+                        UpdateCandidates();
+                        e.Handled = true;
+                    }
                     break;
                 case Key.C:
-                    ClearCandidates();
-                    e.Handled = true;
+                    if (g_Timer.IsRunning)
+                    {
+                        ClearCandidates();
+                        e.Handled = true;
+                    }
                     break;
                 default:
                     break;
@@ -1588,12 +1609,12 @@ namespace SudokuSolverSetter
             if (darkerColour == null)//reduces memory clutter by only ever assigning these colours once. Also, the objects are only created if the user activates darkmode.
             {
                 darkerColour = new SolidColorBrush(Color.FromArgb(255, 30, 30, 30));
-                darkColour = new SolidColorBrush(Color.FromArgb(150, 45, 45, 45));
-                altDarkCellColour = new SolidColorBrush(Color.FromArgb(150, 66, 66, 66));
+                darkColour = new SolidColorBrush(Color.FromArgb(g_opacity, 45, 45, 45));
+                altDarkCellColour = new SolidColorBrush(Color.FromArgb(g_opacity, 66, 66, 66));
                 darkButtonColour = new SolidColorBrush(Color.FromArgb(255, 60, 60, 60));
                 darkTextColour = new SolidColorBrush(Color.FromArgb(200, 240, 240, 240));
-                darkFocusCell = new SolidColorBrush(Color.FromArgb(150, 127, 127, 127));
-                darkHoverCell = new SolidColorBrush(Color.FromArgb(150, 100, 100, 100));
+                darkFocusCell = new SolidColorBrush(Color.FromArgb(g_opacity, 127, 127, 127));
+                darkHoverCell = new SolidColorBrush(Color.FromArgb(g_opacity, 100, 100, 100));
             }
                 
             this.Background = darkColour;
